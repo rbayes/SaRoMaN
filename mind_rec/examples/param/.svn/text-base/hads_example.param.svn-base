@@ -1,0 +1,21 @@
+########################################################################
+#                                                                      #
+#  This is a parameter file that can be read by bhep sreader class.    #
+#                                                                      #
+########################################################################
+
+## hit plane tolerance (cm)
+ANA tol D 1.
+
+## hit resolution (cm)
+ANA res D 1.
+
+###  data to read ###
+
+DATA idst_files SV 1
+/home/alaing/temp_ntup/tnd_cc_newVert.gz
+
+### data to write ###
+
+DATA odst_files SV 1
+test.gz

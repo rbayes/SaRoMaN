@@ -1,0 +1,92 @@
+#! /bin/sh
+# mind-config.  Generated from mind-config.in by configure.
+
+
+prefix=/usr/local
+exec_prefix=${prefix}
+includedir=${prefix}/include
+
+usage()
+{
+    cat  <<EOF
+Usage: clhep-config [OPTION]
+
+Known values for OPTION are:
+
+  --prefix              show installation prefix
+  --cxx                 print C++ compilation command
+  --cc                  print C compilation command
+  --cpp                 print pre-processor commands
+  --include             print include path
+  --ldflags             print linker flags
+  --libs                print libraries to link against
+  --help                display this help and exit
+  --version             output version information
+
+EOF
+
+    exit $1
+}
+
+if test $# -eq 0; then
+    usage 1
+fi
+
+while test $# -gt 0; do
+    case "$1" in
+    -*=*)
+        optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'`
+	;;
+    *) 
+        optarg=
+	;;
+    esac
+
+    case "$1" in
+    --prefix)
+	echo /usr/local
+	;;
+
+    --version)
+	echo  v0r1p0
+	exit 0
+	;;
+
+    --help)
+	usage 0
+	;;
+
+    --cxx)
+       	echo g++ -g -Wall -I/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include -I"/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include" -I/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/bhep/include -I/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/include
+       	;;
+
+    --cc)
+       	echo gcc -g -O2
+       	;;
+
+    --cpp)
+       	echo "CPP:    " gcc -E 
+       	echo "CXXCPP: " g++ -E 
+       	;;
+
+    --include)
+       	echo -I/usr/local/include
+       	;;
+
+    --ldflags)
+       	echo   -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/lib -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/bhep/lib -L"/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party"/lib 
+       	;;
+
+    --libs)
+       	echo -L/usr/local/lib -lmind -lrecpack -lCLHEP -lbhep -lm  -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/lib -lrecpack -lm -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/lib -lCLHEP-2.1.4.1 -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/bhep/lib -lbhep -lm -L"/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/lib" -lCLHEP-2.1.4.1
+       	;;
+
+    *)
+	usage
+	exit 1
+	;;
+    esac
+    shift
+done
+
+exit 0

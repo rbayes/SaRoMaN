@@ -1,0 +1,111 @@
+########################################################################
+#                                                                      #
+#  This is a parameter file that can be read by bhep sreader class.    #
+#                                                                      #
+########################################################################
+
+#############################################
+#  parameters for the run type
+#############################################
+
+# Input file base.
+RUN filebase S /data/neutrino01/mind_sim/Rec_out/muCC/muCC_
+
+# First and last file.
+RUN firstF I 1
+RUN lastF I 14
+
+# Analysis type: 1 - hits only, 2 - all like.
+RUN anType I 1
+
+# Likelihood file names.
+RUN cclike S /data/neutrino01/mind_sim/likelihoods/combCC.root
+RUN nclike S /data/neutrino01/mind_sim/likelihoods/newNC.root
+
+# Interaction: nu_mu, nu_e, NC. Beam charge: -1 for store mu, 1 for store mubar
+RUN intType S nu_mu
+RUN bChar I -1
+
+# Do smear (0 will envoke had_rec when written)
+RUN doSmear I 1
+
+# Smear resolution parameters.
+RUN rootP D 0.55
+RUN constP D 0.03
+RUN angA D 10.4
+RUN angB D 10.1
+###
+
+# Maximum true neutrino energy.
+RUN truEmax D 25
+
+# Binning for response matrices.
+RUN truBins I 11
+RUN bEdges DV 12
+0 2 3 4 5 6 8 10 12.5 15 20 25
+
+# Detector parameters (mm).
+RUN detX D 14000
+RUN detY D 14000
+RUN WLSatten D 5000
+
+# Vary an interaction proportion? doVary: 0 = no, 1 = decrease type, 2 = decrease 'rest'
+RUN doVary I 0
+RUN vtype I 1
+## File containing histograms with appropriate %/100 xsec errors.
+RUN xsecFile S /data/neutrino01/mind_sim/analysis/compiled/xsecsys/numuQE.root
+
+#############################################
+#  parameters for the cut type
+#############################################
+
+# Edge cuts. (position mm).z1,zend,x1,xend,y1,yend.
+CUT edges DV 6
+18000
+19900
+6500
+6900
+6500
+6950
+
+# Minimum loglikeQP value.
+CUT minQP D -0.5
+
+# Maximum over estimate of rec momentum (maxRecMom = this*maxE).
+CUT maxOver D 1.6
+
+# Minimum proportion of nodes fitted.
+CUT nodeprop D 0.6
+
+# Cuts on NC log likelihoods. [0] hits, [1] hitsxfrac, [2] hitsxmean, [3] hitsxfracxmean.
+CUT NClike DV 4
+1.0
+2.0
+0.0
+4.0
+
+# MinE for kinematic cuts (GeV).
+CUT kinE D 7.
+
+# Minimum QT
+CUT QTmin D 0.25
+
+# Prec vs Erec gradient.
+CUT pGrad D 0.3
+
+# Quadratic fit err/p exclusion region.
+CUT quadCut DV 2
+-1.0
+0.0
+
+# transverse/longitudinal extent requirements.
+# [0] - tran/long intercept
+# [1] - tran/long vs. hits gradient.
+# [2] - maximum long for cut 2.
+# [3] - recMom vs. long gradient.
+# 
+CUT tranlong DV 4
+0.18
+0.0026
+6000
+3.0

@@ -1,0 +1,65 @@
+########################################################################
+#                                                                      #
+#  This is a parameter file that can be read by bhep sreader class.    #
+#                                                                      #
+########################################################################
+
+#############################################
+#  parameters for the run type
+#############################################
+
+RUN TrainTMVA I 1
+
+RUN class_outFile S /afs/phas.gla.ac.uk/user/r/rbayes/MIND/multitrack_anal/TMVA/nuSTORM_CC/TMVA.root
+
+# Input file base.
+RUN SigFileBase S /data/neutrino03/rbayes/Rec_out/muCC/muCC_
+
+# First and last file.
+RUN firstSig I 1100
+RUN lastSig  I 1199
+
+RUN BackFileBase SV 1
+/data/neutrino02/sbramsiepe/Rec_out/mubarAll/mubarAll_
+
+# First and last file.
+RUN firstBack IV 1 
+32500 
+RUN lastBack  IV 1 
+32999
+
+# Interaction: nu_mu, nu_e, NC. Beam charge: -1 for store mu, 1 for store mubar
+RUN intType S nu_mu
+RUN bChar I -1
+
+# Maximum true neutrino energy.
+RUN truEmax D  3.8
+
+RUN MethodList SV 3
+KNN BDT MLP
+
+# Binning for response matrices.
+RUN truBins I 16
+RUN bEdges DV 17
+0 0.25 0.5 0.75 1.0 1.25 1.5 1.75 2 2.25 2.5 2.75 3 3.25 3.5 3.75 4.0 4.25
+# 0 2 3 4 5 6 8 10 12.5 15 20 25
+
+# Edge cuts. (position mm).z1,zend,x1,xend,y1,yend.
+CUT edges DV 6
+9000
+-9500
+2485
+10
+-50000
+50000
+
+# Maximum over estimate of rec momentum (maxRecMom = this*maxE).
+CUT maxOver D 4.0
+
+# Minimum proportion of nodes fitted.
+CUT nodeprop D 0.6
+
+# Variables for the multivariate analysis
+# ErrqP, trHits, Rp, engfrac, meanDep, EngVar, recMom, Qt, meanHPP
+CUT MVAVars IV 9
+1 1 1 0 1 1 0 1 1

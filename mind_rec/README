@@ -1,0 +1,31 @@
+MIND 
+======================================================
+
+
+
+Availability
+============
+
+
+Installation
+============
+
+To compile Nemora you will need an ANSI C++-compiler.  After unpacking the
+distribution the Makefiles can be prepared using the configure
+command,
+
+  ./configure
+
+You can then build the library by typing,
+
+  make
+
+
+The library can be installed using the command,
+
+  make install
+
+The default install directory prefix is /usr/local.  Consult the file
+INSTALL for information on installing the library in another location
+or changing other default compilation options.
+

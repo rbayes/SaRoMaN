@@ -1,0 +1,53 @@
+
+########################################################################
+#                                                                      #
+#  This is a parameter file that can be read by bhep sreader class.    #
+#                                                                      #
+########################################################################
+
+#############################################
+#  parameters for the setup
+#############################################
+
+# radiation length (mm)
+RUN x0 D 1e9
+# energy loss (MeV/cm)
+RUN de_dx D -8
+
+#############################################
+#  parameters for the analysis
+#############################################
+
+# type of fit
+RUN kfitter S kalman
+
+# verbosities for recpack services
+ANA vfit I 0
+ANA vmat I 0
+ANA vnav I 0
+ANA vmod I 0
+ANA vsim I 0
+
+# maximum chi2 for tracks
+RUN chi2fit_max D 50
+
+# maximum local chi2 for nodes
+RUN chi2node_max D 500
+
+# fit data twice (0=false, 1=true)
+ANA refit I 1
+
+###  data to read ###
+
+DATA idst_files SV 1
+../ntuples/tndmu_ms_eloss_10k.gz
+
+###  data to write ###
+
+DATA odst_files SV 1
+../ntuples/tndmu_ms_eloss_10k.FITTED.gz
+
+
+
+
+

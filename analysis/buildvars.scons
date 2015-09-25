@@ -1,0 +1,7 @@
+CPPDEFINES = []
+CCFLAGS = ['-m64', '-pthread', '-rdynamic']
+CPPFLAGS = []
+CPPPATH = ['/data/neutrino04/common_SW/clhep//include', '/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/bhep/include', '/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/include']
+LIBPATH = ['/data/neutrino04/common_SW/clhep//lib', '/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/bhep/lib', '/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib']
+LIBS = ['CLHEP-2.1.0.1', 'bhep', 'Core', 'Cint', 'RIO', 'Net', 'Hist', 'Graf', 'Graf3d', 'Gpad', 'Tree', 'Rint', 'Postscript', 'Matrix', 'Physics', 'MathCore', 'Thread', 'm', 'dl', 'TMVA']
+LINKFLAGS = ['-pthread']

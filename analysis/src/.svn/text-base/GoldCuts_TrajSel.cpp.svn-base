@@ -1,0 +1,1030 @@
+
+#include "GoldCuts_TrajSel.h"
+#include <TRandom3.h>
+
+
+GoldCuts_TrajSel::GoldCuts_TrajSel(const bhep::gstore &store)
+{
+  _filebase = store.fetch_sstore("filebase");
+
+  std::string outName = store.fetch_sstore("outFile");
+  _OutFile = new TFile( outName.c_str(), "recreate");
+
+  _intType = store.fetch_sstore("intType");
+  _anType = store.fetch_istore("anType");
+  _beamCharge = store.fetch_istore("bChar");
+
+  define_cut_levels( store );
+  
+  define_histos( store );
+
+  
+  _firstF = store.fetch_istore("firstF");
+  _lastF  = store.fetch_istore("lastF");
+  
+  _doVary = store.fetch_istore("doVary");
+
+  if ( _doVary > 0 )
+    define_variables( store );
+
+  _detX = store.fetch_dstore("detX");
+  _detY = store.fetch_dstore("detY");
+  _WLSAtten = store.fetch_dstore("WLSatten");
+
+  // isMeson = true;
+}
+
+/********************************************/
+void GoldCuts_TrajSel::execute()
+/********************************************/
+{
+  //Do the analysis!!
+  std::string fileName;
+  bool includeEvent;
+  
+  for (int ifile = _firstF;ifile <= _lastF;ifile++){
+    
+    fileName = _filebase+bhep::to_string( ifile )+".root";
+    std::cout<<fileName<<std::endl;
+    TFile *f1 = new TFile( fileName.c_str(), "read" );
+    if(f1->IsZombie()) continue;
+    TTree *data;
+    f1->GetObject("tree", data);
+
+    set_branches( *data );
+
+    for (int ient = 0;ient < data->GetEntries();ient++){
+      
+      data->GetEntry( ient );
+      if(ient%1000 == 0) std::cout<<"Event = "<<ient<<std::endl;
+      if ( _doVary > 0 )
+	includeEvent = include_event();
+      else includeEvent = true;
+      // if (_trueVert[2] < _edges[4] || _trueVert[2] > _edges[5]) includeEvent = false;
+      if ( includeEvent){
+	   //&& 0.001*_enu < 1.0){
+
+	_alltracks1->Fill( _enu/1000 );
+	IntHist[_truInt]->Fill( _enu/1000 );
+	_ifail->Fill(_fail);
+	fill_tracks2();
+	if ( _intType == "nu_mu" ) _ally->Fill( 1 - sqrt( pow(1.0/_truqP,2)+pow(105.66,2) )/_enu );
+	
+	select_muon_trajectory();
+	// _mutraj=0;
+	for(int it=0;it<_ntraj;it++) traj.push_back(it);
+	if ( _ntraj > 0 )
+	  analyse_success();
+	traj.clear();
+      }
+    }
+  
+    
+    delete data;
+    delete f1;
+
+  }
+  
+  // if ( _intType == "nu_mu" ){
+  _Eff->Divide( _alltracks1 );
+  _recEff->Divide( _alltracks2 );
+  _Ey->Divide( _ally );
+  // }
+  _back->Divide( _alltracks1 );
+  _recBack->Divide( _alltracks2 );
+  for(int i=0;i<10;i++){
+    IntEff[i]->Divide( IntHist[i] );
+    Intback[i]->Divide( IntHist[i] );
+    IntHist[i]->Divide( _alltracks1 );
+    IntrecEff[i]->Divide( _alltracks2 );
+    IntrecBack[i]->Divide( _alltracks2 );
+  }
+  _EffNM->Divide( _alltracksNM1 );
+  _backNM->Divide( _alltracksNM1 );
+  _By->Divide( _ally );
+  _rcuts->Scale(1./_alltracks1->Integral());
+  _pcuts->Scale(1./_alltracks1->Integral());
+  _rcuts_back->Scale(1./_alltracks1->Integral());
+  _pcuts_back->Scale(1./_alltracks1->Integral());
+  _rcuts_sig->Scale(1./_alltracks1->Integral());
+  _pcuts_sig->Scale(1./_alltracks1->Integral());
+  _LCC1_sig->Scale(1./_LCC1_sig->Integral());
+  _LCC1_back->Scale(1./_LCC1_back->Integral());
+  //_LCC4_sig->Scale(1./_LCC4_sig->Integral());
+  //_LCC4_back->Scale(1./_LCC4_back->Integral());
+  _ifail->Scale(1./_alltracks1->Integral());
+}
+
+/********************************************/
+void GoldCuts_TrajSel::finalize()
+/********************************************/
+{
+  //Finalise outputs
+  _OutFile->Write();
+  _OutFile->Close();
+  delete _OutFile;
+  
+  _likeCC->Close();
+  _likeNC->Close();
+  delete _likeCC;
+  delete _likeNC;
+  
+  if ( _doVary > 0 ){
+    _xsecF->Close();
+    delete _xsecF;
+  }
+
+}
+
+/********************************************/
+void GoldCuts_TrajSel::fill_tracks2()
+/********************************************/
+{
+  //Fill a column of the 2D matrix for normalisation.
+  double incr = 0.0;
+  int bin;
+  while ( incr < _alltracks2->GetXaxis()->GetXmax() )
+    {
+      _alltracks2->Fill( incr, _enu/1000 );
+
+      bin = _alltracks2->GetXaxis()->FindBin( incr );
+      incr += _alltracks2->GetXaxis()->GetBinWidth( bin );
+    }
+
+}
+
+/********************************************/
+void GoldCuts_TrajSel::define_histos(const bhep::gstore& store)
+/********************************************/
+{
+  //Define the required output histograms.
+  _maxE = store.fetch_dstore("truEmax");
+  int ntBins = store.fetch_istore("truBins");
+  double trEdge[ntBins+1], recEdge[ntBins+2];
+  define_rec_binning( store, recEdge, trEdge );
+
+  //if ( _intType == "nu_mu" ){
+
+  _Eff = new TH1F("Eff",";True Neutrino Energy;Fractional Efficiency",25,0,_maxE);
+  _Eff->Sumw2();
+
+  _EffNM = new TH1F("EffNM",";True Neutrino Energy;Fractional Efficiency",25,0,_maxE);
+  _EffNM->Sumw2();
+  
+  _Ey = new TH1F("Ey","Efficiency as function of inelasticity",100,0,1);
+  _Ey->Sumw2();
+  
+  _By = new TH1F("By","Background as function of inelasticity",100,0,1);
+  _By->Sumw2();
+  
+  _recEff = new TH2F("recEff","Signal response",ntBins+1, recEdge, ntBins, trEdge);
+  _recEff->Sumw2();
+  
+  _maxOver = store.fetch_dstore("maxOver");
+
+  _recmunu = new TH2F("recmunu",";Rec. #nu Energy (GeV); Rec. #mu Energy (GeV)",
+		      (int)(40), 0, _maxE*_maxOver, (int)(30), 0, _maxE*_maxOver);
+  _recmunu->Sumw2();
+
+  _recmutrunu = new TH2F("recmutrunu",";Rec. #mu Momentum (GeV/c); True #nu Energy (GeV)",
+		      (int)(40), 0, _maxE*_maxOver, (int)(30), 0, _maxE);
+  _recmutrunu->Sumw2();
+  
+  _recQtnu = new TH2F("recQtnu",";Rec. #nu Energy (GeV); Q_{t} (GeV)",
+		      (int)(40), 0, _maxE*_maxOver, (int)(40), 0, _maxE);
+  _recQtnu->Sumw2();
+
+  _recmunu_back = new TH2F("recmunu_back",";Rec. #nu Energy (GeV); Rec. #mu Energy (GeV)",
+		      (int)(40), 0, _maxE*_maxOver, (int)(30), 0, _maxE*_maxOver);
+  _recmunu_back->Sumw2();
+  
+  _recQtnu_back = new TH2F("recQtnu_back",";Rec. #nu Energy (GeV); Q_{t} (GeV)",
+		      (int)(40), 0, _maxE*_maxOver, (int)(40), 0, _maxE);
+  _recQtnu_back->Sumw2();
+  
+
+  _dir_back = new TH2D("dir_back",";p_{x}/p_{z};p_{y}/p_{z}", 100, -2.5, 2.5, 100, -2.5, 2.5);
+  _dir_back->Sumw2();
+  _dir_sig = new TH2D("dir_sig",";p_{x}/p_{z};p_{y}/p_{z}", 100, -2.5, 2.5, 100, -2.5, 2.5);
+  _dir_sig->Sumw2();
+  _dirMC_back = new TH2D("dirMC_back",";p_{x}/p_{z};p_{y}/p_{z}", 100, -2.5, 2.5, 100, -2.5, 2.5);
+  _dirMC_back->Sumw2();
+  _dirMC_sig = new TH2D("dirMC_sig",";p_{x}/p_{z};p_{y}/p_{z}", 100, -2.5, 2.5, 100, -2.5, 2.5);
+  _dirMC_sig->Sumw2();
+
+  _ally = new TH1F("tracksy","All events inelasticity",100,0,1);
+  _ally->Sumw2();
+  
+  _pmu = new TH1F("p_mu",";Reconstructed Muon Momentum (GeV/c)",(int(_maxE*5)),0,_maxE);
+  _pmu->Sumw2();
+
+  _pmutfail = new TH1F("p_mutfail",";True Muon Momentum (GeV/c)",(int(_maxE*5)),0,_maxE);
+  _pmutfail->Sumw2();
+
+  _pmufail = new TH1F("p_mufail",";Reconstructed Muon Momentum (GeV/c)",(int(_maxE*5)),-_maxE,_maxE);
+  _pmufail->Sumw2();
+  
+  /*} else {
+
+    _Eff = NULL;
+    _recEff = NULL;
+    _recmunu = NULL;
+    _recQtnu = NULL;
+    _Ey = NULL;
+    _By = NULL;
+    _ally = NULL;
+    _pmu = NULL;
+
+    }*/
+  _rcuts = new TH1F("cuts_reject", "Events rejected by cuts",6, 0.0, 6.0);
+  _rcuts->Sumw2();
+  _pcuts = new TH1F("cuts_passed", "Events passed by cuts",7, 0.0, 7.0);
+  _pcuts->Sumw2();
+
+  _rcuts_sig = new TH1F("cuts_reject_sig", "Events rejected by cuts",6, 0.0, 6.0);
+  _rcuts_sig->Sumw2();
+  _pcuts_sig = new TH1F("cuts_passed_sig", "Events passed by cuts",7, 0.0, 7.0);
+  _pcuts_sig->Sumw2();
+
+  _rcuts_back = new TH1F("cuts_reject_back", "Events rejected by cuts",6, 0.0, 6.0);
+  _rcuts_back->Sumw2();
+  _pcuts_back = new TH1F("cuts_passed_back", "Events passed by cuts",7, 0.0, 7.0);
+  _pcuts_back->Sumw2();
+  
+  _zFid   = new TH1F("zFid",";Vertex Z-position (m)", 140, _edges[1] - 1000, _edges[0] + 1000);
+  _zFidcut = new TH1F("zFidcut",";Vertex Z-position (m)", 140, _edges[1] - 1000, _edges[0] + 1000);
+  _rzFid   = new TH2F("rzFid",";Vertex Z-position (m);Vertex R-position", 
+		      140, _edges[1] - 1000, _edges[0] + 1000, 140, 0, _edges[2] + 1000);
+  _rzFidcut = new TH2F("rzFidcut",";Vertex Z-position (m);Vertex R-position", 
+		       140, _edges[1] - 1000, _edges[0] + 1000, 140, 0, _edges[2] + 1000);
+  _Lqp    = new TH1F("Lqp", ";L_{q/p};Occupancy",20,-5, 5);
+  _Lqp_back = new TH1F("Lqp_back", ";L_{q/p};Occupancy",20,-5, 5);
+  _errqp       = new TH1F("errqp",";#sigma_{q/p}/(q/p);Occupancy",100,0,4);
+  _errqp_sig   = new TH1F("errqp_sig",";#sigma_{q/p}/(q/p);Occupancy",100,0,4);
+  _errqp_back  = new TH1F("errqp_back",";#sigma_{q/p}/(q/p);Occupancy",100,0,4);
+
+  _LCC1_sig   = new TH1F("LCC1_sig", ";L_1;Occupancy",35, -15, 20);
+  _LCC1_back   = new TH1F("LCC1_back", ";L_1;Occupancy",35, -15, 20);
+  _Nhits       = new TH1F("Nhits", ";Number of Candidate Hits; Occupancy",100,0,250);
+  _Nhits_sig       = new TH1F("Nhits_sig", ";Number of Candidate Hits; Occupancy",100,0,250);
+  _Nhits_back       = new TH1F("Nhits_back", ";Number of Candidate Hits; Occupancy",100,0,250);
+
+  _rangtruE   = new TH2F("rangtruE",";Momentum from Range (GeV/c);True Neutrino Energy (GeV)",
+			  80, -_maxE, _maxE, 40, 0., _maxE);
+
+  /*_LCC2_sig    = new TH1F("LCC2_sig", ";L_2;Occupancy",35, -15, 20);
+  _LCC2_back   = new TH1F("LCC2_back", ";L_2;Occupancy",35, -15, 20);    
+  _LCC3_sig    = new TH1F("LCC3_sig", ";L_3;Occupancy",35, -15, 20);
+  _LCC3_back   = new TH1F("LCC3_back", ";L_3;Occupancy",35, -15, 20);
+  _LCC4_sig    = new TH1F("LCC4_sig", ";L_{4};Occupancy",35, -15, 20);
+  _LCC4_back   = new TH1F("LCC4_back", ";L_{4};Occupancy",35, -15, 20);
+  */
+  _ifail = new TH1F("ifail",";Fail Code; Fraction of Events",8,-0.5,7.5);
+  _imuontraj = new TH2F("imuontraj",";Muon Trajectory Index;Track Momentum (GeV/c)",10,-0.5,9.5,50,-_maxE,_maxE);
+  _itraj = new TH2F("itraj",";Trajectory Index;Track Momentum (GeV/c)",10,-0.5,9.5,50,-_maxE,_maxE);
+ 
+  
+  _fitprop = new TH1F("fitprop",";Clusters in Fit/Clusters in Track",120,0.0,1.2);
+  _fitprop_back = new TH1F("fitprop_back",";Clusters in Fit/Clusters in Track",120,0.0,1.2);
+  
+  _back = new TH1F("back","true eng background",25,0,_maxE);
+  _back->Sumw2();
+  _back_pion = new TH2F("back_pion","true eng background",25,0,_maxE,3,-1.0,2.0);
+  _back_pion->Sumw2();
+  _back_kaon = new TH2F("back_kaon","true eng background",25,0,_maxE,3,-1.0,2.0);
+  _back_kaon->Sumw2();
+
+  _backNM = new TH1F("backNM","true eng background",25,0,_maxE);
+  _backNM->Sumw2();
+  
+  _recBack = new TH2F("recBack","Background response",ntBins+1, recEdge, ntBins, trEdge);
+  _recBack->Sumw2();
+
+  _alltracks1 = new TH1F("tracks","true eng background",25,0,_maxE);
+  _alltracks1->Sumw2();
+
+  for(int i=0; i<10; i++){
+    TString tempname="nutracks_";
+    IntHist.push_back(new TH1F(tempname + (long int)i,";True Neutrino Energy;Fractional Content",
+			       25,0,_maxE));
+    IntHist.back()->Sumw2();
+    tempname="nuEff_";
+    IntEff.push_back(new TH1F(tempname + (long int)i,";True Neutrino Energy;Fractional Content",
+			       25,0,_maxE));
+    IntEff.back()->Sumw2();
+    tempname="nuback_";
+    Intback.push_back(new TH1F(tempname + (long int)i,";True Neutrino Energy;Fractional Content",
+			       25,0,_maxE));
+    Intback.back()->Sumw2();
+    tempname="nurecEff_";
+    IntrecEff.push_back(new TH2F(tempname + (long int)i,";Reconstructed Energy;True Neutrino Energy",ntBins+1, recEdge, ntBins, trEdge));
+    IntrecEff.back()->Sumw2();
+    
+    tempname="nurecBack_";
+    IntrecBack.push_back(new TH2F(tempname + (long int)i,";Reconstructed Energy;True Neutrino Energy",ntBins+1, recEdge, ntBins, trEdge));
+    IntrecBack.back()->Sumw2();
+  }
+
+  _alltracksNM1 = new TH1F("tracksNM",";True Neutrino Energy",25,0,_maxE);
+  _alltracksNM1->Sumw2();
+
+  _alltracks2 = new TH2F("tracks2D","All event response",ntBins+1, recEdge, ntBins, trEdge);
+  _alltracks2->Sumw2();
+  /*
+  _dispX_sig = new TH2F("dispX_sig",
+			";No. Clusters in Candidate; Displacement in X/ Displacement in Z",
+			15, 0., 20.*_maxE, 25, 0., 1.);
+
+  _dispZ_sig = new TH2F("dispZ_sig",
+			";Displacement in Z (m); Rec. #mu Momentum (GeV/c)",
+			80, 0., 0.8*_maxE, 8, 0., _maxE*1.6);
+
+  _dispX_back = new TH2F("dispX_back",
+			";No. Clusters in Candidate; Displacement in X/ Displacement in Z",
+			15, 0., 20.*_maxE, 25, 0., 1.);
+
+  _dispZ_back = new TH2F("dispZ_back",
+			 ";Displacement in Z (m); Rec. #mu Momentum (GeV/c)",
+			80, 0., 0.8*_maxE, 8, 0., _maxE*1.6);
+
+  _qCharge = new TH1F("qCharge",";#delta c/c",100, -2, 1);
+  _qCharge_back = new TH1F("qCharge_back",";#delta c/c",100, -2, 1);
+  */
+  //Likelihoods.
+  std::string lCCname = store.fetch_sstore("cclike");
+  std::string lNCname = store.fetch_sstore("nclike");
+
+  _likeCC = new TFile( lCCname.c_str(), "read" );
+  _likeNC = new TFile( lNCname.c_str(), "read" );
+
+  _likeCC->GetObject("trHits", _hitCC); _likeNC->GetObject("trHits", _hitNC);
+  _likeCC->GetObject("pID", _errSig); _likeNC->GetObject("pnoID", _errBack);
+  //err_nc should be for background so combine and renormalise.
+  _errBack->Add( (TH1F*)_likeCC->Get("pnoID") );
+  _errBack->Scale( 1.0/_errBack->Integral() );
+
+  if ( _anType == 1 ){
+    _fracCC = NULL; _fracNC = NULL;
+    _meanCC = NULL; _meanNC = NULL;
+  } else {
+    _likeCC->GetObject("engfracC", _fracCC); _likeNC->GetObject("engfracC", _fracNC);
+    _likeCC->GetObject("trMeanC2", _meanCC); _likeNC->GetObject("trMeanC2", _meanNC);
+  }
+  //
+}
+
+/********************************************/
+void GoldCuts_TrajSel::define_rec_binning(const bhep::gstore& store, double* recB, double* truB)
+/********************************************/
+{
+  //Sort out the bin widths for response matrices.
+  vector<double> edges = store.fetch_vstore("bEdges");
+
+  vector<double>::iterator bIt;
+  int counter = 0;
+  for (bIt = edges.begin();bIt < edges.end();bIt++, counter++)
+    {
+      truB[counter] = (*bIt);
+      recB[counter] = (*bIt);
+      if ( bIt == edges.end()-1 ) recB[counter+1] = (*bIt)+1;
+    }
+  
+}
+
+/********************************************/
+void GoldCuts_TrajSel::define_variables(const bhep::gstore& store)
+/********************************************/
+{
+  //Get the information required for xsec study.
+  _Vtype = store.fetch_istore("vtype");
+
+  if ( !_doSmear ){
+    long seed = (long)store.fetch_dstore("seed");
+    _ranGen = TRandom3( seed );
+  }
+
+  std::string xsecFile = store.fetch_sstore("xsecFile");
+  _xsecF = new TFile( xsecFile.c_str(), "read" );
+
+  _xsecF->GetObject("xsec", _xsecErr);
+}
+
+
+/********************************************/
+bool GoldCuts_TrajSel::include_event()
+/********************************************/
+{
+  //Check if this event should be included in the sample.
+  if ( _doVary == 1 && _truInt != _Vtype ) return true;
+  if ( _doVary == 2 && _truInt ==  _Vtype ) return true;
+  
+  int bin = _xsecErr->FindBin( _enu/1000 );
+  double xsErr = _xsecErr->GetBinContent( bin );
+  
+  if ( _doVary == 1 ){
+
+    if ( _ranGen.Rndm() <= 1-xsErr ) return true;
+    else return false;
+
+  } else if ( _doVary == 2 ){
+
+    if ( _ranGen.Rndm() <= 1/(xsErr+1) ) return true;
+    else return false;
+
+  }
+
+  return true;
+}
+
+
+void GoldCuts_TrajSel::define_cut_levels(const bhep::gstore& store)
+{  
+  _doSmear   = store.fetch_istore("doSmear");
+  _edges     = store.fetch_vstore("edges");
+  _logQPmin  = store.fetch_dstore("minQP");
+  _maxOver   = store.fetch_dstore("maxOver");
+  _minNodes  = store.fetch_dstore("nodeprop");
+  _rangelimit= store.find_dstore("rangelimit") ? store.fetch_dstore("rangelimit"): 0.10;
+  _likeCut   = store.fetch_dstore("NClike");
+  _minQT     = store.fetch_dstore("QTmin");
+}
+
+void GoldCuts_TrajSel::set_branches(TTree& inTree)
+
+{
+  TBranch *b_XPositions;
+  TBranch *b_YPositions;
+  TBranch *b_ZPositions;
+
+  _XPos = 0;
+  _YPos = 0;
+  _ZPos = 0;
+
+  inTree.SetBranchStatus("*", 0);
+  inTree.SetBranchStatus("Evt", 1);             inTree.SetBranchAddress("Evt", &_evt);
+  inTree.SetBranchStatus("Fitted", 1);          inTree.SetBranchAddress("Fitted", &_suc);
+  inTree.SetBranchStatus("NeuEng", 1);          inTree.SetBranchAddress("NeuEng", &_enu);
+  inTree.SetBranchStatus("TrajectoryNo", 1);    inTree.SetBranchAddress("TrajectoryNo", &_ntraj);
+  inTree.SetBranchStatus("LongMuTraj",1);       inTree.SetBranchAddress("LongMuTraj", &_mutrajlong);
+  inTree.SetBranchStatus("NoMuTraj",1);         inTree.SetBranchAddress("NoMuTraj", &_mutrajNhit);
+  inTree.SetBranchStatus("TruCharge", 1);       inTree.SetBranchAddress("TruCharge", &_truq);
+  inTree.SetBranchStatus("RecCharge", 1);       inTree.SetBranchAddress("RecCharge", &_recq);
+  inTree.SetBranchStatus("ID", 1);       inTree.SetBranchAddress("ID", &_truID);
+  inTree.SetBranchStatus("TrueInteraction",1);  inTree.SetBranchAddress("TrueInteraction", &_truInt);
+  inTree.SetBranchStatus("Fail",1);             inTree.SetBranchAddress("Fail", &_fail);
+  inTree.SetBranchStatus("RecMom",1);           inTree.SetBranchAddress("RecMom", &_recqP);
+  inTree.SetBranchStatus("TruMom",1);           inTree.SetBranchAddress("TruMom", &_truqP);
+  inTree.SetBranchStatus("ErrMom",1);           inTree.SetBranchAddress("ErrMom", &_errqP);
+  inTree.SetBranchStatus("rangqP",1);          inTree.SetBranchAddress("rangqP", &_rangeMom);
+  inTree.SetBranchStatus("initrangqP",1);          inTree.SetBranchAddress("initrangqP", &_initqP);
+  inTree.SetBranchStatus("RecXDirection",1);    inTree.SetBranchAddress("RecXDirection", &_recXdir);
+  inTree.SetBranchStatus("RecYDirection",1);    inTree.SetBranchAddress("RecYDirection", &_recYdir);
+  inTree.SetBranchStatus("TrueXDirection",1);    inTree.SetBranchAddress("TrueXDirection", &_truXdir);
+  inTree.SetBranchStatus("TrueYDirection",1);    inTree.SetBranchAddress("TrueYDirection", &_truYdir);
+  inTree.SetBranchStatus("RecXPosition",1);    inTree.SetBranchAddress("RecXPosition", &_vertX);
+  inTree.SetBranchStatus("RecYPosition",1);    inTree.SetBranchAddress("RecYPosition", &_vertY);
+  // inTree.SetBranchStatus("HitBreakDown");       inTree.SetBranchAddress("HitBreakDown", &_trHits);
+  if( inTree.GetBranch("FitN") ){
+    inTree.SetBranchStatus( "FitN", 1 );     inTree.SetBranchAddress( "FitN", &_fitn );
+  } else {
+    inTree.SetBranchStatus( "fittedNode", 1 );     inTree.SetBranchAddress( "fittedNode", &_fitn );
+  }
+  inTree.SetBranchStatus("InMu",1);             inTree.SetBranchAddress("InMu", &_inmu);
+  inTree.SetBranchStatus("hadRecEng",1);        inTree.SetBranchAddress("hadRecEng", &_hadRecEng);
+  inTree.SetBranchStatus("hadQESEng",1);        inTree.SetBranchAddress("hadQESEng", &_hadQESEng);
+  inTree.SetBranchStatus("hadTruEng", 1);       inTree.SetBranchAddress("hadTruEng", &_hadEng);
+  inTree.SetBranchStatus("hadronP", 1);         inTree.SetBranchAddress("hadronP", &_hadMom);
+  inTree.SetBranchStatus("hadRdirP",1);         inTree.SetBranchAddress("hadRdirP", &_hrdir);
+  // inTree.SetBranchStatus("CandHits", 1);        inTree.SetBranchAddress("CandHits", &_inCand);
+  // inTree.SetBranchStatus("HadronNodes", 1);     inTree.SetBranchAddress(
+  inTree.SetBranchStatus("NoHits",1);           inTree.SetBranchAddress("NoHits", &_nohits);
+  if( inTree.GetBranch( "XPositions" ) ){
+    inTree.SetBranchStatus("XPositions",1);       inTree.SetBranchAddress("XPositions", &_XPos, &b_XPositions);}
+  else{
+    inTree.SetBranchStatus("XPos",1);       inTree.SetBranchAddress("XPos", &_XPos, &b_XPositions);}
+  if( inTree.GetBranch( "YPositions" ) ){
+    inTree.SetBranchStatus("YPositions",1);       inTree.SetBranchAddress("YPositions", &_YPos, &b_YPositions);}
+  else{
+    inTree.SetBranchStatus("YPos",1);       inTree.SetBranchAddress("YPos", &_YPos, &b_YPositions);}
+  if( inTree.GetBranch( "ZPositions" ) ){
+    inTree.SetBranchStatus("ZPositions",1);       inTree.SetBranchAddress("ZPositions", &_ZPos, &b_ZPositions);}
+  else{
+    inTree.SetBranchStatus("ZPos",1);       inTree.SetBranchAddress("ZPos", &_ZPos, &b_ZPositions);}
+  inTree.SetBranchStatus("length",1);           inTree.SetBranchAddress("length", &_len);
+  inTree.SetBranchStatus("TrajVertex",1);       inTree.SetBranchAddress("TrajVertex", &_vertZ);   
+  inTree.SetBranchStatus("evVertex",1);       inTree.SetBranchAddress("evVertex", &_trueVert);   
+}
+
+void GoldCuts_TrajSel::select_muon_trajectory()
+{
+  
+  _mutraj = 0;
+  if(_ntraj > 1){
+    if(_mutrajlong == _mutrajNhit) _mutraj = _mutrajNhit;
+    else if (_mutrajlong > _ntraj && _mutrajNhit < _ntraj) _mutraj = _mutrajNhit;
+    else if (_mutrajlong < _ntraj && _mutrajNhit > _ntraj) _mutraj = _mutrajlong;
+    else {
+      bool allfit = true;
+      for(int i=0; i<_ntraj; i++)
+	if(_suc[i] == 0){ allfit = false; }
+      if ( allfit == false ) _mutraj = _mutrajNhit;
+      else                   _mutraj = _mutrajlong;
+    }
+  }
+}
+
+void GoldCuts_TrajSel::analyse_success()  {
+  
+  bool tracksel = false;
+
+  // if( _ntraj == 1 ){
+  tracksel = full_cut();
+  // }
+  // else {
+  //   tracksel = Muon_Selection();
+  // }
+  if(tracksel){
+    int ID = _recq[_mutraj] == _beamCharge && (_intType == "nu_mu" || _intType == "nu_tau") ? 1:-1;
+    if(ID==1){
+      
+      _Eff->Fill( _enu/1000 );
+      for(int it=0; it<_ntraj;it++){
+	if(it!=_mutraj){
+	  _imuontraj->Fill( it, 0.001/_recqP[it]);
+	}
+      }
+      IntEff[_truInt]->Fill( _enu/1000);
+      _recmutrunu->Fill(_recEnu/1000, _enu/1000 );
+      if( _recEnu > _maxE*1000 ) _recEnu = _maxE*1000;
+      _recEff->Fill(_recEnu/1000, _enu/1000 );
+      IntrecEff[_truInt]->Fill( _recEnu/1000, _enu/1000 );
+      if(_intType == "nu_mu") _Ey->Fill( 1 - sqrt( pow(1.0/_truqP,2) + pow(105.66,2) )/_enu );
+      _pmu->Fill(_recq[_mutraj]/_recqP[_mutraj]/1000.);
+      _dir_sig->Fill(_recXdir[_mutraj], _recYdir[_mutraj]);
+      _dirMC_sig->Fill(_truXdir, _truYdir);
+      _rangtruE->Fill(_rangeMom[_mutraj]*0.001,_enu/1000.);
+      if(_enu < 1000 && fabs(0.001/_recqP[_mutraj]) > 2.)
+	std::cout<<_mutraj<<"\t"<<_ntraj<<"\t"<<_enu*0.001<<"\t"<<fabs(0.001/_recqP[_mutraj])<<"\t"<<_len[_mutraj]<<"\t"<<_inmu[_mutraj]<<std::endl;
+      
+    } else {
+      
+      _back->Fill( _enu/1000 );
+      for(int it=0; it<_ntraj;it++){
+	if(it!=_mutraj){
+	  _itraj->Fill( it, 0.001/_recqP[it]);
+	}
+      }
+      Intback[_truInt]->Fill( _enu/1000 );
+      if ( _recEnu > _maxE*1000 ) _recEnu = _maxE*1000;//Put into overflow bin.
+      _recBack->Fill( _recEnu/1000, _enu/1000 );
+      IntrecBack[_truInt]->Fill( _recEnu/1000, _enu/1000 );
+      if ( _intType == "nu_mu" ){
+	_By->Fill( 1 - sqrt( pow(1.0/_truqP,2)+pow(105.66,2) )/_enu );
+	_pmutfail->Fill(1./_truqP/1000);
+	_pmufail->Fill(1./_recqP[_mutraj]/1000);
+      }
+      _dir_back->Fill(_recXdir[_mutraj], _recYdir[_mutraj]);
+      _dirMC_back->Fill(_truXdir, _truYdir);
+    } 
+    
+  }
+}
+
+bool GoldCuts_TrajSel::fiducial(bool usetrue){
+  if(usetrue){
+    // Find the closest hit to the true vertex
+    int mintraj=0, minhit=0;
+    double mindoa=99999.9;
+    
+    for(int i=0; i<_XPos->size(); i++){
+      for(int j=0; j<_XPos->at(i).size(); j++){
+	// std::cout<<i<<"\t"<<j<<"\t"<<_ZPos->at(i).at(j)<<std::endl;
+	double doa = sqrt(pow(_XPos->at(i).at(j) - _trueVert[0], 2) +
+			  pow(_YPos->at(i).at(j) - _trueVert[1], 2) +
+			  pow(_ZPos->at(i).at(j) - _trueVert[2], 2));
+	if(doa < mindoa){
+	  mintraj = i;
+	  minhit  = j;
+	}
+      }
+    }
+    double doaVert[3] = // {_trueVert[0], _trueVert[1], _trueVert[2]};
+      {_XPos->at(mintraj)[minhit],
+       _YPos->at(mintraj)[minhit],
+       _ZPos->at(mintraj)[minhit]};
+    
+    double vertR = sqrt(pow(doaVert[0],2) + pow(doaVert[1],2));
+    if ( doaVert[2] > _edges[0]) return false;
+    if ( doaVert[2] < _edges[1]) return false;
+    if ( vertR > _edges[2]) return false;
+    if ( vertR < _edges[3]) return false;
+    if ( fabs(doaVert[0]) > _edges[4]) return false;
+    if ( fabs(doaVert[1]) > _edges[5]) return false;
+    if ( fabs(doaVert[1]) > 
+	 _edges[4] * (1 + tan(atan(1.)/2.)) - fabs(doaVert[0])) return false;
+    _zFid->Fill(doaVert[2]);
+    _rzFid->Fill(doaVert[2], vertR);
+    return true;
+  }else {
+    
+    if ( _vertZ[_mutraj] > _edges[0]) return false;
+    if ( _vertZ[_mutraj] < _edges[1]) return false;
+    double vertR = sqrt(pow(_vertX[_mutraj],2) + pow(_vertY[_mutraj],2));
+    if ( vertR > _edges[2]) return false;
+    if ( vertR < _edges[3]) return false;
+    if ( fabs(_vertX[_mutraj]) > _edges[4]) return false;
+    if ( fabs(_vertY[_mutraj]) > _edges[5]) return false;
+    if ( fabs(_vertY[_mutraj]) > 
+	 _edges[4] * (1 + tan(atan(1.)/2.)) - fabs(_vertX[_mutraj])) return false;
+    return true;
+  }
+}
+
+
+bool GoldCuts_TrajSel::full_cut(){
+  // itraj = traj.begin();
+  // _mutraj = 0;
+  int ID = 1;
+  if ( _ntraj == 0 ) return false;
+  if ( !_suc[_mutraj] )
+    return false;
+  else{
+    ID = _recq[_mutraj] == _beamCharge && (_intType == "nu_mu" || _intType == "nu_tau") ? 1:-1;
+    _pcuts->Fill("Reconstruction Success",1);
+    ID ==1? _pcuts_sig->Fill("Reconstruction Success",1):_pcuts_back->Fill("Reconstruction Success",1);
+  }
+  if ( !fiducial(true) ){
+    _rcuts->Fill("Fiducial",1);
+    ID==1 ? _rcuts_sig->Fill("Fiducial",1):_rcuts_back->Fill("Fiducial",1);
+    return false;
+  } else {
+    _pcuts->Fill("Fiducial",1);
+    ID==1 ? _pcuts_sig->Fill("Fiducial",1): _pcuts_back->Fill("Fiducial",1);
+  }
+  if ( fabs( _errqP[_mutraj] / _recqP[_mutraj] ) >= _errSig->GetXaxis()->GetXmax()) return false;
+  else {
+    double err_cc = _errSig->GetBinContent( _errSig->FindBin( fabs( _errqP[_mutraj]/_recqP[_mutraj] ) ) );
+    double err_nc = _errBack->GetBinContent( _errSig->FindBin( fabs( _errqP[_mutraj]/_recqP[_mutraj] ) ) );
+    double errPar = log( err_cc/err_nc );
+    _errqp->Fill(fabs( _errqP[_mutraj] / _recqP[_mutraj] ));
+    ID==1 ?  _errqp_sig->Fill(fabs( _errqP[_mutraj] / _recqP[_mutraj] )):
+      _errqp_back->Fill(fabs( _errqP[_mutraj] / _recqP[_mutraj] ));
+    ID==1 ? _Lqp->Fill(errPar): _Lqp_back->Fill(errPar);
+    
+    if ( fabs(0.001/(_recqP[_mutraj])) > _maxOver*_maxE ){
+      _rcuts->Fill("Max Momentum",1);
+      ID==1 ? _rcuts_sig->Fill("Max Momentum",1):_rcuts_back->Fill("Max Momentum", 1);
+      return false;
+    } else {
+      _pcuts->Fill("Max Momentum",1);
+      ID==1 ? _pcuts_sig->Fill("Max Momentum",1):_pcuts_back->Fill("Max Momentum", 1);
+    }
+    ID ==1 ? _fitprop->Fill((double)_fitn[_mutraj]/(double)_inmu[_mutraj]):
+      _fitprop_back->Fill((double)_fitn[_mutraj]/(double)_inmu[_mutraj]);
+    if ( (double)_fitn[_mutraj]/(double)_inmu[_mutraj] < _minNodes ){ 
+      _rcuts->Fill("Fitted proportion",1); 
+      ID==1 ? _rcuts_sig->Fill("Fitted proportion",1):_rcuts_back->Fill("Fitted proportion",1);
+      return false; 
+    } // 
+    else{
+      _pcuts->Fill("Fitted proportion",1);
+      ID==1? _pcuts_sig->Fill("Fitted proportion",1): _pcuts_back->Fill("Fitted proportion",1);
+    }
+    if( _initqP[_mutraj]/_recqP[_mutraj] < _rangelimit){
+      _rcuts->Fill("Range Charge",1); 
+      ID==1 ? _rcuts_sig->Fill("Range Charge",1):_rcuts_back->Fill("Range Charge",1);
+      return false;
+    }
+    else { 
+      _pcuts->Fill("Range Charge",1);
+      ID==1 ? _pcuts_sig->Fill("Range Charge",1): _pcuts_back->Fill("Range Charge",1); 
+    }
+    if( errPar <= _logQPmin ) {
+      _rcuts->Fill("Track quality",1); 
+      ID==1 ? _rcuts_sig->Fill("Track quality",1): _rcuts_back->Fill("Track quality",1); 
+      return false;}
+    else {
+      _pcuts->Fill("Track quality",1);
+      ID==1 ? _pcuts_sig->Fill("Track quality",1): _pcuts_back->Fill("Track quality",1); 
+    }
+    double pratio;
+    bool NClike = NC_likelihood(ID, pratio);
+    //if(! NClike )
+    //  NClike = Muon_Selection();
+    if ( !NClike ){ // 
+      _rcuts->Fill("CC Selection",1); 
+      ID==1 ? _rcuts_sig->Fill("CC Selection",1): _rcuts_back->Fill("CC Selection",1); 
+      return false;}
+    else{
+      _pcuts->Fill("CC Selection",1);
+      ID==1 ? _pcuts_sig->Fill("CC Selection",1): _pcuts_back->Fill("CC Selection",1); 
+    }
+
+    double vertR = sqrt(pow(_vertX[_mutraj],2) + pow(_vertY[_mutraj],2));
+    if(_truID[_mutraj]!=0){
+      _zFidcut->Fill(_vertZ[_mutraj]); 
+      _rzFidcut->Fill(_vertZ[_mutraj],vertR);
+    }
+    
+    double altEng = 0, Esig = 0, dTh = 0;
+    if(_ntraj==1)
+      _recEnu = fabs(_hadQESEng[0]);
+    else if( _ntraj > 1 ){ 
+      double altEng = _hadEng*0.001;
+      // sqrt( pow(_hadMom[0],2)+pow(_hadMom[1],2)+pow(_hadMom[2],2));
+      if ( ID == -1 && (_intType == "NC" || _intType == "nu_tau" ) )
+	altEng -= sqrt( pow(0.001/_recqP[_mutraj],2) );
+
+      Esig = sqrt( pow( _smearRoot*sqrt( altEng ), 2 )
+		   + pow(  _smearConst*altEng, 2 ) );
+      
+      _recEnu = sqrt( pow(0.001/(_recqP[_mutraj]),2)+pow(0.10566,2) )
+	+ altEng + _ranGen.Gaus( 0, Esig );
+      _recEnu *= 1000;
+    } else _recEnu = 0.;
+    
+    // kin_cut( ID ); 
+    /*
+    if (0) { // 
+      
+      // if(1./sqrt(1 + _dir[1][0]*_dir[1][0] + _dir[1][1]*_dir[1][1]) < _momGrad ){
+      _rcuts->Fill("Kinematic",1); 
+      ID==1 ? _rcuts_sig->Fill("Kinematic",1): _rcuts_back->Fill("Kinematic",1); 
+      return false;
+    }
+    else{ _pcuts->Fill("Kinematic",1);
+      ID==1 ? _pcuts_sig->Fill("Kinematic",1): _pcuts_back->Fill("Kinematic",1); 
+      
+    }
+    */
+  }
+  
+  return true;
+}
+/*
+bool GoldCuts_TrajSel::Muon_Selection(){
+  // Iterate over all of the trajectories in the event
+  itraj = traj.begin();
+  while(itraj < traj.end() && traj.size() > 0){   
+    if(!_suc[*itraj]){ traj.erase(itraj++); continue; }
+    if(!fiducial() ){ traj.erase(itraj++);  continue; }
+    if( fabs(0.001/_recqP[*itraj]) > _maxOver*_maxE ){ traj.erase(itraj++); continue; }
+    if((double)_fitn[*itraj]/(double)_inmu[*itraj] < _minNodes )
+      { traj.erase(itraj++); continue; }
+    if( _initqP[*itraj]/_recqP[*itraj] < 0 )
+      { traj.erase(itraj++); continue; }
+    if( fabs(_errqP[*itraj]/_recqP[*itraj] ) >= _errSig->GetXaxis()->GetXmax())
+      { traj.erase(itraj++); continue; }
+    else {
+      double err_cc = _errSig->GetBinContent( _errSig->FindBin( fabs( _errqP[_mutraj]/_recqP[_mutraj] ) ) );
+      double err_nc = _errBack->GetBinContent( _errSig->FindBin( fabs( _errqP[_mutraj]/_recqP[_mutraj] ) ) );
+      double errPar = log( err_cc/err_nc );
+      
+      if(errPar <= _logQPmin)
+	{ traj.erase(itraj++); continue; }
+    }
+    // Not including a selection based on the number of hits (yet).
+    itraj++;
+  }
+  if(traj.size() == 0) return false;
+  if(traj.size() == 1){
+    // Set the muon index and apply the NC likelihood cut
+    itraj=traj.begin();
+    _mutraj = *itraj;
+    
+    int ID = _recq[_mutraj] == _beamCharge && 
+       (_intType == "nu_mu" || _intType == "nu_tau") ? 1:-1;
+     double pratio;
+    if( !NC_likelihood(ID, pratio) ) { return false; }
+    // if ( !kin_cut( ID ) ) { return false; }
+    
+    return true;
+   
+  }
+  if(traj.size() > 1){
+    // Select the longest trajectory of those remaining and see if the
+    // NC likelihood is applicable
+    double maxlength=-9999.999;
+    int maxtraj=0;
+    std::vector<int>::iterator maxitraj;
+    for(itraj=traj.begin();itraj!=traj.end();itraj++){
+      if(maxlength < _len[*itraj]){
+	maxlength = _len[*itraj];
+	maxtraj   = *itraj;
+	maxitraj  = itraj;
+      }
+    }
+    itraj  = maxitraj;
+    _mutraj = maxtraj;
+    
+    int ID = _recq[_mutraj] == _beamCharge && 
+      (_intType == "nu_mu" || _intType == "nu_tau") ? 1:-1;
+    double pratio;
+    // if( !NC_likelihood(ID, pratio) ) {    return false; } 
+    // if ( !kin_cut( ID ) ) { return false; }
+    return true; 
+  }    
+}
+*/
+bool GoldCuts_TrajSel::NC_likelihood(int ID, double &Pratio) {
+  double CChit, NChit;
+  double CCfrac, NCfrac;
+  double CCmean, NCmean;
+  double logPar;
+  
+  // if ( _anType == 1 ){
+  
+  // calc_hit_proportion();
+  _Nhits->Fill(_inmu[_mutraj]);
+  ID==1 ? _Nhits_sig->Fill(_inmu[_mutraj]): _Nhits_back->Fill(_inmu[_mutraj]);
+  if ( (double)_inmu[_mutraj] >= _hitCC->GetXaxis()->GetXmax() )
+    return true;
+  else {
+    
+    CChit = _hitCC->GetBinContent( _hitCC->FindBin( _inmu[_mutraj] ) );
+    NChit = _hitNC->GetBinContent( _hitNC->FindBin( _inmu[_mutraj] ) );
+    logPar = log(CChit/NChit);
+    ID==1 ? _LCC1_sig->Fill(logPar):_LCC1_back->Fill(logPar);
+    if ( logPar > _likeCut ) return true;
+    else return false;
+  }
+} 
+
+/********************************************/
+//void Golden_Analysis::calc_hit_proportion()
+/********************************************/
+/*
+{
+  //Calculate correct proportion of candidate/event when no eDep.
+  _visEng = 0.1;
+  _trajEng = 0.01;//avoids pole/incorrect quasi identification.
+
+  int nChit = 0, nEhit = 0;
+  for (int Ej=0;Ej<_nhits;Ej++){
+	    
+    if ( _inCand[Ej] || _hadH[Ej] ) nEhit++;
+    if ( _inCand[Ej] ) nChit++;
+    
+  }
+  _trHitProp = (double)nChit/(double)nEhit;
+
+}
+*/
+
+bool GoldCuts_TrajSel::kin_cut(int ID){ 
+  double altEng = 0, Esig = 0, dTh = 0;
+  if(_ntraj==1){
+    // use the calculated quasi-elastic hadron energy
+    if ( ID == 1 && _beamCharge == 1 )
+      _recEnu = quasi_nubar_prot();
+    else if ( ID == 1 && _beamCharge == -1 )
+      _recEnu = quasi_nu_neut();
+    else if ( ID == -1 && _beamCharge == 1 )
+      _recEnu = quasi_nu_neut();
+    else if ( ID == -1 && _beamCharge == -1 )
+      _recEnu = quasi_nubar_prot();
+    ID == 1 ? _recmunu->Fill(_recEnu/1000,fabs(0.001/_recqP[_mutraj]))
+      : _recmunu_back->Fill(_recEnu/1000,fabs(0.001/_recqP[_mutraj]));
+    if ( _recEnu/1000 <= _kMinE ) return true;
+    else if ( fabs(1.0/_recqP[_mutraj]) >= _momGrad*_recEnu ) return true;
+  } else {
+    if ( _doSmear ){
+      // check the momentum
+      altEng = _hadRecEng[0]*0.001;
+      if ( ID == -1 && (_intType == "NC" || _intType == "nu_tau" ) )
+	altEng -= sqrt( pow(0.001/_recqP[_mutraj],2) );
+
+      Esig = sqrt( pow( _smearRoot*sqrt( altEng ), 2 )
+		   + pow(  _smearConst*altEng, 2 ) );
+      
+      _recEnu = sqrt( pow(0.001/(_recqP[_mutraj]),2)+pow(0.10566,2) )
+	+ altEng + _ranGen.Gaus( 0, Esig );
+      _recEnu *= 1000;
+      
+      dTh = sqrt( pow(_angA/sqrt(altEng),2) + pow(_angB/(altEng),2) );
+      QT = calcQt( _ranGen.Gaus( 0, dTh ) );
+      // if(_evt%1000 == 0) std::cout<<Esig<<"\t"<<QT<<std::endl;
+      if(ID == 1){
+	_recmunu->Fill(_recEnu*0.001,fabs(0.001/_recqP[_mutraj]));
+	_recQtnu->Fill(_recEnu*0.001,QT);
+      } else {
+	_recmunu_back->Fill(_recEnu*0.001,fabs(0.001/_recqP[_mutraj]));
+	_recQtnu_back->Fill(_recEnu*0.001,QT);
+      }
+      
+    } else {
+      /*
+      std::cout << "You twat! You haven't written the rec code yet!"<< std::endl
+		<< "Use the smear!" << std::endl;
+      exit(0);
+      */
+      altEng = _hadRecEng[0];
+      double pimass = 139.57;
+      double mumass = 105.66;
+      for(int it=0; it < _ntraj; it++){
+	if(it == (_mutraj)) continue;
+	// Use the range to estimate the energy
+	// Assume that the products are pions (?!?) and scale the range based on CSDA
+	double trackmom = abs(_rangeMom[_mutraj]);
+	trackmom *= mumass/pimass;
+	altEng += sqrt(trackmom*trackmom + pimass*pimass);
+      }  
+      _recEnu = sqrt( pow(1.0/(_recqP[_mutraj]),2)+pow(mumass,2) ) + altEng;
+      double dirdot = _recXdir[_mutraj]*_hrdir[0] + _recYdir[_mutraj]*_hrdir[1] + _hrdir[2];
+      double norm   = sqrt(1 + pow(_recXdir[_mutraj],2) + pow(_recYdir[_mutraj],2));
+      double sinth = sin(acos(dirdot/norm));
+      // _recEnu *= 1000;
+      QT = sinth*sinth/(_recqP[_mutraj]*1000.);
+      if(ID == 1){
+	_recmunu->Fill(_recEnu*0.001,fabs(0.001/_recqP[_mutraj]));
+	_recQtnu->Fill(_recEnu*0.001,QT);
+      } else {
+	_recmunu_back->Fill(_recEnu*0.001,fabs(0.001/_recqP[_mutraj]));
+	_recQtnu_back->Fill(_recEnu*0.001,QT);
+      } 
+    }
+    
+    if ( _recEnu/1000 > _kMinE-2.0 && QT <= _minQT ) return false;
+    else if ( fabs(1.0/_recqP[_mutraj]) >= _momGrad*_recEnu || _recEnu/1000 <= _kMinE )
+      return true;
+  }
+}
+
+
+
+/********************************************/
+double GoldCuts_TrajSel::quasi_nubar_prot()
+/********************************************/
+{
+  //Quasi formula: nubar p scattering.
+  double Eng;
+  Eng = 938.27*sqrt( pow(1.0/_recqP[_mutraj],2)+pow(105.66,2) );
+  Eng -= 4361.42;
+  Eng /= 939.57-sqrt( pow(1.0/_recqP[_mutraj],2)+pow(105.66,2) )
+    +fabs(1.0/_recqP[_mutraj])*(1.0/sqrt( _recXdir[_mutraj]*_recXdir[_mutraj]+_recYdir[_mutraj]*_recYdir[_mutraj]+1 ));
+
+  if ( Eng < 0 )//reconstruct as a free muon if -ve value calculated.
+    Eng = sqrt( pow(1.0/_recqP[_mutraj],2)+pow(105.66,2) );
+
+  return Eng;
+}
+
+/********************************************/
+double GoldCuts_TrajSel::quasi_nu_neut()
+/********************************************/
+{
+  //Quasi formula: nu n scattering.
+  double Eng;
+  Eng = 939.57*sqrt( pow(1.0/_recqP[_mutraj],2)+pow(105.66,2) );
+  Eng -= 6802.61;
+  Eng /= 938.27-sqrt( pow(1.0/_recqP[_mutraj],2)+pow(105.66,2) )
+    +fabs(1.0/_recqP[_mutraj])*
+    (1.0/sqrt( _recXdir[_mutraj]*_recXdir[_mutraj]+_recYdir[_mutraj]*_recYdir[_mutraj]+1));
+
+  if ( Eng < 0 )//reconstruct as a free muon if -ve value calculated.
+    Eng = sqrt( pow(1.0/_recqP[_mutraj],2)+pow(105.66,2) );
+
+  return Eng;
+}
+
+/********************************************/
+double GoldCuts_TrajSel::calcQt(double sig)
+/********************************************/
+{
+  double muVec[3], mag = 0, hadVec[3];
+  //calculate muon unit direction vec.
+  muVec[2] = 1.;
+  muVec[0] = _recXdir[_mutraj];
+  muVec[1] = _recYdir[_mutraj];
+  
+  for (int i=0;i<3;i++)
+    mag += pow(muVec[i],2);
+
+  mag = sqrt(mag);
+
+  for (int j=0;j<3;j++)
+    muVec[j] /= mag;
+  
+  if ( _intType == "nu_tau" || _intType == "NC" )
+    for (int ii=0;ii<3;ii++)
+      _hadMom[ii] -= fabs( 1.0/_recqP[_mutraj] )*muVec[ii];
+  
+  //smear hadronic direction.
+  double hadMag = sqrt( pow(_hadMom[0],2)+pow(_hadMom[1],2)+pow(_hadMom[2],2));
+  double theta = acos( _hadMom[2]/hadMag );
+  double cosThi = _hadMom[0]/(hadMag*sin( theta ));
+  double sinThi = _hadMom[1]/(hadMag*sin( theta ));
+  
+  theta += sig / (180/3.1415926535897932);
+  
+  hadVec[0] = sin( theta )*cosThi;
+  hadVec[1] = sin( theta )*sinThi;
+  hadVec[2] = cos( theta );
+  
+  double ctheta = 0.;
+  
+  for (int k=0;k<3;k++)
+    ctheta += muVec[k]*hadVec[k];
+  
+  return fabs(1.0/(_recqP[_mutraj]*1000))*pow( sin( acos( ctheta ) ), 2 );
+}

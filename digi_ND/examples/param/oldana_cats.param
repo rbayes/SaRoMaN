@@ -1,0 +1,58 @@
+########################################################################
+#                                                                      #
+#  This is a parameter file that can be read by bhep sreader class.    #
+#                                                                      #
+########################################################################
+
+#############################################
+#  parameters for the run type
+#############################################
+
+# seed value for random generator
+RUN Gen_seed D 364374645
+
+#ROOT file name for output
+RUN outFile S test1.root
+
+# haronic energy smear sigma
+RUN perC_sig D 0.55
+RUN const_sig D 0.03
+
+# Parameters relevant for gluckstern (m)
+RUN sample_dist D 0.01
+RUN x0 D 0.1758
+
+# hadronic angle smear sigma
+RUN sqr_had_sig D 10.4
+RUN had_sig D 10.1
+
+# interaction length (m)
+RUN lamb_Fe D 0.1677
+
+# magnetic field magnitude (T)
+RUN B_field D 1.
+
+#############################################
+#  parameters for the ana type
+#############################################
+
+# minimum length difference (cm)
+ANA length_diff D 75.
+
+# minimum Qt
+ANA Qt D 0.2
+
+# momentum cut gradient
+ANA mom_cut D 0.2
+
+# Signal charge
+ANA sig_q I 1
+
+#############################################
+#  DATA input
+#############################################
+
+DATA idst_file S /home/alaing/mind_sim/mindG4/branches/v2/test.dst.root
+
+# DATA odst_file S 1
+# test_out.gz

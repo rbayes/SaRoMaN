@@ -1,0 +1,7 @@
+Scans needed for compilation.
+
+analysis run using libraries compiled from headers and implementations in include and src to make an executeable from run_analysis.cpp.
+
+It is a glorified Macro. Sorry.
+
+Andrew

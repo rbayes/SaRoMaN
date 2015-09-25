@@ -1,0 +1,171 @@
+########################################################################
+#                                                                      #
+#  This is a parameter file that can be read by bhep sreader class.    #
+#                                                                      #
+########################################################################
+
+#############################################
+#  parameters for the setup
+#############################################
+
+# MIND dimensions (m)
+RUN MIND_x D 14.
+RUN MIND_y D 14.
+RUN MIND_z D 40.
+
+# MIND internal dimensions (cm)
+# ****IRON****
+RUN widthI D 3.
+# radiation length (mm)
+RUN x0Fe D 17.58
+
+# ****SCIN**** (cm)
+RUN widthS D 2.
+RUN nplane I 1
+# radiation length (mm)
+RUN x0Sc D 413.1
+
+# ****AIR **** (cm)
+RUN widthA D 0.1
+# radiation length (m)
+RUN x0AIR D 303.9
+
+# relative density, Sc/Fe, AIR/Sc.
+RUN rel_denSI D 0.135
+RUN rel_denAS D 0.001
+
+# measurement type.
+RUN meas_type S xy
+
+# magnetic field.
+RUN mag_field DV 3
+0.
+1.
+0.
+########
+
+# energy loss (MeV/cm)
+RUN de_dx D -8
+
+# Position resolution for detector (cm).
+RUN pos_res D 1.
+
+# name of detector for hit getter.
+RUN detect S tracking
+
+########
+# For hit clustering.(edge in cm)
+RUN do_clust I 1
+RUN rec_boxX D 3.5
+
+# min energy at plane for detection (MeV) ***must be same as in digi!!***
+RUN min_eng D 0.00004
+
+# Seed for smear on cluster position.
+RUN Gen_seed D 373940592
+
+# sigma (cm)
+RUN pos_sig D 1.
+
+#############################################
+#  parameters for the analysis
+#############################################
+
+# monitor ntuple file
+RUN out_file S ../test_1.root
+
+#liklihood file.
+RUN like_file S ../likelihoods/likeOut_cc_0.root
+
+# type of fit
+RUN kfitter S kalman
+
+# fitter model
+RUN model S particle/helix
+
+# verbosities for recpack services
+ANA vfit I 0
+ANA vmat I 0
+ANA vnav I 0
+ANA vmod I 0
+ANA vsim I 0
+
+# maximum chi2 for tracks
+RUN chi2fit_max D 50
+
+# maximum local chi2 for nodes (muon fit)
+RUN chi2node_max D 20
+RUN max_outliers I 5
+
+# maximum local chi2 for nodes (pattern rec.)
+RUN pat_rec_max_chi D 20
+RUN pat_rec_max_outliers I 10
+RUN max_consec_missed_planes I 3
+# minimum proportion of planes used to not reject
+# event failing consec planes cut
+RUN min_use_prop D 0.8
+
+# cuts on cellular automaton trajectories. separation in cm.
+RUN max_sep D 7
+RUN max_traj I 20
+RUN accept_chi D 20
+RUN max_coincidence D 0.5
+
+# lowest and highest number of hits required for fit.
+RUN low_Pass_hits I 6
+RUN high_Pass_hits I 500
+
+# proportion of nodes which must be fir not to trigger backwards fit.
+RUN low_fit_cut0 D 0.8
+
+# proportion of nodes which must be fit to accept type 2 (free mu) interaction.
+RUN low_fit_cut2 D 0.6
+
+# Fiducial cuts. (reduction in z and reduction at both sides in x,y. cm)
+RUN z_cut D 300
+RUN x_cut D 50
+RUN y_cut D 50
+
+# fit data twice (0=false, 1=true)
+ANA refit I 1
+
+# multiplication factor for covariance in refit seed
+ANA facRef D 5.
+
+# Relevant parameters for pattern recognition.
+# Do Pattern recognition (0=false, 1=true)
+ANA patRec I 1
+
+# Min./Max. isolated hits for patRec seed.
+ANA min_seed_hits I 5
+ANA max_seed_hits I 20
+ANA min_check_nodes I 3
+
+# Minumum proportion of isolated hits for central p seed.
+ANA min_iso_prop D 0.8
+
+# Bit to tell if require output of likelihood info.
+RUN likeli I 0
+
+###  data to read ###
+DATA idst_files SV 1
+../digi_out/muCC/muCC_0_digi.dst_1.root
+# ../digi_out/mubarCC/muCC_0_digi.dst.root
+# ../digi_out/mubarCC/muCC_0_digi.dst_1.root
+# ../digi_out/mubarCC/muCC_0_digi.dst_2.root
+# ../digi_out/mubarCC/muCC_0_digi.dst_3.root
+# ../digi_out/muCC_test20k_digi.dst.root
+# ~/decNtup/newTest.dst.root
+# ../test_digi.dst.root
+# /home/alaing/varVert/variable_vert_0.gz
+# /home/alaing/varVert/variable_vert_1.gz
+# /home/alaing/decNtup/wsdecays_1.gz
+# /home/alaing/ntupElec/tnd_e_2.gz
+# /data3/andrew/tnd_nc_3.gz
+# /data3/andrew/tnd_nc_4.gz
+# /data3/andrew/tnd_nc_5.gz
+
+###  data to write ###
+#
+# DATA odst_files SV 1
+# /home/alaing/ntupElec/tnd_e.FITTED.gz

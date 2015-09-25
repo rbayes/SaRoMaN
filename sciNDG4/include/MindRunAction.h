@@ -1,0 +1,37 @@
+// ----------------------------------------------------------------------------
+///  \file   MindRunAction.h
+///  \brief  User action at run scope.
+///
+///  \author   J Martin-Albo <jmalbos@ific.uv.es>
+///  \date     15 Apr 2009
+///  \version  $Id: MindRunAction.h 280 2009-06-11 12:36:45Z jmalbos $
+///
+///  Copyright (c) 2009 -- IFIC Neutrino Group 
+// ----------------------------------------------------------------------------
+
+#ifndef __RUN_ACTION__
+#define __RUN_ACTION__
+
+#include <G4UserRunAction.hh>
+
+class G4Run;
+
+/// TOFIX.
+///
+
+class MindRunAction: public G4UserRunAction
+{
+public:
+  /// Constructor
+  MindRunAction() {}
+  /// Destructor
+  ~MindRunAction() {}
+
+  ///
+  void BeginOfRunAction(const G4Run*);
+
+  ///
+  void EndOfRunAction(const G4Run*);
+};
+
+#endif

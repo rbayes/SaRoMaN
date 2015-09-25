@@ -1,0 +1,195 @@
+########################################################################
+#                                                                      #
+#  This is a parameter file that can be read by bhep sreader class.    #
+#                                                                      #
+########################################################################
+
+#############################################
+#  parameters for the setup
+#############################################
+
+# MIND dimensions (m)
+RUN MIND_x D 6.
+RUN MIND_y D 6.
+RUN MIND_z D 13.
+RUN EAR_height D 2.8994
+RUN EAR_width  D 0.4393
+
+RUN IsOctagonal I 0
+
+# MIND internal dimensions (cm)
+# ****IRON****
+# RUN widthI D 1.0
+RUN widthI D 1.5
+# RUN widthI D 2.0
+# RUN widthI D 3.0
+# radiation length (mm)
+RUN x0Fe D 17.58
+
+# ****SCIN**** (cm)
+RUN widthS D 1.5
+RUN nplane I 1
+# radiation length (mm)
+RUN x0Sc D 413.1
+
+# ****AIR **** (cm)
+RUN widthA D 0.25
+# radiation length (m)
+RUN x0AIR D 303.9
+
+# ****Aluminium **** (cm)
+RUN widthAl D 0.1
+
+# relative density, Sc/Fe, AIR/Sc.
+RUN rel_denSI D 0.135
+RUN rel_denAS D 0.001
+
+# Attenuation in Wavelength shifting fibre
+RUN WLSatten D 5000.
+
+# measurement type.
+RUN meas_type S xy
+
+# magnetic field.
+RUN mag_field DV 3
+0.
+1.
+0.
+
+# RUN mag_field_map S /data/neutrino04/common_SW/MIND/mindG4/MIND_field_map_files-5_cm_grid/iron_field_halfplane_2.res
+# RUN mag_field_map S /data/neutrino04/common_SW/MIND/mindG4/MIND_field_map_files-5_cm_grid/iron_field_combined_z=0.res
+
+RUN fieldScale D FFF
+########
+
+# energy loss (MeV/cm)
+# 1.5 cm Fe, 2 cm Sc, 1.0 cm Air
+# RUN de_dx_min D 0.5323 
+# 2 cm Fe, 2 cm Sc
+# RUN de_dx_min D 0.637  
+# 1.5 cm Fe, 1.5 cm Sc, 0.5 cm Air
+# RUN de_dx_min D 0.6484
+# 1.5 cm Fe, 1.5 cm Sc, 0.5 cm Air, 0.1 cm Aluminum
+RUN de_dx_min D 0.575
+# 3 cm Fe, 2 cm Sc
+# RUN de_dx_min D 0.757
+
+# Position resolution for detector (cm).
+RUN pos_res D 0.75
+
+# Step size for track fitting (cm).
+RUN StepSize D 5.
+
+# name of detector for hit getter.
+RUN detect S tracking
+
+########
+# For hit clustering.(edge in cm)
+RUN do_clust I 1
+RUN rec_boxX D 2.0
+
+# min energy at plane for detection (MeV) ***must be same as in digi!!***
+RUN min_eng D 0.000016
+
+# Seed for smear on cluster position.NOT USED!! NEEDS TIDIED!
+RUN Gen_seed D 373940592
+
+# sigma (cm)
+RUN pos_sig D 1.
+
+#############################################
+#  parameters for the analysis
+#############################################
+
+# monitor ntuple file
+RUN out_file S DDD/Rec_out/pppXXX/pppXXX_NN.root
+
+#liklihood file.
+RUN like_file S DDD/likelihoods/like_ppp_XXX_NN.root
+
+# type of fit
+RUN kfitter S kalman
+
+# fitter model
+RUN model S particle/helix
+
+# verbosities for recpack services
+ANA vfit I 0
+ANA vmat I 0
+ANA vnav I 0
+ANA vmod I 0
+ANA vsim I 0
+
+# maximum chi2 for tracks
+RUN chi2fit_max D 50
+
+# maximum local chi2 for nodes (muon fit)
+RUN chi2node_max D 20
+RUN max_outliers I 5
+
+# maximum local chi2 for nodes (pattern rec.)
+RUN pat_rec_max_chi D 20
+RUN pat_rec_max_outliers I 10
+RUN max_consec_missed_planes I 3
+# minimum proportion of planes used to not reject
+# event failing consec planes cut
+RUN min_use_prop D 0.7
+
+# Stuff for skipper etc.
+RUN maxBlobSkip D 0.2
+RUN minBlobOcc D 2
+
+# cuts on cellular automaton trajectories. separation in cm.
+RUN max_sep D 7
+RUN max_traj I 40
+RUN accept_chi D 20
+RUN max_coincidence D 0.5
+
+# lowest and highest number of hits required for fit.
+RUN low_Pass_hits I 6
+RUN high_Pass_hits I 500
+
+# proportion of nodes which must be fir not to trigger backwards fit.
+RUN low_fit_cut0 D 0.8
+
+# proportion of nodes which must be fit to accept type 2 (free mu) interaction.
+RUN low_fit_cut2 D 0.6
+
+# Fiducial cuts. (reduction in z and reduction at both sides in x,y. cm)
+RUN z_cut D 300
+RUN x_cut D 50
+RUN y_cut D 50
+
+# fit data twice (0=false, 1=true)
+ANA refit I 1
+
+# multiplication factor for covariance in refit seed
+ANA facRef D 10000.
+
+# Relevant parameters for pattern recognition.
+# Do Pattern recognition (0=false, 1=true)
+ANA patRec I 1
+
+# Min./Max. isolated hits for patRec seed.
+ANA min_seed_hits I 5
+ANA max_seed_hits I 20
+ANA min_check_nodes I 3
+
+# Minumum proportion of isolated hits for central p seed.
+ANA min_iso_prop D 0.8
+
+# additional variables for mutliple track analysis
+ANA plane_occupancy I 10
+ANA max_multOcc_plane I 10
+
+# Bit to tell if require output of likelihood info.
+RUN likeli I 1
+
+###  data to read ###
+DATA idst_files SV 1
+DDD/digi_out/pppXXX/pppXXX_NN_digi.dst.root
+
+###  data to write ###
+#
+# DATA odst_files SV 1
+# /home/alaing/ntupElec/tnd_e.FITTED.gz

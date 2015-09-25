@@ -1,0 +1,110 @@
+// -----------------------------------------------------------------------------
+///  \file    MindLayerParameterisation.h
+///  \brief  
+/// 
+///  \author   J. Martin-Albo <jmalbos@ific.uv.es>
+///  \date     24 August 2009
+///  \version  $Id$
+///
+///  Copyright (c) 2009 -- IFIC Neutrino Group
+// -----------------------------------------------------------------------------
+
+#ifndef __DETECTOR_PARAMETERISATION__
+#define __DETECTOR_PARAMETERISATION__
+
+#include <G4VPVParameterisation.hh>
+#include <globals.hh>
+#include <G4ThreeVector.hh>
+#include <bhep/store.h>
+#include <vector>
+
+class G4VPhysicalVolume;
+class G4Material;
+class G4Box;
+class G4VisAttributes;
+class MindSD;
+
+
+/// FIXME. Class description.
+
+class MindLayerParameterisation: public G4VPVParameterisation
+{
+public:
+  /// Constructor
+  MindLayerParameterisation();
+  /// Destructor
+  ~MindLayerParameterisation() {}
+  
+  ///
+  void ComputeDimensions(G4Box&, const G4int, const G4VPhysicalVolume*) const;
+
+  ///
+  void ComputeTransformation(const G4int, G4VPhysicalVolume*) const;
+
+  ///
+  G4Material* ComputeMaterial(const G4int, G4VPhysicalVolume*, 
+			      const G4VTouchable*);
+
+  ///
+  G4int SelectRandomLayer(const G4String& type) const;
+
+  ///
+  G4ThreeVector GenerateVertexInLayer(const G4int layer_no) const;
+
+  ///
+  G4int GetNoOfLayers() const { return _num_layers; }
+  /* G4int GetNoPassive() const { return _num_blocks; } */
+/*   G4int GetNoActive() const { return _num_blocks*_num_active; } */
+
+  ///
+  G4double GetPassiveTargetProb() const { return _passive_target_prob; }
+
+  ///
+  G4double GetDetectorLength() const { return _detector_length; }
+
+private:
+
+  void Initialize();
+
+  /// Return z-position of a given layer
+  G4double LocateLayer(const G4int layerNo) const;
+
+  /// Check whether a layer is passive or active
+  G4bool IsPassive(G4int layerNo) const;
+
+  G4double PassiveTargetProb();
+
+  G4ThreeVector RandomPointInBox(G4double, G4double, G4double) const;
+
+ private:
+  //protected:
+
+  // Return z-position of a given layer
+  /* G4double LocateLayer(const G4int layerNo, const G4String& type) const; */
+
+  G4double _detector_width;
+  G4double _detector_height;
+  G4double _detector_length;
+
+  G4double _passive_thickness; 
+  G4double _active_thickness;  
+
+  G4double _block_length;
+
+  G4double _passive_target_prob;
+
+  std::vector<double> _gap;
+
+  G4int _num_active;
+  G4int _num_layers;
+  G4int _num_blocks;
+  G4int _layers_per_block;
+
+  G4String _passive_mat;
+  G4String _active_mat;
+
+  MindSD* _MSD;
+};
+
+#endif
+

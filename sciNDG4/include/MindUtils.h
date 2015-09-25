@@ -1,0 +1,45 @@
+// ----------------------------------------------------------------------------
+///  \file   MindUtils.h
+///  \brief  Utility class.
+///
+///  \author   J Martin-Albo <jmalbos@ific.uv.es>
+///  \date     10 June 2009
+///  \version  $Id: MindUtils.h 462 2011-09-20 15:41:28Z ryan $
+///
+///  Copyright (c) 2009 -- IFIC Neutrino Group
+// ----------------------------------------------------------------------------
+
+#ifndef __UTILS__
+#define __UTILS__
+
+#include <globals.hh>
+
+namespace bhep { class particle; }
+
+
+/// Set of functions which perform common tasks (mainly on the bhep 
+/// transient objects). All methods are defined static under a
+/// stateless class.
+
+class MindUtils 
+{
+public:
+
+  /// Return particle from bhep transient event identified by G4TrackID
+  static bhep::particle* GetBParticle(G4int G4TrackID);
+
+  ///
+  static void OpenOutputDst(const G4String& dst_name, G4int seed_val);
+  ///
+  static void CloseOutputDst();
+
+  private:
+  // Constructors, destructor and assign-op are hidden
+  MindUtils();
+  ~MindUtils();
+  MindUtils(MindUtils const&);
+  MindUtils& operator=(MindUtils const&);
+};
+
+#endif
+

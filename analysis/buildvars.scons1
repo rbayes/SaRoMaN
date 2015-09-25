@@ -1,0 +1,7 @@
+CPPDEFINES = []
+CCFLAGS = ['-m64', '-pthread', '-rdynamic']
+CPPFLAGS = []
+CPPPATH = ['/data/neutrino04/common_SW/clhep//include', '/data/neutrino04/common_SW/bhep/include', '/data/neutrino04/common_SW/root/root-5.32.00/include']
+LIBPATH = ['/data/neutrino04/common_SW/clhep//lib', '/data/neutrino04/common_SW/bhep/lib', '/data/neutrino04/common_SW/root/root-5.32.00/lib']
+LIBS = ['CLHEP-2.1.0.1', 'bhep', 'Core', 'Cint', 'RIO', 'Net', 'Hist', 'Graf', 'Graf3d', 'Gpad', 'Tree', 'Rint', 'Postscript', 'Matrix', 'Physics', 'MathCore', 'Thread', 'm', 'dl', 'TMVA']
+LINKFLAGS = ['-pthread']

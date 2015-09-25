@@ -1,0 +1,54 @@
+============================================================
+    mindG4 - Geant4 simulation of the MIND calorimeter    
+============================================================
+
+$Id$
+
+
+
+0. Prerequisites
+-----------------
+MindG4 depends on several third-party libraries. Make sure
+you have them installed:
+
+- CLHEP,
+- Geant4.9.2 (or later),
+- OpenGL and X11 (for visualization),
+- BHEP
+- and ROOT.
+
+SCons (http://www.scons.org/) is used for compiling and
+building the package. At least version 1.0.0 is required.
+SCons depends on Python (version >1.5.2).
+
+
+1. Installation and sample run
+-------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------
+$Id$
+

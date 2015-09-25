@@ -1,0 +1,110 @@
+// ----------------------------------------------------------------------------
+///  \file   MindSingleParticle.h
+///  \brief  Primary generator for single-particle events.
+///
+///  \author   J Martin-Albo <jmalbos@ific.uv.es>
+///  \date     17 March 2009
+///  \version  $Id$
+///
+///  Copyright (c) 2009 -- IFIC Neutrino Group
+// ----------------------------------------------------------------------------
+
+#ifndef __SINGLE_PARTICLE__
+#define __SINGLE_PARTICLE__
+
+#include <G4VPrimaryGenerator.hh>
+#include <globals.hh>
+
+#include <TSystem.h>
+#include <TFile.h>
+#include <TTree.h>
+#include <TIterator.h>
+
+#include "EVGCore/EventRecord.h"
+#include "GHEP/GHepParticle.h"
+#include "Ntuple/NtpMCFormat.h"
+#include "Ntuple/NtpMCTreeHeader.h"
+#include "Ntuple/NtpMCEventRecord.h"
+#include "Messenger/Messenger.h"
+#include "PDG/PDGCodes.h"
+// #include "Utils/CmdLineArgParserUtils.h"
+// #include "Utils/CmdLineArgParserException.h"
+#include "Utils/CmdLnArgParser.h"
+
+#include "MindConfigService.h"
+#include "MindParamStore.h"
+#include "MindDetectorConstruction.h"
+#include "MindDetectorGeometry.h"
+#include "MindLookupTable.h"
+
+#include <G4ParticleTable.hh>
+#include <G4Event.hh>
+
+#include <G4RunManager.hh>
+#include <G4VUserDetectorConstruction.hh>
+#include <Randomize.hh>
+#include <G4Material.hh>
+#include <G4PrimaryParticle.hh>
+
+
+#include <bhep/bhep_svc.h>
+
+class G4ParticleDefinition;
+class G4PrimaryParticle;
+class G4Event;
+
+using namespace genie;
+using namespace CLHEP;
+/// Primary generator for single-particle events.
+//
+class MindSingleParticle: public G4VPrimaryGenerator
+{
+public:
+  /// Constructor
+  MindSingleParticle();
+  /// Destructor
+  ~MindSingleParticle() {}
+  
+  void GeneratePrimaryVertex(G4Event*);
+
+private:
+  void Initialize();
+  G4PrimaryParticle* 
+     CreatePrimaryParticle(GHepParticle& part, G4int PDG, bool primLep=false);
+  /* G4PrimaryParticle* */
+/*     CreatePrimaryParticle(GHepParticle& part, G4int PDG); */
+
+  G4int SelectVertexRegion();
+  G4double GetTargetProb();
+
+  G4ThreeVector GenerateRandomDirection();
+  G4double GenerateRandomEnergy(G4double, G4double);
+
+private:
+  // MindVertexFactory* _vtxFct;
+
+  G4ParticleDefinition* _particle_definition;
+  G4double _mass;
+  G4int _charge; 
+  G4double _energy_min;
+  G4double _energy_max;
+  G4double _costh_min;
+  G4double _costh_max;
+
+  G4int _vert_mat;
+  G4double _FeTargetProp;
+  G4String _vtx_location;
+
+  G4int _evCount[2]; //< Event counter.
+  G4int _tasd;
+
+  //Vertex in the case a fixed point is requested.
+  G4int _fvecReg;
+  G4ThreeVector _fvec;
+  std::vector<double> _RMS;
+
+  bhep::vdouble _had4P;
+  bhep::vdouble _fspdg;
+};
+
+#endif
