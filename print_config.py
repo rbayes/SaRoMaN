@@ -383,8 +383,6 @@ DATA odst_file S %(out_base)s/digi_out/nd_%(part)s%(inttype)s/nd_%(part)s%(intty
 
 '''% dict(dictionary, **vars(self))
 
-		print filedata
-
 		return filedata
 
 
