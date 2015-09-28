@@ -62,6 +62,7 @@ BUILDVARS_FILE = 'buildvars.scons'
 
 # dummy default for path-variables
 DEFAULT_PATH = '.'
+USER_PATH = os.getenv('HOME')
 
 # create Variables instance (associated to file) and add it the vars
 vars = Variables(BUILDVARS_FILE)
@@ -102,11 +103,11 @@ vars.AddVariables(
 
     PathVariable('LOG4CPP_INCDIR',
                  'Path to log4cpp headers directory.',
-                 '/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include'),
+                 USER_PATH+'/nuSTORM/third_party/include'),
 
     PathVariable('LOG4CPP_LIBDIR',
                  'Path to log4cpp installation',
-		 '/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/lib'),
+		 USER_PATH+'/nuSTORM/third_party/lib'),
 
     PathVariable('G4INCLUDE',
                  'Path to Geant4 headers directory',
@@ -126,11 +127,11 @@ vars.AddVariables(
 
     PathVariable('CRY_INCDIR',
 		 'Path to CRY headers directory',
-		 '/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/cry_v1.7/src'),
+		 USER_PATH+'/nuSTORM/third_party/cry_v1.7/src'),
 
     PathVariable('CRY_LIBDIR',
 		 'Path to CRY installation',
-		 '/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/cry_v1.7/lib'),
+		 USER_PATH+'/nuSTORM/third_party/cry_v1.7/lib'),
 
     PathVariable('XERCES_INCDIR',
                  'Path to xerces headers directory',
@@ -335,7 +336,7 @@ if not env['LIBPATH']:
 
 	env.ParseConfig("xml2-config --libs")
 
-  	env.MergeFlags('-L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v6_412/lib')
+  	env.MergeFlags('-L'+USER_PATH+'/third_party/genie_source/src/scripts/build/ext/v6_412/lib')
         
 
     # CRY  .................................................
@@ -344,7 +345,7 @@ if not env['LIBPATH']:
 	env.Append(CPPPATH = env['CRY_INCDIR'])
     else:
 	try:
-	    env.MergeFlags('-I/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/cry_v1.7/include')
+	    env.MergeFlags('-I'+USER_PATH+'/nuSTORM/third_party/cry_v1.7/include')
 	except OSError:
 	    Abort("CRY could not be configured.")
     
@@ -353,7 +354,7 @@ if not env['LIBPATH']:
 	env.Append(LIBS = "CRY")
     else:
 	try:
-	    env.Append(LIBPATH = "/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/cry_v1.7/lib")
+	    env.Append(LIBPATH = USER_PATH+"/nuSTORM/third_party/cry_v1.7/lib")
 	    env.Append(LIBS = 'CRY')
 	except OSError:
 	    Abort("CRY could not be configured.")
@@ -432,7 +433,7 @@ env['CPPPATH'] += ['#include']
 
 # create library and add it to LIBPATH and LIBS
 src = Glob('#src/*.cc')
-src += Glob('/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/cry_v1.7/src/*.cc')
+src += Glob(USER_PATH+'/nuSTORM/third_party/cry_v1.7/src/*.cc')
 lib = env.Library('MindG4', src)
 
 env['LIBPATH'] += ['#']

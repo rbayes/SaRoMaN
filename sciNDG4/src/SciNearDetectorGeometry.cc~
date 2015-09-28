@@ -121,10 +121,10 @@ void SciNearDetectorGeometry::SetInputParameters()
 
   //Are we making a tasd? here we always assume yes 
   // but not in the intended way.
-  // if ( config.PeekIParam("TASD") )
-  //  _tasd = config.GetIParam("TASD");
-  //else
-  //   _tasd = 0;
+  if ( config.PeekIParam("TASD") )
+    _tasd = config.GetIParam("TASD");
+  else
+    _tasd = 0;
   
   // And again for this detector we know the fields.
   /*
@@ -653,7 +653,10 @@ G4ThreeVector SciNearDetectorGeometry::GetVertex(G4String region)
       region = "PASSIVE";
     else region = "ACTIVE";
   }
-  
+  if ( _tasd == 2 ){
+    region = "ACTIVE";
+  }
+
   if (region == "PASSIVE") {
     piece_no = (G4int)ceil(_number_pieces * G4UniformRand());
     // Point in PASSIVE system of reference
@@ -673,7 +676,7 @@ G4ThreeVector SciNearDetectorGeometry::GetVertex(G4String region)
     G4double vert_vol = _vertex_width * _vertex_height * _vertex_depth;
     G4double mind_scivol = _active_thickness*_vertex_height*_vertex_height * atan(1);
     G4double vert_prob = vert_vol / (vert_vol + mind_scivol);
-    bool inVertexDet = G4UniformRand() < vert_prob;
+    bool inVertexDet = G4UniformRand() < vert_prob || _tasd==2;
 
     piece_no = (G4int)ceil((inVertexDet?_number_TASDpieces:_number_pieces) 
 			   * G4UniformRand());

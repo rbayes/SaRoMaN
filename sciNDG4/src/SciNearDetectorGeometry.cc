@@ -53,33 +53,33 @@ void SciNearDetectorGeometry::SetInputParameters()
     MindConfigService::Instance().Geometry();
   
   // Parameters for MIND muon catcher.
-  _piece_width       = config.GetDParam("width") * mm;
-  _piece_height      = config.GetDParam("height") * mm;
-  _mind_length       = config.GetDParam("length") * mm;
+  _piece_width       = config.GetDParam("MIND_x") * m;
+  _piece_height      = config.GetDParam("MIND_y") * m;
+  _mind_length       = config.GetDParam("MIND_z") * m;
   _ear_width         = config.PeekDParam("ear_width")?
     config.GetDParam("ear_width") *mm:0.1*mm;
-  _ear_height        = config.PeekDParam("ear_width")?
-    config.GetDParam("ear_height") *mm:_piece_height/2.;
+  _ear_height        = config.PeekDParam("ear_height")?
+    config.GetDParam("ear_height") *m:_piece_height/2.;
   _bore_diameter     = config.PeekDParam("bore_diameter")?
-    config.GetDParam("bore_diameter")*mm: 100*mm;
+    config.GetDParam("bore_diameter")*m: 100*mm;
 
   // Parameters for a vertex detector.
-  _vertex_width      = config.GetDParam("vwidth") * mm;
-  _vertex_height     = config.GetDParam("vheight") * mm;
-  _vertex_depth      = config.GetDParam("vdepth") * mm;
+  _vertex_width      = config.GetDParam("vertex_x") * m;
+  _vertex_height     = config.GetDParam("vertex_y") * m;
+  _vertex_depth      = config.GetDParam("vertex_z") * m;
   // _cal_depth         = config.GetDParam("cdepth") * mm;
 
   // Use the same active thickness for the vertex detector and calorimeter
-  _active_thickness  = config.GetDParam("active_thickness") * mm;
-  _passive_thickness = config.GetDParam("passive_thickness") * mm;
-  _bracing_thickness = config.PeekDParam("bracing_thickness") * mm ?
-    config.GetDParam("bracing_thickness") * mm : 0.0 * mm;
+  _active_thickness  = config.GetDParam("active_thickness") * cm;
+  _passive_thickness = config.GetDParam("passive_thickness") * cm;
+  _bracing_thickness = config.PeekDParam("bracing_thickness") * cm ?
+    config.GetDParam("bracing_thickness") * cm : 0.0 * mm;
 
-  _number_active = config.GetIParam("num_active_layers");
+  _number_active = config.GetIParam("nplane");
 
   IsOctagonal = config.PeekIParam("IsOctagonal")?
     config.GetIParam("IsOctagonal"): 1;
-  if(IsOctagonal) _bracing_thickness = 0.0 * mm;
+  if(IsOctagonal) _bracing_thickness = 0.0 * cm;
   
   _piece_length = 0;
   _TASDm_length = 0;
