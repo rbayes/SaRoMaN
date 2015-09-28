@@ -11,7 +11,7 @@ class saroman:
     def __init__(self):
         #Set up paths #
         self.home = os.getenv("HOME") 
-        self.exec_base = os.path.join(self.home, 'nuSTORM')
+        self.exec_base = os.path.join(self.home, 'SaRoMaN')
         self.out_base  = os.path.join(self.home, 'out')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
         self.third_party_support = self.home + "/nuSTORM/third_party"
@@ -263,7 +263,7 @@ if __name__ == "__main__":
     s.set_environment()
     s.run_genie()
     s.run_simulation()
-    s.run_digitization()
-    s.run_reconstruction()
+#    s.run_digitization()
+#    s.run_reconstruction()
 
 

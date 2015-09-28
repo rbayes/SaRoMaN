@@ -22,7 +22,8 @@ class print_config:
 		self.MIND_passive_mat = 'G4_Fe'
 		self.MIND_width_passive = 1.5 # cm
 		self.MIND_rad_length_passive = 17.58 #mm
-		self.MIND_width_bracing = 0.1 # cm Aluminum
+		self.MIND_bracing_mat = 'G4_Al'
+		self.MIND_width_bracing = 0.1 # cm
 		self.MIND_width_air = 0.25 # cm
 		self.MIND_rad_length_air = 303.9 #mm
 
@@ -35,79 +36,15 @@ class print_config:
 	    outfile.close()
 
 	def print_digi_config(self,dictionary,filename):
-		filedata = '''
-########################################################################
-#                                                                      #
-#  This is a parameter file that can be read by bhep sreader class.    #
-#                                                                      #
-########################################################################
 
-#############################################
-#  parameters for the run type
-#############################################
-
-# number of events to be processed.
-RUN nEvents I %(Nevts)d
-
-# gausian sigma for smear (cm)
-RUN Gaus_Sigma D 1.0
-
-# energy smear (%%)
-RUN Eng_Res D 0.11
-
-# seed value for random generator
-CON Gen_seed D 107311191
-
-#############################################
-# Parameters for hit_constructor
-#############################################
-
-# MIND dimensions (m)
-CON MIND_x D %(MIND_xdim)d
-CON MIND_y D %(MIND_ydim)d
-CON MIND_z D %(MIND_zdim)d
-CON VERTEX_x D %(MIND_vertex_xdim)d
-CON VERTEX_y D %(MIND_vertex_ydim)d
-CON VERTEX_z D %(MIND_vertex_zdim)d
-
-# MIND internal dimensions (cm)
-# ****IRON****
-CON widthI D 1.5
-
-# ****SCIN**** (cm)
-CON widthS D 1.5
-CON nplane I 1
-
-# **** Aluminum **** (cm)
-CON widthAl D 0.1
-
-CON isOctagonal I 0
-
-# ****AIR **** (cm)
-CON widthA D 0.25
-# radiation length (mm)
-CON x0Sc D 413.1
-
-CON rec_boxX D 2.0
-CON rec_boxY D 2.0
-
-# minimum energy at plane to be detected.(MeV)
-CON min_eng D 0.000016
-
-#############################################
-#  Data to read and write
-#############################################
-
-DATA idst_files SV 1
-%(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d.dst.root
-
-DATA odst_file S %(out_base)s/digi_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d_digi.dst.root
-'''% dict(dictionary, **vars(self))
-
-		self.print_file(filename,filedata)
+		#self.print_file(filename,filedata)
+		filedata = self.print_general('CON',dictionary)
 
 	def print_mindG4_config(self,dictionary,filename):
-		filedata = '''
+
+		filedata = self.print_general('GEOMETRY',dictionary)
+
+		filedata += '''
 ### ---------------------------------------------------------------------------
 ###  $Id: example_mindG4.config 436 2010-11-03 15:06:50Z alaing $
 ###
@@ -122,28 +59,6 @@ JOB number_events I %(Nevts)s
 JOB random_seed I 13243%(seed)d
 
 ### GEOMETRY configuration parameters #####################
-
-### Detector dimensions (in mm)
-GEOMETRY width  D 6000.
-GEOMETRY height D 6000.
-GEOMETRY length D 2000.
-GEOMETRY vwidth D 2000.
-GEOMETRY vheight D 2000.
-GEOMETRY vdepth  D 2000.
-GEOMETRY ear_width D 439.3
-GEOMETRY ear_height D 2899.4
-GEOMETRY bore_diameter D 200
-
-### Calorimeter layers thicknesses (in mm)
-GEOMETRY active_thickness  D 15.
-GEOMETRY passive_thickness D 15.
-GEOMETRY bracing_thickness D 1.
-
-GEOMETRY IsOctagonal I 0
-
-### Active and passive materials (see documentation for values)
-GEOMETRY active_material  S G4_POLYSTYRENE
-GEOMETRY passive_material S G4_Fe
 
 ### Uncomment if you want to simulate TASD.
 ## Sets all volumes as sensitive detectors.
@@ -237,38 +152,6 @@ PHYSICS minimum_kinEng D 100.
 #############################################
 #  parameters for the setup
 #############################################
-
-# MIND dimensions (m)
-RUN MIND_x D 6.
-RUN MIND_y D 6.
-RUN MIND_z D 13.
-RUN vertex_x D 2.
-RUN vertex_y D 2.
-RUN vertexDepth D 2.
-RUN EAR_height D 2.8994
-RUN EAR_width  D 0.4393
-
-RUN IsOctagonal I 0
-
-# MIND internal dimensions (cm)
-# ****IRON****
-RUN widthI D 1.5
-# radiation length (mm)
-RUN x0Fe D 17.58
-
-# ****SCIN**** (cm)
-RUN widthS D 1.5
-RUN nplane I 1
-# radiation length (mm)
-RUN x0Sc D 413.1
-
-# ****AIR **** (cm)
-RUN widthA D 0.25
-# radiation length (m)
-RUN x0AIR D 303.9
-
-# ****Aluminium **** (cm)
-RUN widthAl D 0.1
 
 # relative density, Sc/Fe, AIR/Sc.
 RUN rel_denSI D 0.135
@@ -431,3 +314,77 @@ DATA idst_files SV 1
 '''% dictionary
 
 		self.print_file(filename,filedata)
+
+#For rec and digi so far
+	def print_general(self, inPreParam, dictionary):
+		self.preParam = inPreParam
+
+
+		filedata = '''
+'''
+
+		if(self.preParam == 'CON'):
+			filedata+= '''
+# number of events to be processed.
+RUN nEvents I %(Nevts)d
+
+# gausian sigma for smear (cm)
+RUN Gaus_Sigma D 1.0
+
+# energy smear (%%)
+RUN Eng_Res D 0.11
+
+# seed value for random generator
+CON Gen_seed D 107311191
+
+CON rec_boxX D 2.0
+CON rec_boxY D 2.0
+
+# minimum energy at plane to be detected.(MeV)
+CON min_eng D 0.000016
+
+DATA idst_files SV 1
+%(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d.dst.root
+
+DATA odst_file S %(out_base)s/digi_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d_digi.dst.root
+'''% dict(dictionary, **vars(self))
+
+		filedata += '''
+
+%(preParam)s IsOctagonal I %(MIND_type)s
+
+# MIND dimensions (m)
+%(preParam)s MIND_x D %(MIND_xdim)s
+%(preParam)s MIND_y D %(MIND_ydim)s
+%(preParam)s MIND_z D %(MIND_zdim)s
+%(preParam)s vertex_x D %(MIND_vertex_xdim)s
+%(preParam)s vertex_y D %(MIND_vertex_ydim)s
+%(preParam)s vertex_z D %(MIND_vertex_zdim)s //vertexDepth
+%(preParam)s ear_height D %(MIND_ear_ydim)s
+%(preParam)s ear_width  D %(MIND_ear_xdim)s
+%(preParam)s bore_diameter D %(MIND_bore_diameter)s
+
+#Mind internal dimensions
+%(preParam)s active_material S %(MIND_active_mat)s
+%(preParam)s active_thickness D %(MIND_width_active)s //widthSc
+%(preParam)s x0Sc D %(MIND_rad_length_active)s
+%(preParam)s active_layers I %(MIND_active_layers)s //nlayers
+%(preParam)s passive_material S %(MIND_passive_mat)s
+%(preParam)s passive_thickness D %(MIND_width_passive)s //widthI
+%(preParam)s x0Fe D %(MIND_rad_length_passive)s
+
+%(preParam)s bracing_material S %(MIND_bracing_mat)s 
+%(preParam)s bracing_thickness D %(MIND_width_bracing)s // widthAl
+
+%(preParam)s air_gap D %(MIND_width_air)s //withA
+%(preParam)s x0AIR D %(MIND_rad_length_air)s
+
+'''% dict(dictionary, **vars(self))
+
+		#print filedata
+
+		return filedata
+
+
+
+
