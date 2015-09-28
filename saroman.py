@@ -263,7 +263,7 @@ if __name__ == "__main__":
     s.set_environment()
     s.run_genie()
     s.run_simulation()
-#    s.run_digitization()
-#    s.run_reconstruction()
+    s.run_digitization()
+    s.run_reconstruction()
 
 

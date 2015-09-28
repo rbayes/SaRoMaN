@@ -350,11 +350,11 @@ void MINDsetup::readParam(){
       
     _msetup.message("MIND length:",MIND_z/cm,"cm",c);
     
-    EAR_height = _pstore.fetch_dstore("EAR_height") * m;
+    EAR_height = _pstore.fetch_dstore("ear_height") * m;
 
     _msetup.message("MIND ear height:",EAR_height/cm,"cm",c);
 
-    EAR_width = _pstore.fetch_dstore("EAR_width") * m;
+    EAR_width = _pstore.fetch_dstore("ear_width") * m;
 
     _msetup.message("MIND ear width:",EAR_width/cm,"cm",c);
 
@@ -364,19 +364,19 @@ void MINDsetup::readParam(){
       _pstore.fetch_dstore("vertex_x") * m : 0.0;
     VERT_y = _pstore.find_dstore("vertex_y") ?
       _pstore.fetch_dstore("vertex_y") * m : 0.0;
-    VERT_z = _pstore.find_dstore("vertexDepth") ?
-      _pstore.fetch_dstore("vertexDepth") * m : 0.0;
+    VERT_z = _pstore.find_dstore("vertex_z") ?
+      _pstore.fetch_dstore("vertex_z") * m : 0.0;
     
 
     //-------------------------------------------------------------//
     //                      | INNER DIMENSIONS |                   //
     //-------------------------------------------------------------//
 
-    IRON_z = _pstore.fetch_dstore("widthI") * cm;
-    SCINT_z = _pstore.fetch_dstore("widthS") * cm;
-    AIR_z = _pstore.fetch_dstore("widthA") * cm;
-    Al_z  = _pstore.find_dstore("widthAl") ? _pstore.fetch_dstore("widthAl") * cm : 0.0;
-    nScint = _pstore.fetch_istore("nplane");
+    IRON_z = _pstore.fetch_dstore("passive_thickness") * cm;
+    SCINT_z = _pstore.fetch_dstore("active_thickness") * cm;
+    AIR_z = _pstore.fetch_dstore("air_gap") * cm;
+    Al_z  = _pstore.find_dstore("bracing_thickness") ? _pstore.fetch_dstore("bracing_thickness") * cm : 0.0;
+    nScint = _pstore.fetch_istore("active_layers");
 
 
     //Adjust length for integer number of pieces.

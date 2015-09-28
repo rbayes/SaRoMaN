@@ -250,12 +250,12 @@ void event_classif::readParam() {
   _chi2_max = _infoStore.fetch_dstore("accept_chi");
   _max_coincedence = _infoStore.fetch_dstore("max_coincidence");
   
-  _pieceLength = _infoStore.fetch_dstore("widthI") * cm
-    + _infoStore.fetch_dstore("widthS") * _infoStore.fetch_istore("nplane") * cm
-    + _infoStore.fetch_dstore("widthA") * (_infoStore.fetch_istore("nplane")+1) * cm
-    + _infoStore.fetch_dstore("widthAl") * _infoStore.fetch_istore("nplane") * cm;
+  _pieceLength = _infoStore.fetch_dstore("passive_thickness") * cm
+    + _infoStore.fetch_dstore("active_thickness") * _infoStore.fetch_istore("active_layers") * cm
+    + _infoStore.fetch_dstore("air_gap") * (_infoStore.fetch_istore("active_layers")+1) * cm
+    + _infoStore.fetch_dstore("bracing_thickness") * _infoStore.fetch_istore("active_layers") * cm;
   
-  _isTASD = _infoStore.fetch_dstore("widthI") == 0 ? true : false;
+  _isTASD = _infoStore.fetch_dstore("passive_thickness") == 0 ? true : false;
 
   _maxBlobSkip = _infoStore.fetch_dstore("maxBlobSkip");
   _minBlobOcc = _infoStore.fetch_dstore("minBlobOcc");
@@ -263,8 +263,8 @@ void event_classif::readParam() {
   _detX = _infoStore.fetch_dstore("MIND_x") * m;
   _detY = _infoStore.fetch_dstore("MIND_y") * m;
   _detZ = _infoStore.fetch_dstore("MIND_z") * m;
-  _vdetZ = _infoStore.find_dstore("vertexDepth")?
-    _infoStore.fetch_dstore("vertexDepth") : 0.0;
+  _vdetZ = _infoStore.find_dstore("vertex_z")?
+    _infoStore.fetch_dstore("vertex_z") : 0.0;
 
   if(_infoStore.find_dstore("WLSatten"))
     _WLSAtten = _infoStore.fetch_dstore("WLSatten");

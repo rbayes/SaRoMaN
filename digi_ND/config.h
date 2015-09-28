@@ -8,13 +8,13 @@
 #define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the `bhep' library (-lbhep). */
-#define HAVE_LIBBHEP 1
+/* #undef HAVE_LIBBHEP */
 
 /* Define to 1 if you have the `CLHEP' library (-lCLHEP). */
-#define HAVE_LIBCLHEP 1
+/* #undef HAVE_LIBCLHEP */
 
 /* Define to 1 if you have the `g2c' library (-lg2c). */
-/* #undef HAVE_LIBG2C */
+#define HAVE_LIBG2C 1
 
 /* Define to 1 if you have the `m' library (-lm). */
 #define HAVE_LIBM 1

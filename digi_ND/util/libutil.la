@@ -14,7 +14,7 @@ library_names=''
 old_library='libutil.a'
 
 # Libraries that this one depends upon.
-dependency_libs=' -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/bhep/lib -L/data/neutrino04/common_SW/clhep//lib -lCLHEP /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/bhep/lib/libbhep.la -lCLHEP-2.1.0.1 -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -ldl'
+dependency_libs=' -L/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -L/data/neutrino04/common_SW/nuSTORM/third_party/bhep/lib -L/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party/lib -lg2c /data/neutrino04/common_SW/nuSTORM/third_party/bhep/lib/libbhep.la -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -lCLHEP-2.1.4.1 -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -ldl'
 
 # Version information for libutil.
 current=0

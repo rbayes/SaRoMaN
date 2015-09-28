@@ -37,8 +37,8 @@ class print_config:
 
 	def print_digi_config(self,dictionary,filename):
 
-		#self.print_file(filename,filedata)
 		filedata = self.print_general('CON',dictionary)
+		self.print_file(filename,filedata)
 
 	def print_mindG4_config(self,dictionary,filename):
 
@@ -142,7 +142,9 @@ PHYSICS minimum_kinEng D 100.
 		self.print_file(filename,filedata)
 
 	def print_rec_config(self,dictionary,filename):
-		filedata = '''
+		filedata = self.print_general('RUN',dictionary)
+
+		filedata += '''
 ########################################################################
 #                                                                      #
 #  This is a parameter file that can be read by bhep sreader class.    #
@@ -381,7 +383,7 @@ DATA odst_file S %(out_base)s/digi_out/nd_%(part)s%(inttype)s/nd_%(part)s%(intty
 
 '''% dict(dictionary, **vars(self))
 
-		#print filedata
+		print filedata
 
 		return filedata
 

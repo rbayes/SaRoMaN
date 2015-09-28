@@ -10,16 +10,16 @@ hit_constructor::hit_constructor(const bhep::gstore& store)
   _detectorLength = store.fetch_dstore("MIND_z") * m;
   _detectorX = store.fetch_dstore("MIND_x") * m;
   _detectorY = store.fetch_dstore("MIND_y") * m;
-  _vertexDetdepth = store.fetch_dstore("VERTEX_z") * m;
-  _vertexDetX = store.fetch_dstore("VERTEX_x") * m;
-  _vertexDetY = store.fetch_dstore("VERTEX_y") * m;
-  _passiveLength = store.fetch_dstore("widthI") * cm;
-  _activeLength = store.fetch_dstore("widthS") * cm;
+  _vertexDetdepth = store.fetch_dstore("vertex_z") * m;
+  _vertexDetX = store.fetch_dstore("vertex_x") * m;
+  _vertexDetY = store.fetch_dstore("vertex_y") * m;
+  _passiveLength = store.fetch_dstore("passive_thickness") * cm;
+  _activeLength = store.fetch_dstore("active_thickness") * cm;
   _braceLength = 0.0;
-  if (store.find_dstore("widthAl"))
-    _braceLength = store.fetch_dstore("widthAl") * cm;
-  _gapLength = store.fetch_dstore("widthA") * cm;
-  _nActive = store.fetch_istore("nplane");
+  if (store.find_dstore("bracing_thickness"))
+    _braceLength = store.fetch_dstore("bracing_thickness") * cm;
+  _gapLength = store.fetch_dstore("air_gap") * cm;
+  _nActive = store.fetch_istore("active_layers");
   OctGeom = 0;
   if (store.find_istore("isOctagonal"))
     OctGeom = store.fetch_istore("isOctagonal");

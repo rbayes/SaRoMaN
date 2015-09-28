@@ -86,15 +86,15 @@ DIST_ARCHIVES = $(distdir).tar.gz
 GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/mind_rec/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/missing --run aclocal-1.9
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/mind_rec/missing --run tar
+AMTAR = ${SHELL} /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/missing --run tar
 AM_LDFLAGS = 
 AR = ar
-AUTOCONF = ${SHELL} /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/mind_rec/missing --run autoconf
-AUTOHEADER = ${SHELL} /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/mind_rec/missing --run autoheader
-AUTOMAKE = ${SHELL} /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/mind_rec/missing --run automake-1.9
+AUTOCONF = ${SHELL} /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/missing --run autoconf
+AUTOHEADER = ${SHELL} /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/missing --run autoheader
+AUTOMAKE = ${SHELL} /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/missing --run automake-1.9
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -104,7 +104,7 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -Wall -I/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include -I"/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include" -I/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/bhep/include -I/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/include
+CXXFLAGS = -g -Wall -I/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include -I"/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party/include" -I/data/neutrino04/common_SW/nuSTORM/third_party/bhep/include -I/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/include
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -120,13 +120,13 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LDFLAGS =  -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/lib -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/bhep/lib -L"/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party"/lib
+LDFLAGS =  -L/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -L/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//lib -L/data/neutrino04/common_SW/nuSTORM/third_party/bhep/lib -L"/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party"/lib
 LIBOBJS = 
-LIBS = -lrecpack -lCLHEP -lbhep -lm  -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/lib -lrecpack -lm -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/lib -lCLHEP-2.1.4.1 -L/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/bhep/lib -lbhep -lm -L"/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/lib" -lCLHEP-2.1.4.1
+LIBS = -lrecpack -lCLHEP -lbhep -lg2c -lm  -L/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic -L/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//lib -lrecpack -lg2c -lm -L/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party/genie_source/src/scripts/build/ext/v5_34_10/download/root/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -pthread -lm -ldl -rdynamic -L/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party/lib -lCLHEP-2.1.4.1 -L/data/neutrino04/common_SW/nuSTORM/third_party/bhep/lib -lbhep -lm -L"/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party/lib" -lCLHEP-2.1.4.1
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/mind_rec/missing --run makeinfo
+MAKEINFO = ${SHELL} /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/missing --run makeinfo
 OBJEXT = o
 PACKAGE = mind
 PACKAGE_BUGREPORT = 
@@ -171,7 +171,7 @@ host_os = linux-gnu
 host_vendor = redhat
 includedir = ${prefix}/include
 infodir = ${prefix}/info
-install_sh = /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/mind_rec/install-sh
+install_sh = /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localstatedir = ${prefix}/var
@@ -519,7 +519,7 @@ distcheck: dist
 	*.zip*) \
 	  unzip $(distdir).zip ;;\
 	esac
-	chmod -R a-w $(distdir); chmod a+w $(distdir)
+	chmod -R a-w $(distdir); chmod u+w $(distdir)
 	mkdir $(distdir)/_build
 	mkdir $(distdir)/_inst
 	chmod a-w $(distdir)

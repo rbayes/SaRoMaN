@@ -1,204 +1,212 @@
-MINDfieldMapReader.lo: MINDfieldMapReader.cpp \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/string \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/c++config.h \
- /usr/include/bits/wordsize.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/os_defines.h \
- /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/cpu_defines.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stringfwd.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/char_traits.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_algobase.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cstddef \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/include/stddef.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/functexcept.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/exception_defines.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/cpp_type_traits.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ext/type_traits.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ext/numeric_traits.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_pair.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/move.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/concept_check.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_iterator_base_types.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_iterator_base_funcs.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_iterator.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/debug/debug.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/postypes.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cwchar \
- /usr/include/wchar.h /usr/include/stdio.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/include/stdarg.h \
- /usr/include/bits/wchar.h /usr/include/xlocale.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/allocator.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/c++allocator.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ext/new_allocator.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/new \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/exception \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/localefwd.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/c++locale.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/clocale \
- /usr/include/locale.h /usr/include/bits/locale.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/iosfwd \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cctype \
- /usr/include/ctype.h /usr/include/bits/types.h \
- /usr/include/bits/typesizes.h /usr/include/endian.h \
- /usr/include/bits/endian.h /usr/include/bits/byteswap.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/ostream_insert.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cxxabi-forced.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_function.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/backward/binders.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/basic_string.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ext/atomicity.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/gthr.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/gthr-default.h \
- /usr/include/pthread.h /usr/include/sched.h /usr/include/time.h \
- /usr/include/bits/sched.h /usr/include/bits/time.h \
- /usr/include/bits/pthreadtypes.h /usr/include/bits/setjmp.h \
- /usr/include/unistd.h /usr/include/bits/posix_opt.h \
- /usr/include/bits/environments.h /usr/include/bits/confname.h \
- /usr/include/getopt.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/atomic_word.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/initializer_list \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/basic_string.tcc \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/vector \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_construct.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_uninitialized.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_vector.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_bvector.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/vector.tcc \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/map \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_tree.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_map.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_multimap.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/iostream \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ostream \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ios \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/ios_base.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/locale_classes.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/locale_classes.tcc \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/streambuf \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/streambuf.tcc \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/basic_ios.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/locale_facets.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cwctype \
- /usr/include/wctype.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/ctype_base.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/streambuf_iterator.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/ctype_inline.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/locale_facets.tcc \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/basic_ios.tcc \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/ostream.tcc \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/istream \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/istream.tcc \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/fstream \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/codecvt.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cstdio \
- /usr/include/libio.h /usr/include/_G_config.h \
- /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/basic_file.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/c++io.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/fstream.tcc \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/EVectorMap.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/EAlgebra.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/Matrix.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/defs.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/GenMatrix.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/GenMatrix.icc \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/Matrix.icc \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/stdexcept \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/SymMatrix.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/SymMatrix.icc \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/Vector.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/Vector.icc \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cmath \
- /usr/include/math.h /usr/include/bits/huge_val.h \
- /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
- /usr/include/bits/inf.h /usr/include/bits/nan.h \
- /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/cmath.tcc \
- /usr/include/stdlib.h /usr/include/bits/waitflags.h \
- /usr/include/bits/waitstatus.h /usr/include/sys/types.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h \
- /usr/include/alloca.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/typeinfo \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/algorithm \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_algo.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cstdlib \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/algorithmfwd.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_heap.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_tempbuf.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Units/SystemOfUnits.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Units/defs.h \
- ../mind/MINDfieldMapReader.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/RecPackManager.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/GeometrySvc.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Svc.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Tool.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/dictionary.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/stc_tools.h \
- /usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/functional \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Messenger.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ToolServer.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Setup.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Volume.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Surface.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/EGeo.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/HyperVector.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/NamedObject.h \
- /usr/include/assert.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Box.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Rectangle.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Plane.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Tube.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Definitions.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ModelSvc.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Model.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Propagator.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IPropagator.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/State.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/HyperVectorObject.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IModelEquation.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/INoiser.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IModelCorrection.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ISurfaceIntersector.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IStateRepresentation.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/SurfaceIntersector.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Noiser.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ModelCorrection.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/StateRepresentation.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ConversionSvc.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Projector.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IProjector.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Node.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/RecResult.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/RecObject.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Measurement.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ISurfaceProjector.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/NavigationSvc.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Navigator.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/StepNavigator.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Trajectory.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ActiveSetup.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/MasterInspector.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Inspector.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ISurfaceLogic.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/INavigationLogic.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/MatchingSvc.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ITrajectoryFinder.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ISurfaceMaker.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/FittingSvc.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IFitter.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/SimulationSvc.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/MeasSimulator.h \
- /afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/PropertyInspector.h
+MINDfieldMapReader.lo MINDfieldMapReader.o: MINDfieldMapReader.cpp \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/string \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/c++config.h \
+  /usr/include/bits/wordsize.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/os_defines.h \
+  /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-64.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/cpu_defines.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stringfwd.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/char_traits.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cstring \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cstddef \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h \
+  /usr/include/string.h /usr/include/xlocale.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_algobase.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/climits \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/limits.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/syslimits.h \
+  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
+  /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
+  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
+  /usr/include/bits/stdio_lim.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cstdlib \
+  /usr/include/stdlib.h /usr/include/bits/waitflags.h \
+  /usr/include/bits/waitstatus.h /usr/include/endian.h \
+  /usr/include/bits/endian.h /usr/include/sys/types.h \
+  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
+  /usr/include/time.h /usr/include/sys/select.h \
+  /usr/include/bits/select.h /usr/include/bits/sigset.h \
+  /usr/include/bits/time.h /usr/include/sys/sysmacros.h \
+  /usr/include/bits/pthreadtypes.h /usr/include/alloca.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/iosfwd \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/c++locale.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cstdio \
+  /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h \
+  /usr/include/wchar.h /usr/include/bits/wchar.h /usr/include/gconv.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdarg.h \
+  /usr/include/bits/sys_errlist.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/clocale \
+  /usr/include/locale.h /usr/include/bits/locale.h \
+  /usr/include/langinfo.h /usr/include/nl_types.h /usr/include/iconv.h \
+  /usr/include/libintl.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/c++io.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/gthr.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/gthr-default.h \
+  /usr/include/pthread.h /usr/include/sched.h /usr/include/bits/sched.h \
+  /usr/include/signal.h /usr/include/bits/setjmp.h /usr/include/unistd.h \
+  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+  /usr/include/bits/confname.h /usr/include/getopt.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cctype \
+  /usr/include/ctype.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/postypes.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cwchar \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/ctime \
+  /usr/include/stdint.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/functexcept.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/exception_defines.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_pair.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/cpp_type_traits.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_iterator_base_types.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_iterator_base_funcs.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/concept_check.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_iterator.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/debug/debug.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/memory \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/allocator.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/c++allocator.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/ext/new_allocator.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/new \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/exception \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_construct.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_uninitialized.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_raw_storage_iter.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/limits \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_function.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/basic_string.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/atomicity.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/atomic_word.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/algorithm \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_algo.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_heap.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_tempbuf.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/basic_string.tcc \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/vector \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_vector.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_bvector.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/vector.tcc \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/map \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_tree.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_map.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_multimap.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/iostream \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/ostream \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/ios \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/localefwd.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/ios_base.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/locale_classes.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/streambuf \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/streambuf.tcc \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/basic_ios.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/streambuf_iterator.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/locale_facets.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cwctype \
+  /usr/include/wctype.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/ctype_base.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/ctype_inline.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/codecvt.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/time_members.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/messages_members.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/basic_ios.tcc \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/ostream.tcc \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/locale \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/locale_facets.tcc \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/typeinfo \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/istream \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/istream.tcc \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/fstream \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/basic_file.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/fstream.tcc \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/EVectorMap.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/EAlgebra.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/Matrix.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/defs.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/GenMatrix.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/GenMatrix.icc \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/Matrix.icc \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/stdexcept \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/SymMatrix.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/SymMatrix.icc \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/Vector.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/Vector.icc \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cmath \
+  /usr/include/math.h /usr/include/bits/huge_val.h \
+  /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
+  /usr/include/bits/inf.h /usr/include/bits/nan.h \
+  /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/cmath.tcc \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Units/SystemOfUnits.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Units/defs.h \
+  ../mind/MINDfieldMapReader.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/RecPackManager.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/GeometrySvc.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Svc.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Tool.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/dictionary.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/stc_tools.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/functional \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Messenger.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ToolServer.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Setup.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Volume.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Surface.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/EGeo.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/HyperVector.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/NamedObject.h \
+  /usr/include/assert.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Box.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Rectangle.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Plane.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Tube.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Definitions.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ModelSvc.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Model.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Propagator.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IPropagator.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/State.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/HyperVectorObject.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IModelEquation.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/INoiser.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IModelCorrection.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ISurfaceIntersector.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IStateRepresentation.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/SurfaceIntersector.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Noiser.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ModelCorrection.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/StateRepresentation.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ConversionSvc.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Projector.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IProjector.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Node.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/RecResult.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/RecObject.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Measurement.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ISurfaceProjector.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/NavigationSvc.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Navigator.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/StepNavigator.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Trajectory.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ActiveSetup.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/MasterInspector.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Inspector.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ISurfaceLogic.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/INavigationLogic.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/MatchingSvc.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ITrajectoryFinder.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ISurfaceMaker.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/FittingSvc.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IFitter.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/SimulationSvc.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/MeasSimulator.h \
+  /afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/PropertyInspector.h
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/string:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/string:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/c++config.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/c++config.h:
 
 /usr/include/bits/wordsize.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/os_defines.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/os_defines.h:
 
 /usr/include/features.h:
 
@@ -208,119 +216,127 @@ MINDfieldMapReader.lo: MINDfieldMapReader.cpp \
 
 /usr/include/gnu/stubs-64.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/cpu_defines.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/cpu_defines.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stringfwd.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stringfwd.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/char_traits.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/char_traits.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_algobase.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cstring:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cstddef:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cstddef:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/include/stddef.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stddef.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/functexcept.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/exception_defines.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/cpp_type_traits.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ext/type_traits.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ext/numeric_traits.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_pair.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/move.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/concept_check.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_iterator_base_types.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_iterator_base_funcs.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_iterator.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/debug/debug.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/postypes.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cwchar:
-
-/usr/include/wchar.h:
-
-/usr/include/stdio.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/include/stdarg.h:
-
-/usr/include/bits/wchar.h:
+/usr/include/string.h:
 
 /usr/include/xlocale.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/allocator.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_algobase.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/c++allocator.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/climits:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ext/new_allocator.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/limits.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/new:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/syslimits.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/exception:
+/usr/include/limits.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/localefwd.h:
+/usr/include/bits/posix1_lim.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/c++locale.h:
+/usr/include/bits/local_lim.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/clocale:
+/usr/include/linux/limits.h:
 
-/usr/include/locale.h:
+/usr/include/bits/posix2_lim.h:
 
-/usr/include/bits/locale.h:
+/usr/include/bits/xopen_lim.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/iosfwd:
+/usr/include/bits/stdio_lim.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cctype:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cstdlib:
 
-/usr/include/ctype.h:
+/usr/include/stdlib.h:
 
-/usr/include/bits/types.h:
+/usr/include/bits/waitflags.h:
 
-/usr/include/bits/typesizes.h:
+/usr/include/bits/waitstatus.h:
 
 /usr/include/endian.h:
 
 /usr/include/bits/endian.h:
 
-/usr/include/bits/byteswap.h:
+/usr/include/sys/types.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/ostream_insert.h:
+/usr/include/bits/types.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cxxabi-forced.h:
+/usr/include/bits/typesizes.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_function.h:
+/usr/include/time.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/backward/binders.h:
+/usr/include/sys/select.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/basic_string.h:
+/usr/include/bits/select.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ext/atomicity.h:
+/usr/include/bits/sigset.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/gthr.h:
+/usr/include/bits/time.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/gthr-default.h:
+/usr/include/sys/sysmacros.h:
+
+/usr/include/bits/pthreadtypes.h:
+
+/usr/include/alloca.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/iosfwd:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/c++locale.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cstdio:
+
+/usr/include/stdio.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/include/gconv.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/include/stdarg.h:
+
+/usr/include/bits/sys_errlist.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/clocale:
+
+/usr/include/locale.h:
+
+/usr/include/bits/locale.h:
+
+/usr/include/langinfo.h:
+
+/usr/include/nl_types.h:
+
+/usr/include/iconv.h:
+
+/usr/include/libintl.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/c++io.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/gthr.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/gthr-default.h:
 
 /usr/include/pthread.h:
 
 /usr/include/sched.h:
 
-/usr/include/time.h:
-
 /usr/include/bits/sched.h:
 
-/usr/include/bits/time.h:
-
-/usr/include/bits/pthreadtypes.h:
+/usr/include/signal.h:
 
 /usr/include/bits/setjmp.h:
 
@@ -334,117 +350,171 @@ MINDfieldMapReader.lo: MINDfieldMapReader.cpp \
 
 /usr/include/getopt.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/atomic_word.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cctype:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/initializer_list:
+/usr/include/ctype.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/basic_string.tcc:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/postypes.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/vector:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cwchar:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_construct.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/ctime:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_uninitialized.h:
+/usr/include/stdint.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_vector.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/functexcept.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_bvector.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/exception_defines.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/vector.tcc:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_pair.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/map:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/cpp_type_traits.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_tree.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_iterator_base_types.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_map.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_iterator_base_funcs.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_multimap.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/concept_check.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/iostream:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_iterator.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ostream:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/debug/debug.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/ios:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/memory:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/ios_base.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/allocator.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/locale_classes.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/c++allocator.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/locale_classes.tcc:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/ext/new_allocator.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/streambuf:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/new:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/streambuf.tcc:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/exception:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/basic_ios.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_construct.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/locale_facets.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_uninitialized.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cwctype:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_raw_storage_iter.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/limits:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_function.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/basic_string.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/atomicity.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/atomic_word.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/algorithm:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_algo.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_heap.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_tempbuf.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/basic_string.tcc:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/vector:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_vector.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_bvector.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/vector.tcc:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/map:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_tree.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_map.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/stl_multimap.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/iostream:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/ostream:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/ios:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/localefwd.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/ios_base.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/locale_classes.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/streambuf:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/streambuf.tcc:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/basic_ios.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/streambuf_iterator.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/locale_facets.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cwctype:
 
 /usr/include/wctype.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/ctype_base.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/ctype_base.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/streambuf_iterator.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/ctype_inline.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/ctype_inline.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/codecvt.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/locale_facets.tcc:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/time_members.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/basic_ios.tcc:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/messages_members.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/ostream.tcc:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/basic_ios.tcc:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/istream:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/ostream.tcc:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/istream.tcc:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/locale:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/fstream:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/locale_facets.tcc:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/codecvt.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/typeinfo:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cstdio:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/istream:
 
-/usr/include/libio.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/istream.tcc:
 
-/usr/include/_G_config.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/fstream:
 
-/usr/include/bits/stdio_lim.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/x86_64-redhat-linux/bits/basic_file.h:
 
-/usr/include/bits/sys_errlist.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/fstream.tcc:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/basic_file.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/EVectorMap.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/x86_64-redhat-linux/bits/c++io.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/EAlgebra.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/fstream.tcc:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/Matrix.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/EVectorMap.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/defs.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/EAlgebra.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/GenMatrix.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/Matrix.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/GenMatrix.icc:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/defs.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/Matrix.icc:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/GenMatrix.h:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/stdexcept:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/GenMatrix.icc:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/SymMatrix.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/Matrix.icc:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/SymMatrix.icc:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/stdexcept:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/Vector.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/SymMatrix.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Matrix/Vector.icc:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/SymMatrix.icc:
-
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/Vector.h:
-
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Matrix/Vector.icc:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cmath:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/cmath:
 
 /usr/include/math.h:
 
@@ -462,164 +532,132 @@ MINDfieldMapReader.lo: MINDfieldMapReader.cpp \
 
 /usr/include/bits/mathcalls.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/cmath.tcc:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/bits/cmath.tcc:
 
-/usr/include/stdlib.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Units/SystemOfUnits.h:
 
-/usr/include/bits/waitflags.h:
-
-/usr/include/bits/waitstatus.h:
-
-/usr/include/sys/types.h:
-
-/usr/include/sys/select.h:
-
-/usr/include/bits/select.h:
-
-/usr/include/bits/sigset.h:
-
-/usr/include/sys/sysmacros.h:
-
-/usr/include/alloca.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/typeinfo:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/algorithm:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_algo.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/cstdlib:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/algorithmfwd.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_heap.h:
-
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/bits/stl_tempbuf.h:
-
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Units/SystemOfUnits.h:
-
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/CLHEP/Units/defs.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/CLHEP/Units/defs.h:
 
 ../mind/MINDfieldMapReader.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/RecPackManager.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/RecPackManager.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/GeometrySvc.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/GeometrySvc.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Svc.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Svc.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Tool.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Tool.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/dictionary.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/dictionary.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/stc_tools.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/stc_tools.h:
 
-/usr/lib/gcc/x86_64-redhat-linux/4.4.7/../../../../include/c++/4.4.7/functional:
+/usr/lib/gcc/x86_64-redhat-linux/4.1.2/../../../../include/c++/4.1.2/functional:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Messenger.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Messenger.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ToolServer.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ToolServer.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Setup.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Setup.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Volume.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Volume.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Surface.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Surface.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/EGeo.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/EGeo.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/HyperVector.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/HyperVector.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/NamedObject.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/NamedObject.h:
 
 /usr/include/assert.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Box.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Box.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Rectangle.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Rectangle.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Plane.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Plane.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Tube.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Tube.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Definitions.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Definitions.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ModelSvc.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ModelSvc.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Model.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Model.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Propagator.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Propagator.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IPropagator.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IPropagator.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/State.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/State.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/HyperVectorObject.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/HyperVectorObject.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IModelEquation.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IModelEquation.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/INoiser.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/INoiser.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IModelCorrection.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IModelCorrection.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ISurfaceIntersector.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ISurfaceIntersector.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IStateRepresentation.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IStateRepresentation.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/SurfaceIntersector.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/SurfaceIntersector.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Noiser.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Noiser.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ModelCorrection.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ModelCorrection.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/StateRepresentation.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/StateRepresentation.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ConversionSvc.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ConversionSvc.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Projector.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Projector.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IProjector.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IProjector.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Node.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Node.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/RecResult.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/RecResult.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/RecObject.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/RecObject.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Measurement.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Measurement.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ISurfaceProjector.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ISurfaceProjector.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/NavigationSvc.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/NavigationSvc.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Navigator.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Navigator.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/StepNavigator.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/StepNavigator.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Trajectory.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Trajectory.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ActiveSetup.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ActiveSetup.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/MasterInspector.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/MasterInspector.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/Inspector.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/Inspector.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ISurfaceLogic.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ISurfaceLogic.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/INavigationLogic.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/INavigationLogic.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/MatchingSvc.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/MatchingSvc.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ITrajectoryFinder.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ITrajectoryFinder.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/ISurfaceMaker.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/ISurfaceMaker.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/FittingSvc.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/FittingSvc.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/IFitter.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/IFitter.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/SimulationSvc.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/SimulationSvc.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/MeasSimulator.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/MeasSimulator.h:
 
-/afs/phas.gla.ac.uk/user/r/rbayes/nuSTORM/third_party/include/recpack/PropertyInspector.h:
+/afs/phas.gla.ac.uk/user/p/phallsjo/nuSTORM/third_party//include/recpack/PropertyInspector.h:
