@@ -12,16 +12,3 @@
 /vis/scene/notifyHandlers
 /vis/viewer/pan 0 0 mm
 /vis/viewer/refresh
-/vis/viewer/zoom 1.1
-/vis/viewer/refresh
-/vis/viewer/set/background 1 1 1 1
-/vis/viewer/refresh
-/vis/viewer/set/lightsVector -700 1000 1000
-/vis/viewer/refresh
-/vis/viewer/set/style surface
-/vis/viewer/refresh
-/vis/viewer/flush
-/vis/viewer/refresh viewer-0
-/vis/viewer/update viewer-0
-/tracking/storeTrajectory 1
-/vis/scene/endOfEventAction accumulate

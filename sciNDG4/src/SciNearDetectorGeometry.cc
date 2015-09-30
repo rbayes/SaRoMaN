@@ -46,8 +46,6 @@ SciNearDetectorGeometry::SciNearDetectorGeometry()
   _logVolume = DefineDetector();
 }
 
-
-
 void SciNearDetectorGeometry::SetInputParameters()
 {
   const MindParamStore& config =
@@ -79,7 +77,6 @@ void SciNearDetectorGeometry::SetInputParameters()
       _isVertexDet = 1;
     }
 
-
   // Use the same active thickness for the vertex detector and calorimeter
   _active_thickness  = config.GetDParam("active_thickness") * cm;
   _passive_thickness = config.GetDParam("passive_thickness") * cm;
@@ -108,7 +105,6 @@ void SciNearDetectorGeometry::SetInputParameters()
       G4Exception("SciNearDetectorGeometry::SetInputParameters",
 		  "Geometry_S001",RunMustBeAborted,
 		  "ERROR.- Missing gap size!");
-      
   }
   
   _piece_length += _passive_thickness + _number_active*_active_thickness 
@@ -129,7 +125,6 @@ void SciNearDetectorGeometry::SetInputParameters()
   _bracing_material = config.PeekSParam("bracing_material") ?
     config.GetSParam("bracing_material") : "G4_Al";
 
-
   //Are we making a tasd? here we always assume yes 
   // but not in the intended way.
   if ( config.PeekIParam("TASD") )
@@ -146,8 +141,6 @@ void SciNearDetectorGeometry::SetInputParameters()
   }
   */
 }
-
-
 
 G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
 {
@@ -387,6 +380,7 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
 	new G4LogicalVolume(bracing_solid, G4Material::GetMaterial(_bracing_material), 
 			    "BRACE", 0, 0, 0, true);
     }
+    
   }
   //G4LogicalVolume* SciPlate_solid = 
   //  new G4LogicalVolume(SciPlate_solid, G4Material::GetMaterial(_active_material), 
@@ -450,7 +444,7 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   }
   else if(IsOctagonal==3){
     G4Box* mind_solid = 
-      new G4Box("MIND", _piece_height/2., _piece_height/2., _mind_length/2.);
+      new G4Box("MIND", _piece_width/2., _piece_height/2., _mind_length/2.);
     
     mind_logic =
       new G4LogicalVolume(mind_solid, G4Material::GetMaterial("G4_AIR"), 
@@ -522,8 +516,13 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
     G4Box* flux_return = new G4Box("FLUX_RETURN", _ear_width/2., _piece_height/2., _detector_length/2.);
     
     flux_return_logic = new G4LogicalVolume(flux_return, G4Material::GetMaterial(_passive_material),
-                 "PASSIVE", 0, 0, 0, true);
+							     "PASSIVE", 0, 0, 0, true);
 
+    G4VPhysicalVolume* flux_physi = new G4PVPlacement(0, G4ThreeVector((_piece_width+_ear_width)/2., 0, 0),
+						      flux_return_logic, "FLUX_RETURN", detector_logic, 0, 0);
+
+    G4VPhysicalVolume* flux_physi2 = new G4PVPlacement(0, G4ThreeVector((-_piece_width-_ear_width)/2., 0, 0),
+						       flux_return_logic, "FLUX_RETURN", detector_logic, 0, 0);
   }
   else {
     G4Tubs* detector_solid = 
@@ -535,14 +534,6 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   }
   G4VPhysicalVolume* mind_physi = new G4PVPlacement(0, G4ThreeVector(0, 0, _vertex_depth/2.),
 						    mind_logic, "MIND", detector_logic, 0, 0);
-
-  G4VPhysicalVolume* flux_physi = new G4PVPlacement(0, G4ThreeVector((_piece_width+_ear_width)/2., 0, 0),
-                flux_return_logic, "FLUX_RETURN", detector_logic, 0, 0);
-
-  G4VPhysicalVolume* flux_physi2 = new G4PVPlacement(0, G4ThreeVector((-_piece_width-_ear_width)/2., 0, 0),
-                flux_return_logic, "FLUX_RETURN", detector_logic, 0, 0);
-
-
   if(_isVertexDet)
     {
   G4VPhysicalVolume* vertex_physi = new G4PVPlacement(0, G4ThreeVector(0, 0, -_mind_length/2.),
@@ -568,13 +559,16 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   G4VisAttributes* green = new G4VisAttributes(G4Colour(0., 0.75, 0.25));
   
   mind_logic->SetVisAttributes(red);
-  flux_return_logic->SetVisAttributes(green);
+  if(IsOctagonal == 3)
+    {
+      flux_return_logic->SetVisAttributes(green);
+    }
+
+
   detector_logic   ->SetVisAttributes(G4VisAttributes::Invisible);
   piece_logic   ->SetVisAttributes(G4VisAttributes::Invisible);
-  //passive_logic ->SetVisAttributes(G4VisAttributes::Invisible);
-  //active_logic  ->SetVisAttributes(G4VisAttributes::Invisible);
-  //passive_logic ->SetVisAttributes(green);
-  //active_logic  ->SetVisAttributes(blue);
+  passive_logic ->SetVisAttributes(G4VisAttributes::Invisible);
+  active_logic  ->SetVisAttributes(G4VisAttributes::Invisible);
   if(_isVertexDet)
     {
   vertex_logic  ->SetVisAttributes(green);
