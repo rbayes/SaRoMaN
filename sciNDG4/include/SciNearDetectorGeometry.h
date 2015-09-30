@@ -76,6 +76,7 @@ private:
   G4double _vertex_width;
   G4double _vertex_height;
   G4double _vertex_depth;
+  bool _isVertexDet;
   G4double _TASDm_length;
 
   // Thicknesses of calorimeter layers

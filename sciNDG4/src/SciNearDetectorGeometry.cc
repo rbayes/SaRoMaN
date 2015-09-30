@@ -13,6 +13,7 @@
 #include "MindSD.h"
 #include "MindField.hh"
 #include "MindFieldMapR.hh"
+#include "babyMindField.hh"
 
 #include <globals.hh>
 #include <G4Box.hh>
@@ -57,7 +58,7 @@ void SciNearDetectorGeometry::SetInputParameters()
   _piece_height      = config.GetDParam("MIND_y") * m;
   _mind_length       = config.GetDParam("MIND_z") * m;
   _ear_width         = config.PeekDParam("ear_width")?
-    config.GetDParam("ear_width") *mm:0.1*mm;
+    config.GetDParam("ear_width") *m:0.1*mm;
   _ear_height        = config.PeekDParam("ear_height")?
     config.GetDParam("ear_height") *m:_piece_height/2.;
   _bore_diameter     = config.PeekDParam("bore_diameter")?
@@ -69,13 +70,23 @@ void SciNearDetectorGeometry::SetInputParameters()
   _vertex_depth      = config.GetDParam("vertex_z") * m;
   // _cal_depth         = config.GetDParam("cdepth") * mm;
 
+  if(_vertex_width == 0 || _vertex_height == 0 || _vertex_depth == 0)
+    {
+      _isVertexDet = 0;
+    }
+  else
+    {
+      _isVertexDet = 1;
+    }
+
+
   // Use the same active thickness for the vertex detector and calorimeter
   _active_thickness  = config.GetDParam("active_thickness") * cm;
   _passive_thickness = config.GetDParam("passive_thickness") * cm;
   _bracing_thickness = config.PeekDParam("bracing_thickness") * cm ?
     config.GetDParam("bracing_thickness") * cm : 0.0 * mm;
 
-  _number_active = config.GetIParam("nplane");
+  _number_active = config.GetIParam("active_layers");
 
   IsOctagonal = config.PeekIParam("IsOctagonal")?
     config.GetIParam("IsOctagonal"): 1;
@@ -279,6 +290,7 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
     
     passive_logic = new G4LogicalVolume(passive_solid, G4Material::GetMaterial(_passive_material), 
 					"PASSIVE", 0, 0, 0, true);
+
   }
   else{
     G4Tubs* passive_solid = 
@@ -351,6 +363,14 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
     active_logic = 
       new G4LogicalVolume(active_solid, G4Material::GetMaterial(_active_material), 
 			  "ACTIVE", 0, 0, 0, true);
+    if(_bracing_thickness > 0.0){
+      G4Box* bracing_solid = 
+	new G4Box("Bracing_solid",_piece_width/2., _piece_height/2., _bracing_thickness/2.); 
+      bracing_logic = 
+	new G4LogicalVolume(bracing_solid, G4Material::GetMaterial(_bracing_material), 
+			    "BRACE", 0, 0, 0, true);
+    }
+
   }
   else {
     G4Tubs* active_solid = 
@@ -359,7 +379,6 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
     active_logic = 
       new G4LogicalVolume(active_solid, G4Material::GetMaterial(_active_material), 
 			  "ACTIVE", 0, 0, 0, true);
-    
     
     if(_bracing_thickness > 0.0){
       G4Tubs* bracing_solid = 
@@ -431,7 +450,7 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   }
   else if(IsOctagonal==3){
     G4Box* mind_solid = 
-      new G4Box("MIND", _piece_width/2., _piece_height/2., _mind_length/2.);
+      new G4Box("MIND", _piece_height/2., _piece_height/2., _mind_length/2.);
     
     mind_logic =
       new G4LogicalVolume(mind_solid, G4Material::GetMaterial("G4_AIR"), 
@@ -450,27 +469,33 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
     new G4PVReplica("PIECE", piece_logic, mind_logic, 
 		    kZAxis, _number_pieces, _piece_length);
 
+
+  G4LogicalVolume* vertex_logic;
+
+  if(_isVertexDet)
+    {
+      // Vertex detector layers
+      G4Box* vlayer_solid = new G4Box("vlayer_solid", _vertex_width/2., _vertex_height/2., _active_thickness/2.);
+      G4LogicalVolume* vlayer_logic = new G4LogicalVolume(vlayer_solid, 
+							  G4Material::GetMaterial(_active_material),
+							  "ACTIVE", 0, 0, 0, true);
+      vlayer_logic->SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,DBL_MAX, minKin));
+      vlayer_logic->SetSensitiveDetector(MSD);
+      G4PVPlacement* vlayer_phys = new G4PVPlacement(0, G4ThreeVector(0,0,0),vlayer_logic,"VLAYER", false, 0, true);
   
-  // Vertex detector layers
-  G4Box* vlayer_solid = new G4Box("vlayer_solid", _vertex_width/2., _vertex_height/2., _active_thickness/2.);
-  G4LogicalVolume* vlayer_logic = new G4LogicalVolume(vlayer_solid, 
-						      G4Material::GetMaterial(_active_material),
-						      "ACTIVE", 0, 0, 0, true);
-  vlayer_logic->SetUserLimits(new G4UserLimits(DBL_MAX,DBL_MAX,DBL_MAX, minKin));
-  vlayer_logic->SetSensitiveDetector(MSD);
-  G4PVPlacement* vlayer_phys = new G4PVPlacement(0, G4ThreeVector(0,0,0),vlayer_logic,"VLAYER", false, 0, true);
-  
-  // Now create the vertex detector
-  G4Box* vertex_solid = new G4Box("vertex_solid", _vertex_width/2., _vertex_height/2., _vertex_depth/2.);
-  G4LogicalVolume* vertex_logic = new G4LogicalVolume(vertex_solid, G4Material::GetMaterial("G4_AIR"),
-						      "ACTIVE", 0, 0, 0,true);
-  G4PVReplica* vlayer_physi = new G4PVReplica("LAYER", vlayer_logic, vertex_logic, kZAxis, 
-					      _number_TASDpieces, _TASDm_length);
+      // Now create the vertex detector
+      G4Box* vertex_solid = new G4Box("vertex_solid", _vertex_width/2., _vertex_height/2., _vertex_depth/2.);
+      vertex_logic = new G4LogicalVolume(vertex_solid, G4Material::GetMaterial("G4_AIR"),
+							  "ACTIVE", 0, 0, 0,true);
+      G4PVReplica* vlayer_physi = new G4PVReplica("LAYER", vlayer_logic, vertex_logic, kZAxis, 
+						  _number_TASDpieces, _TASDm_length);
+    }
 
 
   // DETECTOR .......................................................
   // It is a vacuum-filled volume that contains all PIECES. 
   G4LogicalVolume* detector_logic;
+  G4LogicalVolume* flux_return_logic;
   if(IsOctagonal==1 || IsOctagonal==2){
     G4ExtrudedSolid* detector_solid = 
       new G4ExtrudedSolid("DETECTOR",MindSection,_detector_length/2.,
@@ -486,11 +511,19 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   }
   else if(IsOctagonal==3){
     G4Box* detector_solid = 
-      new G4Box("DETECTOR", _piece_width/2., _piece_height/2., _detector_length/2.);
+      new G4Box("DETECTOR", (_piece_width+_ear_width)/2., (_piece_height+_ear_height)/2., _detector_length/2.);
     
     detector_logic =
       new G4LogicalVolume(detector_solid, G4Material::GetMaterial("G4_AIR"), 
 			  "ACTIVE", 0, 0, 0, true);
+
+    //The iron plates for the magnetic flux return
+
+    G4Box* flux_return = new G4Box("FLUX_RETURN", _ear_width/2., _piece_height/2., _detector_length/2.);
+    
+    flux_return_logic = new G4LogicalVolume(flux_return, G4Material::GetMaterial(_passive_material),
+                 "PASSIVE", 0, 0, 0, true);
+
   }
   else {
     G4Tubs* detector_solid = 
@@ -502,8 +535,19 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   }
   G4VPhysicalVolume* mind_physi = new G4PVPlacement(0, G4ThreeVector(0, 0, _vertex_depth/2.),
 						    mind_logic, "MIND", detector_logic, 0, 0);
+
+  G4VPhysicalVolume* flux_physi = new G4PVPlacement(0, G4ThreeVector((_piece_width+_ear_width)/2., 0, 0),
+                flux_return_logic, "FLUX_RETURN", detector_logic, 0, 0);
+
+  G4VPhysicalVolume* flux_physi2 = new G4PVPlacement(0, G4ThreeVector((-_piece_width-_ear_width)/2., 0, 0),
+                flux_return_logic, "FLUX_RETURN", detector_logic, 0, 0);
+
+
+  if(_isVertexDet)
+    {
   G4VPhysicalVolume* vertex_physi = new G4PVPlacement(0, G4ThreeVector(0, 0, -_mind_length/2.),
 						    vertex_logic, "VERTEX", detector_logic, 0, 0);
+    }
   
   
     // The transmission line itself. Model it with solid copper for scattering
@@ -520,15 +564,21 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   // Visualization attributes ......................................
   
   G4VisAttributes* red  = new G4VisAttributes(G4Colour(1., 0., 0.));
-  G4VisAttributes* blue = new G4VisAttributes(G4Colour(0., 0., 0.));
+  G4VisAttributes* blue = new G4VisAttributes(G4Colour(0., 0., 1.));
   G4VisAttributes* green = new G4VisAttributes(G4Colour(0., 0.75, 0.25));
   
   mind_logic->SetVisAttributes(red);
+  flux_return_logic->SetVisAttributes(green);
   detector_logic   ->SetVisAttributes(G4VisAttributes::Invisible);
   piece_logic   ->SetVisAttributes(G4VisAttributes::Invisible);
-  passive_logic ->SetVisAttributes(G4VisAttributes::Invisible);
-  active_logic  ->SetVisAttributes(G4VisAttributes::Invisible);
+  //passive_logic ->SetVisAttributes(G4VisAttributes::Invisible);
+  //active_logic  ->SetVisAttributes(G4VisAttributes::Invisible);
+  //passive_logic ->SetVisAttributes(green);
+  //active_logic  ->SetVisAttributes(blue);
+  if(_isVertexDet)
+    {
   vertex_logic  ->SetVisAttributes(green);
+    }
   // STL_logic  ->SetVisAttributes(green);
   
   if(_isUniform)
@@ -537,7 +587,10 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
     SetNullField( *detector_logic );
     SetMagneticField( *passive_logic );
     SetNullField( *active_logic );
-    SetDipoleField( *vertex_logic );
+    if(_isVertexDet)
+      {
+	SetDipoleField( *vertex_logic );
+      }  
   }
   // gdm->Write("MIND_detector",detector_logic);
 
@@ -625,10 +678,21 @@ void SciNearDetectorGeometry::SetMagneticField(G4LogicalVolume& detector_logic)
       if(config.PeekDParam("FieldScaling"))
 	fieldScaling = config.GetDParam("FieldScaling");
       bool isLBNO = IsOctagonal == 2 ? true:false;
-	MindField* magField = new MindField(fieldScaling, _piece_height/2., _piece_width/2., isLBNO);
-      fieldMgr->SetDetectorField(magField);
-      fieldMgr->CreateChordFinder(magField);
-      fieldMgr->GetChordFinder()->SetDeltaChord(0.1*cm);
+
+      if(IsOctagonal == 3)
+	{
+	  babyMindField* magField = new babyMindField(fieldScaling, _piece_height/2., _piece_width/2.,_number_active);
+	  fieldMgr->SetDetectorField(magField);
+	  fieldMgr->CreateChordFinder(magField);
+	  fieldMgr->GetChordFinder()->SetDeltaChord(0.1*cm);
+	}
+      else
+	{
+	  MindField* magField = new MindField(fieldScaling, _piece_height/2., _piece_width/2., isLBNO);
+	  fieldMgr->SetDetectorField(magField);
+	  fieldMgr->CreateChordFinder(magField);
+	  fieldMgr->GetChordFinder()->SetDeltaChord(0.1*cm);
+	}
     }
   }   
   else {

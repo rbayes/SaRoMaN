@@ -55,7 +55,7 @@ private:
   void SetNullField(G4LogicalVolume& detector_logic);
   void SetDipoleField(G4LogicalVolume& detector_logic);
   void SetMagneticField(G4LogicalVolume& detector_logic);
-  G4ThreeVector RandomPointInBox(G4double, G4double, G4double);
+  G4ThreeVector RandomPointInBox(G4double, G4double, G4double, bool);
   void CalculatePassiveTargetProb();
 
 private:

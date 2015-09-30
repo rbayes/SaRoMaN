@@ -4,13 +4,13 @@ class print_config:
 
 	def __init__(self):
 		#Mind geometry
-		self.MIND_type = 0   # Cylinder
-		self.MIND_xdim = 6.0 # m
+		self.MIND_type = 3#0   # Cylinder
+		self.MIND_xdim = 7.0 # m
 		self.MIND_ydim = 6.0 # m
 		self.MIND_zdim = 13.0 # m
-		self.MIND_vertex_xdim = 2.0 # m
-		self.MIND_vertex_ydim = 2.0 # m
-		self.MIND_vertex_zdim = 2.0 # m
+		self.MIND_vertex_xdim = 0#2.0 # m
+		self.MIND_vertex_ydim = 0#2.0 # m
+		self.MIND_vertex_zdim = 0#2.0 # m
 		self.MIND_ear_xdim  = 0.4393 # m
 		self.MIND_ear_ydim = 2.8994 # m
 		self.MIND_bore_diameter = 0.2 # m
@@ -18,7 +18,7 @@ class print_config:
 		self.MIND_active_mat = 'G4_POLYSTYRENE'
 		self.MIND_width_active = 1.5 # cm
 		self.MIND_rad_length_active = 413.1 #mm
-		self.MIND_active_layers = 1
+		self.MIND_active_layers = 2 #1
 		self.MIND_passive_mat = 'G4_Fe'
 		self.MIND_width_passive = 1.5 # cm
 		self.MIND_rad_length_passive = 17.58 #mm
@@ -45,13 +45,6 @@ class print_config:
 		filedata = self.print_general('GEOMETRY',dictionary)
 
 		filedata += '''
-### ---------------------------------------------------------------------------
-###  $Id: example_mindG4.config 436 2010-11-03 15:06:50Z alaing $
-###
-###  Example configuration file for the mindG4 application.
-### ---------------------------------------------------------------------------  
-
-
 ### JOB options ###########################################
 JOB output_dst    S %(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d.dst.root
 JOB number_events I %(Nevts)s
@@ -145,11 +138,6 @@ PHYSICS minimum_kinEng D 100.
 		filedata = self.print_general('RUN',dictionary)
 
 		filedata += '''
-########################################################################
-#                                                                      #
-#  This is a parameter file that can be read by bhep sreader class.    #
-#                                                                      #
-########################################################################
 
 #############################################
 #  parameters for the setup

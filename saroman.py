@@ -16,14 +16,15 @@ class saroman:
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
         self.third_party_support = self.home + "/nuSTORM/third_party"
 
+        #Print config object, used to generate config files correctly
         self.print_config=print_config.print_config()
 
         #Should be implemented as input values#
         self.train_sample = 0
         self.part = 'mu'#'14'
         self.pid = 14
-        self.seed = 10
-        self.Nevts = 10
+        self.seed = 100
+        self.Nevts = 100
         self.inttype = 'All'
         self.Bfield = 1.0
 
@@ -46,12 +47,13 @@ class saroman:
         outfile.close()
 
     
-    def print_outdata_file(self,filename,data):
+    def print_outdata_file(self,filename,command):
         '''
-        Print call outdata to file filename.
+        Print the command to stdout then print call output to file filename.
         '''
+        print subprocess.list2cmdline(command)
         outfile = open(filename,'w+')
-        subprocess.call(data, stdout=outfile)
+        subprocess.call(command, stdout=outfile)
         outfile.close()
 
     def shell_source(self, script):
@@ -179,14 +181,12 @@ class saroman:
         command += ['--seed',str(self.seed),'--cross-sections',self.scripts_dir+'/xsec_Fe56_splines.xml']
         command2 += ['--seed',self.ASeed,'--cross-sections',self.scripts_dir+'/xsec_C12+H1_splines.xml']
 
-        print subprocess.list2cmdline(command)
         self.print_outdata_file(genieOutLog,command)
 
         geniefile='gntp.'+str(self.seed)+'.ghep.root'
         geniedest=genieOutDir+'/ev0_'+str(self.seed)+'_'+str(self.pid)+'_'+str(FeTargetCode)+'_'+str(self.Nevts)+'.root'
         shutil.move(geniefile, geniedest)
 
-        print subprocess.list2cmdline(command2)
         self.print_outdata_file(genieOutLog,command2)
         
         geniefile='gntp.'+self.ASeed+'.ghep.root'
@@ -214,7 +214,6 @@ class saroman:
         self.shell_source(self.third_party_support+'/geant4.10.00-install/bin/geant4.sh')
 
         command = [self.exec_base+'/sciNDG4/mindG4',mindG4config]
-        print subprocess.list2cmdline(command)
         self.print_outdata_file(mindG4OutLog,command)
 
     def run_digitization(self):
@@ -234,7 +233,6 @@ class saroman:
 
         digiOutLog = os.path.join(digiOutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
         command = [self.exec_base+"/digi_ND/examples/simple_smear",digiConfig]
-        print subprocess.list2cmdline(command)
         self.print_outdata_file(digiOutLog,command)
 
     def run_reconstruction(self):
@@ -254,7 +252,6 @@ class saroman:
 
         recOutLog = os.path.join(recOutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
         command = [self.exec_base+"/mind_rec/examples/fit_tracks",recConfig, str(self.Nevts)]
-        print subprocess.list2cmdline(command)
         self.print_outdata_file(recOutLog,command)
 
 if __name__ == "__main__":
