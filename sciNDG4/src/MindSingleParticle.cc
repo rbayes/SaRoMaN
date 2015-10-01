@@ -75,7 +75,7 @@ void MindSingleParticle::GeneratePrimaryVertex(G4Event* event)
     (*it1) = 0.;
 
   G4double length = 
-    MindConfigService::Instance().Geometry().GetDParam("length") * mm;
+    MindConfigService::Instance().Geometry().GetDParam("MIND_z") * mm;
   // G4ThreeVector particle_position = G4ThreeVector(0., 0., -length/2.);
   
     // get bhep transient event from singleton

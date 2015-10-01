@@ -21,7 +21,7 @@ class saroman:
 
         #Should be implemented as input values#
         self.train_sample = 0
-        self.part = 'mu'#'14'
+        self.part = 'mu+'#'14'
         self.pid = 14
         self.seed = 100
         self.Nevts = 100
