@@ -25,8 +25,8 @@ class saroman:
         self.pid = 14
         self.seed = 100
         self.Nevts = 100
-        self.inttype = 'All'
-        self.Bfield = 1.0
+        self.inttype = 'CC'
+        self.Bfield = 1.5
 
         #General class variables#
         self.ASeed = str(self.seed + 1000)

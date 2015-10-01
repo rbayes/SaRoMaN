@@ -279,11 +279,10 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   }
   else if(IsOctagonal==3){
     G4Box* passive_solid = 
-      new G4Box("PASSIVE", _piece_width/2., _piece_height/2., _passive_thickness/2.);
+      new G4Box("PASSIVE", (_piece_width+_ear_width)/2., (_piece_height+_ear_height)/2., _passive_thickness/2.);
     
     passive_logic = new G4LogicalVolume(passive_solid, G4Material::GetMaterial(_passive_material), 
 					"PASSIVE", 0, 0, 0, true);
-
   }
   else{
     G4Tubs* passive_solid = 
@@ -489,7 +488,6 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   // DETECTOR .......................................................
   // It is a vacuum-filled volume that contains all PIECES. 
   G4LogicalVolume* detector_logic;
-  G4LogicalVolume* flux_return_logic;
   if(IsOctagonal==1 || IsOctagonal==2){
     G4ExtrudedSolid* detector_solid = 
       new G4ExtrudedSolid("DETECTOR",MindSection,_detector_length/2.,
@@ -510,19 +508,6 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
     detector_logic =
       new G4LogicalVolume(detector_solid, G4Material::GetMaterial("G4_AIR"), 
 			  "ACTIVE", 0, 0, 0, true);
-
-    //The iron plates for the magnetic flux return
-
-    G4Box* flux_return = new G4Box("FLUX_RETURN", _ear_width/2., _piece_height/2., _detector_length/2.);
-    
-    flux_return_logic = new G4LogicalVolume(flux_return, G4Material::GetMaterial(_passive_material),
-							     "PASSIVE", 0, 0, 0, true);
-
-    G4VPhysicalVolume* flux_physi = new G4PVPlacement(0, G4ThreeVector((_piece_width+_ear_width)/2., 0, 0),
-						      flux_return_logic, "FLUX_RETURN", detector_logic, 0, 0);
-
-    G4VPhysicalVolume* flux_physi2 = new G4PVPlacement(0, G4ThreeVector((-_piece_width-_ear_width)/2., 0, 0),
-						       flux_return_logic, "FLUX_RETURN", detector_logic, 0, 0);
   }
   else {
     G4Tubs* detector_solid = 
@@ -558,17 +543,12 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   G4VisAttributes* blue = new G4VisAttributes(G4Colour(0., 0., 1.));
   G4VisAttributes* green = new G4VisAttributes(G4Colour(0., 0.75, 0.25));
   
-  mind_logic->SetVisAttributes(red);
-  if(IsOctagonal == 3)
-    {
-      flux_return_logic->SetVisAttributes(green);
-    }
-
+  //mind_logic->SetVisAttributes(red);
 
   detector_logic   ->SetVisAttributes(G4VisAttributes::Invisible);
   piece_logic   ->SetVisAttributes(G4VisAttributes::Invisible);
-  passive_logic ->SetVisAttributes(G4VisAttributes::Invisible);
-  active_logic  ->SetVisAttributes(G4VisAttributes::Invisible);
+  passive_logic ->SetVisAttributes(red);
+  active_logic  ->SetVisAttributes(green);
   if(_isVertexDet)
     {
   vertex_logic  ->SetVisAttributes(green);

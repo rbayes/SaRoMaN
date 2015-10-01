@@ -5,14 +5,14 @@ class print_config:
 	def __init__(self):
 		#Mind geometry
 		self.MIND_type = 3#0   # Cylinder
-		self.MIND_xdim = 7.0 # m
-		self.MIND_ydim = 6.0 # m
-		self.MIND_zdim = 13.0 # m
+		self.MIND_xdim = 0.96#7.0 # m
+		self.MIND_ydim = 0.96#6.0 # m
+		self.MIND_zdim = 2.0#13.0 # m
 		self.MIND_vertex_xdim = 0#2.0 # m
 		self.MIND_vertex_ydim = 0#2.0 # m
 		self.MIND_vertex_zdim = 0#2.0 # m
-		self.MIND_ear_xdim  = 0.4393 # m
-		self.MIND_ear_ydim = 2.8994 # m
+		self.MIND_ear_xdim  = 2.54#3.5-0.96#0.4393 # m
+		self.MIND_ear_ydim = 1.04#2.0-0.96#2.8994 # m
 		self.MIND_bore_diameter = 0.2 # m
 		#Mind internal dimensions
 		self.MIND_active_mat = 'G4_POLYSTYRENE'
@@ -20,7 +20,7 @@ class print_config:
 		self.MIND_rad_length_active = 413.1 #mm
 		self.MIND_active_layers = 2 #1
 		self.MIND_passive_mat = 'G4_Fe'
-		self.MIND_width_passive = 1.5 # cm
+		self.MIND_width_passive = 3.0#1.5 # cm
 		self.MIND_rad_length_passive = 17.58 #mm
 		self.MIND_bracing_mat = 'G4_Al'
 		self.MIND_width_bracing = 0.1 # cm
