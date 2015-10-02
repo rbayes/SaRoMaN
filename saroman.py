@@ -17,16 +17,18 @@ class saroman:
         self.third_party_support = self.home + "/nuSTORM/third_party"
 
         #Print config object, used to generate config files correctly
-        self.print_config=print_config.print_config()
+        self.GenerationMode = 'SINGLE_PARTICLE' #GENIE
+        self.print_config=print_config.print_config(self.GenerationMode)
 
         #Should be implemented as input values#
         self.train_sample = 0
-        self.part = 'mu+'#'14'
+        self.part = 'mu-'#'14'
         self.pid = 14
-        self.seed = 100
-        self.Nevts = 100
+        self.seed = 500
+        self.Nevts = 500
         self.inttype = 'CC'
         self.Bfield = 1.5
+
 
         #General class variables#
         self.ASeed = str(self.seed + 1000)
@@ -157,41 +159,44 @@ class saroman:
         self.run_reconstruction()
 
     def run_genie(self):
-        genieOutBase = os.path.join(self.out_base, 'genie_samples')
-        genieOutDir = os.path.join(genieOutBase,'nd_'+self.part+self.inttype)
-        genieOutLog = os.path.join(genieOutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
-        FeTargetCode="1000260560"
-        C12HTargetCode='1000060120[0.922582],1000010010[0.077418]'
-        equation ='1/(0.0069*x) +1'
-        vE ='0.01,4.0'
 
-        # Check if the target directories exist if not create it
-        self.check_make_dir(genieOutBase)
-        self.check_make_dir(genieOutDir)
+        if(self.GenerationMode != 'SINGLE_PARTICLE'):
+            
+            genieOutBase = os.path.join(self.out_base, 'genie_samples')
+            genieOutDir = os.path.join(genieOutBase,'nd_'+self.part+self.inttype)
+            genieOutLog = os.path.join(genieOutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
+            FeTargetCode="1000260560"
+            C12HTargetCode='1000060120[0.922582],1000010010[0.077418]'
+            equation ='1/(0.0069*x) +1'
+            vE ='0.01,4.0'
 
-        command = ['gevgen','-r',str(self.seed),'-n',str(self.Nevts),'-p',str(self.pid),'-t',FeTargetCode,
+            # Check if the target directories exist if not create it
+            self.check_make_dir(genieOutBase)
+            self.check_make_dir(genieOutDir)
+
+            command = ['gevgen','-r',str(self.seed),'-n',str(self.Nevts),'-p',str(self.pid),'-t',FeTargetCode,
                              '-e',vE,'-f',equation]
-        command2= ['gevgen','-r',self.ASeed,'-n',str(self.Nevts),'-p',str(self.pid),'-t',C12HTargetCode,
+            command2= ['gevgen','-r',self.ASeed,'-n',str(self.Nevts),'-p',str(self.pid),'-t',C12HTargetCode,
                              '-e',vE,'-f',equation]
 
-        if self.inttype != 'All':
-            command += ['--event-generator-list',self.inttype]
-            command2 += ['--event-generator-list',self.inttype]
+            if self.inttype != 'All':
+                command += ['--event-generator-list',self.inttype]
+                command2 += ['--event-generator-list',self.inttype]
 
-        command += ['--seed',str(self.seed),'--cross-sections',self.scripts_dir+'/xsec_Fe56_splines.xml']
-        command2 += ['--seed',self.ASeed,'--cross-sections',self.scripts_dir+'/xsec_C12+H1_splines.xml']
+                command += ['--seed',str(self.seed),'--cross-sections',self.scripts_dir+'/xsec_Fe56_splines.xml']
+                command2 += ['--seed',self.ASeed,'--cross-sections',self.scripts_dir+'/xsec_C12+H1_splines.xml']
 
-        self.print_outdata_file(genieOutLog,command)
+                self.print_outdata_file(genieOutLog,command)
 
-        geniefile='gntp.'+str(self.seed)+'.ghep.root'
-        geniedest=genieOutDir+'/ev0_'+str(self.seed)+'_'+str(self.pid)+'_'+str(FeTargetCode)+'_'+str(self.Nevts)+'.root'
-        shutil.move(geniefile, geniedest)
+                geniefile='gntp.'+str(self.seed)+'.ghep.root'
+                geniedest=genieOutDir+'/ev0_'+str(self.seed)+'_'+str(self.pid)+'_'+str(FeTargetCode)+'_'+str(self.Nevts)+'.root'
+                shutil.move(geniefile, geniedest)
 
-        self.print_outdata_file(genieOutLog,command2)
+                self.print_outdata_file(genieOutLog,command2)
         
-        geniefile='gntp.'+self.ASeed+'.ghep.root'
-        geniedest=genieOutDir+'/ev0_'+self.ASeed+'_'+str(self.pid)+'_'+str(C12HTargetCode)+'_'+str(self.Nevts)+'.root'
-        shutil.move(geniefile, geniedest)
+                geniefile='gntp.'+self.ASeed+'.ghep.root'
+                geniedest=genieOutDir+'/ev0_'+self.ASeed+'_'+str(self.pid)+'_'+str(C12HTargetCode)+'_'+str(self.Nevts)+'.root'
+                shutil.move(geniefile, geniedest)
             
 
     def run_simulation(self):

@@ -2,7 +2,10 @@ import os
 
 class print_config:
 
-	def __init__(self):
+	def __init__(self,GenerationMode):
+
+
+		self.GenerationMode = GenerationMode
 		#Mind geometry
 		self.MIND_type = 3#0   # Cylinder
 		self.MIND_xdim = 0.96#7.0 # m
@@ -18,7 +21,7 @@ class print_config:
 		self.MIND_active_mat = 'G4_POLYSTYRENE'
 		self.MIND_width_active = 1.5 # cm
 		self.MIND_rad_length_active = 413.1 #mm
-		self.MIND_active_layers = 2 #1
+		self.MIND_active_layers = 3 #1
 		self.MIND_passive_mat = 'G4_Fe'
 		self.MIND_width_passive = 3.0#1.5 # cm
 		self.MIND_rad_length_passive = 17.58 #mm
@@ -44,6 +47,30 @@ class print_config:
 
 		filedata = self.print_general('GEOMETRY',dictionary)
 
+		if(self.GenerationMode == 'SINGLE_PARTICLE'):
+			filedata += '''
+
+### Three generators, SINGLE_PARTICLE, NUANCE and GENIE, with different
+### configuration parameters, are available. The first is chosen
+### as default. Comment out the following lines if you want to
+### use the latter.
+GENERATION generator S SINGLE_PARTICLE
+
+
+GENERATION particle_name S %(part)s
+
+### Particle energy will be sample between these two values (in GeV)
+GENERATION energy_min    D 0.300
+GENERATION energy_max    D 3.000
+
+'''% dictionary
+		elif(self.GenerationMode == 'GENIE'):
+			filedata += '''
+GENERATION generator S GENIE
+'''% dictionary			
+
+		
+
 		filedata += '''
 ### JOB options ###########################################
 JOB output_dst    S %(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d.dst.root
@@ -57,9 +84,6 @@ JOB random_seed I 13243%(seed)d
 ## Sets all volumes as sensitive detectors.
 ## Remember to use G4_POLYSTYRENE as passive_material as well!!.
 # GEOMETRY TASD I 0
-
-### number of active layers per piece. (number of gaps should be 1 greater!)
-GEOMETRY num_active_layers I 1
 
 ### Air gaps between layers (in mm)
 GEOMETRY gap1 D 2.5
@@ -86,24 +110,6 @@ GEOMETRY FieldScaling D %(Bfield)d
 
 ### GENERATION configuration parameters ################### 
 
-### Three generators, SINGLE_PARTICLE, NUANCE and GENIE, with different
-### configuration parameters, are available. The first is chosen
-### as default. Comment out the following lines if you want to
-### use the latter.
-
-GENERATION generator S GENIE
-# GENERATION generator S SINGLE_PARTICLE
-
-
-# GENERATION particle_name S %(part)s
-
-### Particle energy will be sample between these two values (in GeV)
-# GENERATION energy_min    D 0.300
-# GENERATION energy_max    D 3.000
-
-### Uncomment the following lines if you want to use the NUANCE
-### event generator.
-#
 ### NUANCE/GENIE data files for passive and active materials!! Set the filenames here!!
 
 GENERATION active_material_data S %(out_base)s/genie_samples/nd_%(part)s%(inttype)s/ev0_%(ASeed)s_%(pid)d_1000060120[0.922582],1000010010[0.077418]_%(Nevts)s.root

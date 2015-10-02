@@ -544,9 +544,10 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   G4VisAttributes* green = new G4VisAttributes(G4Colour(0., 0.75, 0.25));
   
   //mind_logic->SetVisAttributes(red);
-
+  mind_logic   ->SetVisAttributes(G4VisAttributes::Invisible);
   detector_logic   ->SetVisAttributes(G4VisAttributes::Invisible);
   piece_logic   ->SetVisAttributes(G4VisAttributes::Invisible);
+  passive_logic   ->SetVisAttributes(G4VisAttributes::Invisible);
   passive_logic ->SetVisAttributes(red);
   active_logic  ->SetVisAttributes(green);
   if(_isVertexDet)
