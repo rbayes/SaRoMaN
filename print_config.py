@@ -3,32 +3,7 @@ import os
 class print_config:
 
 	def __init__(self,GenerationMode):
-
-
 		self.GenerationMode = GenerationMode
-		#Mind geometry
-		self.MIND_type = 3#0   # Cylinder
-		self.MIND_xdim = 0.96#7.0 # m
-		self.MIND_ydim = 0.96#6.0 # m
-		self.MIND_zdim = 2.0#13.0 # m
-		self.MIND_vertex_xdim = 0#2.0 # m
-		self.MIND_vertex_ydim = 0#2.0 # m
-		self.MIND_vertex_zdim = 0#2.0 # m
-		self.MIND_ear_xdim  = 2.54#3.5-0.96#0.4393 # m
-		self.MIND_ear_ydim = 1.04#2.0-0.96#2.8994 # m
-		self.MIND_bore_diameter = 0.2 # m
-		#Mind internal dimensions
-		self.MIND_active_mat = 'G4_POLYSTYRENE'
-		self.MIND_width_active = 1.5 # cm
-		self.MIND_rad_length_active = 413.1 #mm
-		self.MIND_active_layers = 3 #1
-		self.MIND_passive_mat = 'G4_Fe'
-		self.MIND_width_passive = 3.0#1.5 # cm
-		self.MIND_rad_length_passive = 17.58 #mm
-		self.MIND_bracing_mat = 'G4_Al'
-		self.MIND_width_bracing = 0.1 # cm
-		self.MIND_width_air = 0.25 # cm
-		self.MIND_rad_length_air = 303.9 #mm
 
 	def print_file(self,filename,data):
 	    '''
@@ -63,11 +38,11 @@ GENERATION particle_name S %(part)s
 GENERATION energy_min    D 0.300
 GENERATION energy_max    D 3.000
 
-'''% dictionary
+'''% dict(dictionary, **vars(self))
 		elif(self.GenerationMode == 'GENIE'):
 			filedata += '''
 GENERATION generator S GENIE
-'''% dictionary			
+'''% dict(dictionary, **vars(self))			
 
 		
 
@@ -103,8 +78,7 @@ GEOMETRY field DV 3
 
 # If we wish to use a field map then the identity of the field map
 # must be entered here.
-# GEOMETRY FieldMap S /data/neutrino04/common_SW/MIND/mindG4/MIND_field_map_files-5_cm_grid/iron_field_halfplane_2.res
-# GEOMETRY FieldMap S /data/neutrino04/common_SW/MIND/mindG4/MIND_field_map_files-5_cm_grid/iron_field_combined_z=0.res
+GEOMETRY FieldMap S %(field_map_full_name)s
 
 GEOMETRY FieldScaling D %(Bfield)d
 
@@ -115,19 +89,23 @@ GEOMETRY FieldScaling D %(Bfield)d
 GENERATION active_material_data S %(out_base)s/genie_samples/nd_%(part)s%(inttype)s/ev0_%(ASeed)s_%(pid)d_1000060120[0.922582],1000010010[0.077418]_%(Nevts)s.root
 GENERATION passive_material_data S %(out_base)s/genie_samples/nd_%(part)s%(inttype)s/ev0_%(seed)d_%(pid)d_1000260560_%(Nevts)s.root
 #
-### Vertex location (RANDOM, ACTIVE, PASSIVE, FIXED).
-GENERATION vertex_location S RANDOM
+### Vertex location (RANDOM, ACTIVE, PASSIVE, FIXED, GAUSS).
+GENERATION vertex_location S GAUSS
+
 
 ### Special simulation for training purpose
 ### Use the muon but not the hadronization from GENIE
 # GENERATION FSL_Select I 0
 
 # Vertex if FIXED requested.
-#GENERATION fvert DV 3
-#0.
-#0.
-#-18000
-#
+GENERATION fvert DV 3
+0.
+0.
+-1000
+ 
+GENERATION bspot DV 2
+100.
+100.
 
 ### PHYSICS configuration parameters ######################
 
@@ -136,7 +114,7 @@ PHYSICS production_cut D 30.
 #
 ### Minimum Kinetic energy for a particle to be tracked (MeV).
 PHYSICS minimum_kinEng D 100.
-'''% dictionary
+'''% dict(dictionary, **vars(self))
 
 		self.print_file(filename,filedata)
 
@@ -165,8 +143,7 @@ RUN mag_field DV 3
 1.
 0.
 
-# RUN mag_field_map S /data/neutrino04/common_SW/MIND/mindG4/MIND_field_map_files-5_cm_grid/iron_field_halfplane_2.res
-# RUN mag_field_map S /data/neutrino04/common_SW/MIND/mindG4/MIND_field_map_files-5_cm_grid/iron_field_combined_z=0.res
+RUN mag_field_map S %(field_map_full_name)s
 
 RUN fieldScale D %(seed)d
 ########

@@ -654,20 +654,11 @@ void SciNearDetectorGeometry::SetMagneticField(G4LogicalVolume& detector_logic)
 	fieldScaling = config.GetDParam("FieldScaling");
       bool isLBNO = IsOctagonal == 2 ? true:false;
 
-      if(IsOctagonal == 3)
-	{
-	  babyMindField* magField = new babyMindField(fieldScaling, _piece_height/2., _piece_width/2.,_number_active);
-	  fieldMgr->SetDetectorField(magField);
-	  fieldMgr->CreateChordFinder(magField);
-	  fieldMgr->GetChordFinder()->SetDeltaChord(0.1*cm);
-	}
-      else
-	{
-	  MindField* magField = new MindField(fieldScaling, _piece_height/2., _piece_width/2., isLBNO);
-	  fieldMgr->SetDetectorField(magField);
-	  fieldMgr->CreateChordFinder(magField);
-	  fieldMgr->GetChordFinder()->SetDeltaChord(0.1*cm);
-	}
+      MindField* magField = new MindField(fieldScaling, _piece_height/2., _piece_width/2., isLBNO);
+      fieldMgr->SetDetectorField(magField);
+      fieldMgr->CreateChordFinder(magField);
+      fieldMgr->GetChordFinder()->SetDeltaChord(0.1*cm);
+
     }
   }   
   else {

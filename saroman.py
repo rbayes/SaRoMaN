@@ -5,6 +5,7 @@ import subprocess
 import shutil
 
 import print_config
+import field_map_generator
 
 class saroman:
 
@@ -16,31 +17,69 @@ class saroman:
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
         self.third_party_support = self.home + "/nuSTORM/third_party"
 
+        #Should be implemented as input values#
+        self.train_sample = 0
+        self.part = 'mu+'#'14'
+        self.pid = 14
+        self.seed = 200
+        self.Nevts = 200
+        self.inttype = 'CC'
+        self.Bfield = 1.5
+
+        #Mind geometry
+        self.MIND_type = 3#0   # Cylinder
+        self.MIND_xdim = 0.96#7.0 # m
+        self.MIND_ydim = 0.96#6.0 # m
+        self.MIND_zdim = 2.0#13.0 # m
+        self.MIND_vertex_xdim = 0#2.0 # m
+        self.MIND_vertex_ydim = 0#2.0 # m
+        self.MIND_vertex_zdim = 0#2.0 # m
+        self.MIND_ear_xdim  = 2.54#3.5-0.96#0.4393 # m
+        self.MIND_ear_ydim = 1.04#2.0-0.96#2.8994 # m
+        self.MIND_bore_diameter = 0.2 # m
+        #Mind internal dimensions
+        self.MIND_active_mat = 'G4_POLYSTYRENE'
+        self.MIND_width_active = 1.5 # cm
+        self.MIND_rad_length_active = 413.1 #mm
+        self.MIND_active_layers = 3 #1
+        self.MIND_passive_mat = 'G4_Fe'
+        self.MIND_width_passive = 3.0#1.5 # cm
+        self.MIND_rad_length_passive = 17.58 #mm
+        self.MIND_bracing_mat = 'G4_Al'
+        self.MIND_width_bracing = 0.1 # cm
+        self.MIND_width_air = 0.25 # cm
+        self.MIND_rad_length_air = 303.9 #mm
+
         #Print config object, used to generate config files correctly
         self.GenerationMode = 'SINGLE_PARTICLE' #GENIE
         self.print_config=print_config.print_config(self.GenerationMode)
 
-        #Should be implemented as input values#
-        self.train_sample = 0
-        self.part = 'mu-'#'14'
-        self.pid = 14
-        self.seed = 500
-        self.Nevts = 500
-        self.inttype = 'CC'
-        self.Bfield = 1.5
-
+        #Setup for field_map_generator.py
+        self.CreateFieldMap = True
+        #   def __init__(self, Bmag, height, width, npanels):
+        self.field_map_generator = field_map_generator.field_map_generator(self.Bfield,self.MIND_ydim+self.MIND_ear_ydim,
+            self.MIND_xdim+self.MIND_ear_xdim, self.MIND_active_layers)
+        self.field_map_name = 'field_map_test.res'
+        self.field_map_folder = self.out_base
+        self.field_map_full_name =os.path.join(self.field_map_folder,self.field_map_name)
 
         #General class variables#
         self.ASeed = str(self.seed + 1000)
 
-    def check_make_dir(self,dirname):
+################################################
+
+    def Generate_field_map(self):
+        if(self.CreateFieldMap):
+            self.field_map_generator.Print_field_to_file(self.field_map_full_name)
+
+    def Check_make_dir(self,dirname):
         '''
         Check if the target directories dirname exist, if not create it.
         '''
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
-    def print_file(self,filename,data):
+    def Print_file(self,filename,data):
         '''
         Print data to file filename.
         '''
@@ -49,7 +88,7 @@ class saroman:
         outfile.close()
 
     
-    def print_outdata_file(self,filename,command):
+    def Print_outdata_file(self,filename,command):
         '''
         Print the command to stdout then print call output to file filename.
         '''
@@ -58,7 +97,7 @@ class saroman:
         subprocess.call(command, stdout=outfile)
         outfile.close()
 
-    def shell_source(self, script):
+    def Shell_source(self, script):
         '''
         Run script as source and update environment accordingly
         '''
@@ -67,7 +106,7 @@ class saroman:
         env = dict((line.split("=",1) for line in output.splitlines()))
         os.environ.update(env)
 
-    def set_environment(self):
+    def Set_environment(self):
         '''
         Set up the environment required to run.
         '''
@@ -77,7 +116,7 @@ class saroman:
         os.environ['THIRD_PARTY_SUPPORT'] = self.third_party_support 
 
         # Start by sourcing the root installation
-        self.shell_source(genie_support_ext + "/v5_34_10/download/root/bin/thisroot.sh")
+        self.Shell_source(genie_support_ext + "/v5_34_10/download/root/bin/thisroot.sh")
         
         # Now add the GENIE libraries to path and the ld library
         os.environ['GENIE'] = self.home + "/nuSTORM/third_party/genie_source"
@@ -131,7 +170,7 @@ class saroman:
 #    def set_MIND_parameters(self, Type, xdim, ydim, zdim, \
 #                           FeThickness, SciThickness, AlThickness,Gap):
 
-    def submit_run(self, seed, Nevts, pid, inttype, BField):
+    def Submit_run(self, seed, Nevts, pid, inttype, BField):
         self.seed = seed
         self.Nevts = Nevts
         self.BField = BField
@@ -153,12 +192,12 @@ class saroman:
             if inttype.find('NC') > 0:
                 inttype = 'NC'
 
-        self.run_genie()
-        self.run_simulation()
-        self.run_digitization()
-        self.run_reconstruction()
+        self.Run_genie()
+        self.Run_simulation()
+        self.Run_digitization()
+        self.Run_reconstruction()
 
-    def run_genie(self):
+    def Run_genie(self):
 
         if(self.GenerationMode != 'SINGLE_PARTICLE'):
             
@@ -171,8 +210,8 @@ class saroman:
             vE ='0.01,4.0'
 
             # Check if the target directories exist if not create it
-            self.check_make_dir(genieOutBase)
-            self.check_make_dir(genieOutDir)
+            self.Check_make_dir(genieOutBase)
+            self.Check_make_dir(genieOutDir)
 
             command = ['gevgen','-r',str(self.seed),'-n',str(self.Nevts),'-p',str(self.pid),'-t',FeTargetCode,
                              '-e',vE,'-f',equation]
@@ -186,86 +225,87 @@ class saroman:
                 command += ['--seed',str(self.seed),'--cross-sections',self.scripts_dir+'/xsec_Fe56_splines.xml']
                 command2 += ['--seed',self.ASeed,'--cross-sections',self.scripts_dir+'/xsec_C12+H1_splines.xml']
 
-                self.print_outdata_file(genieOutLog,command)
+                self.Print_outdata_file(genieOutLog,command)
 
                 geniefile='gntp.'+str(self.seed)+'.ghep.root'
                 geniedest=genieOutDir+'/ev0_'+str(self.seed)+'_'+str(self.pid)+'_'+str(FeTargetCode)+'_'+str(self.Nevts)+'.root'
                 shutil.move(geniefile, geniedest)
 
-                self.print_outdata_file(genieOutLog,command2)
+                self.Print_outdata_file(genieOutLog,command2)
         
                 geniefile='gntp.'+self.ASeed+'.ghep.root'
                 geniedest=genieOutDir+'/ev0_'+self.ASeed+'_'+str(self.pid)+'_'+str(C12HTargetCode)+'_'+str(self.Nevts)+'.root'
                 shutil.move(geniefile, geniedest)
             
 
-    def run_simulation(self):
+    def Run_simulation(self):
         mindG4OutBase = os.path.join(self.out_base, 'G4_out')
         mindG4OutConfig = os.path.join(self.out_base, 'G4_config')
         mindG4OutDir = os.path.join(mindG4OutBase,'nd_'+self.part+self.inttype)
         mindG4ConfigDir = os.path.join(mindG4OutConfig,'nd_'+self.part+self.inttype)
 
         # Check if the target directories exist if not create it
-        self.check_make_dir(mindG4OutBase)
-        self.check_make_dir(mindG4OutConfig)
-        self.check_make_dir(mindG4OutDir)
-        self.check_make_dir(mindG4ConfigDir)
+        self.Check_make_dir(mindG4OutBase)
+        self.Check_make_dir(mindG4OutConfig)
+        self.Check_make_dir(mindG4OutDir)
+        self.Check_make_dir(mindG4ConfigDir)
 
         mindG4config = os.path.join(mindG4ConfigDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.config')
         self.print_config.print_mindG4_config(vars(self),mindG4config)
 
         mindG4OutLog = os.path.join(mindG4OutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
 
-        self.shell_source(self.third_party_support+'/geant4.10.00-install/bin/geant4.sh')
+        self.Shell_source(self.third_party_support+'/geant4.10.00-install/bin/geant4.sh')
 
         command = [self.exec_base+'/sciNDG4/mindG4',mindG4config]
-        self.print_outdata_file(mindG4OutLog,command)
+        self.Print_outdata_file(mindG4OutLog,command)
 
-    def run_digitization(self):
+    def Run_digitization(self):
         digiOutBase = os.path.join(self.out_base, 'digi_out')
         digiOutConfig = os.path.join(self.out_base, 'digi_param')
         digiOutDir = os.path.join(digiOutBase,'nd_'+self.part+self.inttype)
         digiConfigDir = os.path.join(digiOutConfig,'nd_'+self.part+self.inttype)
 
         # Check if the target directories exist if not create it
-        self.check_make_dir(digiOutBase)
-        self.check_make_dir(digiOutConfig)
-        self.check_make_dir(digiOutDir)
-        self.check_make_dir(digiConfigDir)
+        self.Check_make_dir(digiOutBase)
+        self.Check_make_dir(digiOutConfig)
+        self.Check_make_dir(digiOutDir)
+        self.Check_make_dir(digiConfigDir)
 
         digiConfig = os.path.join(digiConfigDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.digi.param')
         self.print_config.print_digi_config(vars(self),digiConfig)
 
         digiOutLog = os.path.join(digiOutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
         command = [self.exec_base+"/digi_ND/examples/simple_smear",digiConfig]
-        self.print_outdata_file(digiOutLog,command)
+        self.Print_outdata_file(digiOutLog,command)
 
-    def run_reconstruction(self):
+    def Run_reconstruction(self):
         recOutBase = os.path.join(self.out_base, 'rec_out')
         recOutConfig = os.path.join(self.out_base, 'rec_param')
         recOutDir = os.path.join(recOutBase,'nd_'+self.part+self.inttype)
         recConfigDir = os.path.join(recOutConfig,'nd_'+self.part+self.inttype)
 
         # Check if the target directories exist if not create it
-        self.check_make_dir(recOutBase)
-        self.check_make_dir(recOutConfig)
-        self.check_make_dir(recOutDir)
-        self.check_make_dir(recConfigDir)
+        self.Check_make_dir(recOutBase)
+        self.Check_make_dir(recOutConfig)
+        self.Check_make_dir(recOutDir)
+        self.Check_make_dir(recConfigDir)
 
         recConfig = os.path.join(recConfigDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.rec.param')
         self.print_config.print_rec_config(vars(self),recConfig)
 
         recOutLog = os.path.join(recOutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
         command = [self.exec_base+"/mind_rec/examples/fit_tracks",recConfig, str(self.Nevts)]
-        self.print_outdata_file(recOutLog,command)
+        self.Print_outdata_file(recOutLog,command)
 
 if __name__ == "__main__":
 
     s=saroman()
-    s.set_environment()
-    s.run_genie()
-    s.run_simulation()
-    s.run_digitization()
-    s.run_reconstruction()
+    s.Set_environment()
+    s.Generate_field_map()
+    s.Run_genie()
+    s.Run_simulation()
+    s.Run_digitization()
+    s.Run_reconstruction()
 
 
