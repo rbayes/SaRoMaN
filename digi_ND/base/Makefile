@@ -15,9 +15,9 @@
 
 
 
-srcdir = .
-top_srcdir = ..
-
+srcdir = /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/digi_ND/base
+top_srcdir = /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/digi_ND
+VPATH = /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/digi_ND/base
 pkgdatadir = $(datadir)/digi
 pkglibdir = $(libdir)/digi
 pkgincludedir = $(includedir)/digi

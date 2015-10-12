@@ -13,9 +13,9 @@
 # PARTICULAR PURPOSE.
 
 
-srcdir = .
-top_srcdir = ..
-
+srcdir = /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/doc
+top_srcdir = /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec
+VPATH = /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/doc
 pkgdatadir = $(datadir)/mind
 pkglibdir = $(libdir)/mind
 pkgincludedir = $(includedir)/mind

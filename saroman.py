@@ -1,12 +1,23 @@
-
+#######################################################################################################################
+#Created by Patrik Hallsjo @ University of Glasgow
+#Need automatic dating through GIT, 
+#Modified on 6/10-2015
+#Created on 25/9-2015
+#######################################################################################################################
+#General python import
+#######################################################################################################################
 import os
 import math
 import subprocess
 import shutil
-
+#######################################################################################################################
+#Importing own python files
+#######################################################################################################################
 import print_config
 import field_map_generator
-
+#######################################################################################################################
+#Class generation
+#######################################################################################################################
 class saroman:
 
     def __init__(self):
@@ -15,14 +26,16 @@ class saroman:
         self.exec_base = os.path.join(self.home, 'SaRoMaN')
         self.out_base  = os.path.join(self.home, 'out')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        self.third_party_support = self.home + "/nuSTORM/third_party"
+        #self.third_party_support = self.home + "/nuSTORM/third_party"
+        #self.third_party_support = self.home + "/third_party_test"
+        self.third_party_support = '/data/neutrino05/phallsjo/third_party2'
 
         #Should be implemented as input values#
         self.train_sample = 0
         self.part = 'mu+'#'14'
         self.pid = 14
-        self.seed = 200
-        self.Nevts = 200
+        self.seed = 10
+        self.Nevts = 10
         self.inttype = 'CC'
         self.Bfield = 1.5
 
@@ -51,7 +64,7 @@ class saroman:
         self.MIND_rad_length_air = 303.9 #mm
 
         #Print config object, used to generate config files correctly
-        self.GenerationMode = 'SINGLE_PARTICLE' #GENIE
+        self.GenerationMode = 'GENIE' #'SINGLE_PARTICLE' #GENIE
         self.print_config=print_config.print_config(self.GenerationMode)
 
         #Setup for field_map_generator.py
@@ -67,17 +80,58 @@ class saroman:
         self.ASeed = str(self.seed + 1000)
 
 ################################################
-
-    def Generate_field_map(self):
-        if(self.CreateFieldMap):
-            self.field_map_generator.Print_field_to_file(self.field_map_full_name)
-
     def Check_make_dir(self,dirname):
         '''
         Check if the target directories dirname exist, if not create it.
         '''
         if not os.path.exists(dirname):
             os.makedirs(dirname)
+
+    def Generate_field_map(self):
+        if(self.CreateFieldMap):
+            self.field_map_generator.Print_field_to_file(self.field_map_full_name)
+
+    def Clean_up_own(self):
+        #sciNDG4
+        command = [self.home+'/bin/scons','-c']
+        subprocess.call(command, cwd = self.exec_base+'/sciNDG4')
+
+        #digi_ND
+        command = self.exec_base+'/digi_ND/cleanup.sh'
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+
+        #mind_rec
+        command = self.exec_base+'/mind_rec/cleanup.sh'
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
+
+    def Config_and_build_own(self):
+        '''
+        Build all the own libraries that are used for SaRoMaN
+        '''
+        #digi_ND
+        #run configure and autogen in that context.
+        command = self.exec_base+'/digi_ND/autogen.sh'
+        print command
+        p1 = subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        command = self.exec_base+'/digi_ND/configure'
+        print command
+        p2 = subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+
+        #mind_rec
+        #run configure and autogen in that context.
+        command = self.exec_base+'/mind_rec/autogen.sh'
+        print command
+        p3 = subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
+        command = self.exec_base+'/mind_rec/configure'
+        print command
+        p4 = subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')        
+
+        #sciNDG4
+        command = [self.home+'/bin/scons']
+        print subprocess.list2cmdline(command)
+        p5 = subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
+
+  #  def Config_and_build_third_party(self):
 
     def Print_file(self,filename,data):
         '''
@@ -87,7 +141,6 @@ class saroman:
         outfile.write(data)
         outfile.close()
 
-    
     def Print_outdata_file(self,filename,command):
         '''
         Print the command to stdout then print call output to file filename.
@@ -112,47 +165,62 @@ class saroman:
         '''
         genie_support_ext = self.third_party_support + "/genie_source/src/scripts/build/ext"
         
-        os.environ['GENIE_SUPPORT_EXT'] = genie_support_ext
+        #os.environ['GENIE_SUPPORT_EXT'] = genie_support_ext
         os.environ['THIRD_PARTY_SUPPORT'] = self.third_party_support 
 
         # Start by sourcing the root installation
-        self.Shell_source(genie_support_ext + "/v5_34_10/download/root/bin/thisroot.sh")
+        #self.Shell_source(genie_support_ext + "/v5_34_10/download/root/bin/thisroot.sh")
+        self.Shell_source(self.third_party_support + "/root/bin/thisroot.sh")
         
         # Now add the GENIE libraries to path and the ld library
-        os.environ['GENIE'] = self.home + "/nuSTORM/third_party/genie_source"
+        #os.environ['GENIE'] = self.third_party_support + "/genie_source"
+        #os.environ['GENIE'] = self.third_party_support + "/genie2.8.6"
+        os.environ['GENIE'] = self.third_party_support + "/genie2.8.6"
         os.environ['GENIE_INCDIR']=self.third_party_support + "/include/GENIE"
         os.environ['GENIE_LIBDIR']=self.third_party_support + "/lib"
         os.environ['PATH']+= os.pathsep + self.third_party_support + "/bin"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/lib"
         # Now add the supporting libraries
         # PYTHIA
-        os.environ['LD_LIBRARY_PATH']+= os.pathsep + genie_support_ext + "/v6_424/lib"
+        #os.environ['LD_LIBRARY_PATH']+= os.pathsep + genie_support_ext + "/v6_424/lib"
+        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/pythia/v6_428/lib"
         # log4cpp
-        os.environ['PATH']+= os.pathsep + self.third_party_support+ "/bin"
-        os.environ['LD_LIBRARY_PATH']+= os.pathsep+self.third_party_support + "/libs"
+        #os.environ['PATH']+= os.pathsep + self.third_party_support+ "/bin"
+        #os.environ['LD_LIBRARY_PATH']+= os.pathsep+self.third_party_support + "/libs"
+        os.environ['PATH']+= os.pathsep + self.third_party_support+ "/log4cpp-install/bin"
+        os.environ['LD_LIBRARY_PATH']+= os.pathsep+self.third_party_support + "/log4cpp-install/lib"
         # LHAPDF
-        os.environ['LHAPATH']=self.home + "/nuSTORM/third_party/genie_source/data/evgen/pdfs"
-        os.environ['LD_LIBRARY_PATH']+= os.pathsep + genie_support_ext + "/v5_7_0/stage/lib"
+        #os.environ['LHAPATH']=self.third_party_support +"/genie_source/data/evgen/pdfs"
+        os.environ['LHAPATH']=self.third_party_support +"/genie2.8.6/data/evgen/pdfs"
+        #os.environ['LD_LIBRARY_PATH']+= os.pathsep + genie_support_ext + "/v5_7_0/stage/lib"
+        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/lhapdf-5.9.1-install/lib"
         # CLHEP
-        clhep_base_dir = self.home + "/clhep"
-        os.environ['CLHEP_BASE_DIR'] = clhep_base_dir 
-        os.environ['PATH']+= os.pathsep + clhep_base_dir + "/bin"
+        #clhep_base_dir = self.third_party_support + "/clhep"
+        clhep_base_dir = self.third_party_support + "/install"
+    #os.environ['CLHEP_BASE_DIR'] = clhep_base_dir
+        os.environ['CLHEP_BASE_DIR'] = clhep_base_dir + "/CLHEP"
+        os.environ['PATH']+= os.pathsep + clhep_base_dir + "/bin"        
+        os.environ['PATH'] += clhep_base_dir + "/CLHEP"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + clhep_base_dir + "/lib"
         # GEANT4
-        g4install = self.third_party_support + "/geant4.10.00-install"
+        #version = "Geant4-10.0.0"
+        version = "Geant4-10.0.1"
+        #g4install = self.third_party_support + "/geant4.10.00-install"
+        g4install = self.third_party_support + "/install"
+        
         os.environ['G4INSTALL']=g4install
         os.environ['G4WORKDIR']=g4install
         os.environ['G4SYSTEM']="Linux-g++"
         os.environ['G4INCLUDE']=g4install + "/include/Geant4"
         os.environ['G4LIB']=g4install + "/lib64"
-        os.environ['G4LEVELGAMMADATA']=g4install + "/share/Geant4-10.0.0/data/PhotonEvaporation3.0"
-        os.environ['G4RADIOACTIVEDATA']=g4install + "/share/Geant4-10.0.0/data/RadiativeDecay4.0"
-        os.environ['G4LEDATA']=g4install + "/share/Geant4-10.0.0/data/G4EMLOW6.35"
-        os.environ['G4NEUTRONHPDATA']=g4install + "/share/Geant4-10.0.0/data/G4NDL4.4"
-        os.environ['G4ABLADATA']=g4install + "/share/Geant4-10.0.0/data/G4ABLA3.0"
-        os.environ['G4SAIDXSDATA']=g4install + "/share/Geant4-10.0.0/data/G4SAIDDATA1.1"
-        os.environ['G4ENSDFSTATE']=g4install + "/share/Geant4-10.0.0/data/G4ENSDFSTATE1.0"
-        os.environ['G4NEUTRONXSDATA']=g4install + "/share/Geant4-10.0.0/data/G4NEUTRONXS1.4"
+        os.environ['G4LEVELGAMMADATA']=g4install + "/share/"+version+"/data/PhotonEvaporation3.0"
+        os.environ['G4RADIOACTIVEDATA']=g4install + "/share/"+version+"/data/RadiativeDecay4.0"
+        os.environ['G4LEDATA']=g4install + "/share/"+version+"/data/G4EMLOW6.35"
+        os.environ['G4NEUTRONHPDATA']=g4install + "/share/"+version+"/data/G4NDL4.4"
+        os.environ['G4ABLADATA']=g4install + "/share/"+version+"/data/G4ABLA3.0"
+        os.environ['G4SAIDXSDATA']=g4install + "/share/"+version+"/data/G4SAIDDATA1.1"
+        os.environ['G4ENSDFSTATE']=g4install + "/share/"+version+"/data/G4ENSDFSTATE1.0"
+        os.environ['G4NEUTRONXSDATA']=g4install + "/share/"+version+"/data/G4NEUTRONXS1.4"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + g4install + "/lib64"
         # Support packages
         # CRY simulation information 
@@ -164,7 +232,9 @@ class saroman:
         os.environ['BHEP_LIB']=self.third_party_support + "/bhep/lib"
         os.environ['BHEP_PATH']=self.third_party_support + "/bhep/bin"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/bhep/lib"
-        os.environ['PATH']+= os.pathsep + "$BHEP_PATH"
+        os.environ['PATH']+= os.pathsep + self.third_party_support + "/bhep/bin"
+
+        #print os.environ
         
 #
 #    def set_MIND_parameters(self, Type, xdim, ydim, zdim, \
@@ -255,7 +325,8 @@ class saroman:
 
         mindG4OutLog = os.path.join(mindG4OutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
 
-        self.Shell_source(self.third_party_support+'/geant4.10.00-install/bin/geant4.sh')
+        #self.Shell_source(self.third_party_support+'/geant4.10.00-install/bin/geant4.sh')
+        self.Shell_source(self.third_party_support+"/install/bin/geant4.sh")
 
         command = [self.exec_base+'/sciNDG4/mindG4',mindG4config]
         self.Print_outdata_file(mindG4OutLog,command)
@@ -297,15 +368,18 @@ class saroman:
         recOutLog = os.path.join(recOutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
         command = [self.exec_base+"/mind_rec/examples/fit_tracks",recConfig, str(self.Nevts)]
         self.Print_outdata_file(recOutLog,command)
-
+#######################################################################################################################
+#File specific functions
+#######################################################################################################################
 if __name__ == "__main__":
 
     s=saroman()
     s.Set_environment()
+    s.Config_and_build_own()
     s.Generate_field_map()
     s.Run_genie()
     s.Run_simulation()
     s.Run_digitization()
     s.Run_reconstruction()
 
-
+#######################################################################################################################

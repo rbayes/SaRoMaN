@@ -23,6 +23,9 @@ void MindGenieInterface::Initialize()
   _mcrec[0] = new NtpMCEventRecord();
   _mcrec[1] = new NtpMCEventRecord();
 
+  //_mcrec[0] = 0;
+  //_mcrec[1] = 0;
+
   //if (config.PeekSParam("active_material_data")) {
   G4String active_mat_file  = config.GetSParam("active_material_data");
   _genieFiles[0] = new TFile( active_mat_file.data(), "read" );

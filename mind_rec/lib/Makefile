@@ -14,9 +14,9 @@
 
 
 
-srcdir = .
-top_srcdir = ..
-
+srcdir = /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/lib
+top_srcdir = /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec
+VPATH = /afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/mind_rec/lib
 pkgdatadir = $(datadir)/mind
 pkglibdir = $(libdir)/mind
 pkgincludedir = $(includedir)/mind
