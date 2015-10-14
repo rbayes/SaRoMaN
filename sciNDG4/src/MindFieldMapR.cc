@@ -15,7 +15,8 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-#include <CLHEP/Units/GlobalSystemOfUnits.h>
+//#include <CLHEP/Units/GlobalSystemOfUnits.h>
+#include "G4SystemOfUnits.hh"
 
 using namespace std;
 

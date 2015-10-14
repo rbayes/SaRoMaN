@@ -14,7 +14,8 @@
 
 #include <globals.hh>
 #include <vector>
-#include <CLHEP/Units/GlobalSystemOfUnits.h>
+//#include <CLHEP/Units/GlobalSystemOfUnits.h>
+#include "G4SystemOfUnits.hh"
 
 namespace bhep { class gstore; }
 

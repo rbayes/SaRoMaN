@@ -10,7 +10,8 @@
 // **************************************************************************
 
 #include "babyMindField.hh"
-#include <CLHEP/Units/GlobalSystemOfUnits.h>
+//#include <CLHEP/Units/GlobalSystemOfUnits.h>
+#include "G4SystemOfUnits.hh"
 
 babyMindField::babyMindField(double Bmag, double height, 
 			     double width, int npanels)

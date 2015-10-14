@@ -1,7 +1,7 @@
 #######################################################################################################################
 #Created by Patrik Hallsjo @ University of Glasgow
 #Need automatic dating through GIT, 
-#Modified on 6/10-2015
+#Modified on 14/10-2015
 #Created on 25/9-2015
 #######################################################################################################################
 #General python import
@@ -28,14 +28,15 @@ class saroman:
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
         #self.third_party_support = self.home + "/nuSTORM/third_party"
         #self.third_party_support = self.home + "/third_party_test"
-        self.third_party_support = '/data/neutrino05/phallsjo/third_party2'
+        #self.third_party_support = '/data/neutrino05/phallsjo/third_party'
+        self.third_party_support = '/data/neutrino05/phallsjo/test'
 
         #Should be implemented as input values#
         self.train_sample = 0
         self.part = 'mu+'#'14'
         self.pid = 14
-        self.seed = 10
-        self.Nevts = 10
+        self.seed = 100
+        self.Nevts = 100
         self.inttype = 'CC'
         self.Bfield = 1.5
 
@@ -60,7 +61,7 @@ class saroman:
         self.MIND_rad_length_passive = 17.58 #mm
         self.MIND_bracing_mat = 'G4_Al'
         self.MIND_width_bracing = 0.1 # cm
-        self.MIND_width_air = 0.25 # cm
+        self.MIND_width_air = 0.5 # cm
         self.MIND_rad_length_air = 303.9 #mm
 
         #Print config object, used to generate config files correctly
@@ -97,10 +98,12 @@ class saroman:
         subprocess.call(command, cwd = self.exec_base+'/sciNDG4')
 
         #digi_ND
+        subprocess.call('make clean', shell=True, cwd = self.exec_base+'/digi_ND') 
         command = self.exec_base+'/digi_ND/cleanup.sh'
         subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
-
         #mind_rec
+        subprocess.call('make clean', shell=True, cwd = self.exec_base+'/mind_rec') 
+
         command = self.exec_base+'/mind_rec/cleanup.sh'
         subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
 
@@ -112,24 +115,31 @@ class saroman:
         #run configure and autogen in that context.
         command = self.exec_base+'/digi_ND/autogen.sh'
         print command
-        p1 = subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
         command = self.exec_base+'/digi_ND/configure'
         print command
-        p2 = subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        subprocess.call('make', shell=True, cwd = self.exec_base+'/digi_ND')
 
         #mind_rec
         #run configure and autogen in that context.
         command = self.exec_base+'/mind_rec/autogen.sh'
         print command
-        p3 = subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
+
         command = self.exec_base+'/mind_rec/configure'
         print command
-        p4 = subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')        
-
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
+        subprocess.call('make', shell=True, cwd = self.exec_base+'/mind_rec')    
+        
         #sciNDG4
         command = [self.home+'/bin/scons']
         print subprocess.list2cmdline(command)
         p5 = subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
+        
+        
 
   #  def Config_and_build_third_party(self):
 
@@ -168,21 +178,15 @@ class saroman:
         #os.environ['GENIE_SUPPORT_EXT'] = genie_support_ext
         os.environ['THIRD_PARTY_SUPPORT'] = self.third_party_support 
 
-        # Start by sourcing the root installation
-        #self.Shell_source(genie_support_ext + "/v5_34_10/download/root/bin/thisroot.sh")
         self.Shell_source(self.third_party_support + "/root/bin/thisroot.sh")
         
-        # Now add the GENIE libraries to path and the ld library
-        #os.environ['GENIE'] = self.third_party_support + "/genie_source"
-        #os.environ['GENIE'] = self.third_party_support + "/genie2.8.6"
         os.environ['GENIE'] = self.third_party_support + "/genie2.8.6"
-        os.environ['GENIE_INCDIR']=self.third_party_support + "/include/GENIE"
-        os.environ['GENIE_LIBDIR']=self.third_party_support + "/lib"
-        os.environ['PATH']+= os.pathsep + self.third_party_support + "/bin"
-        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/lib"
+        os.environ['GENIE_INCDIR']=self.third_party_support + "/genie-install/include/GENIE"
+        os.environ['GENIE_LIBDIR']=self.third_party_support + "/genie-install/lib"
+        os.environ['PATH']+= os.pathsep + self.third_party_support + "/genie-install/bin"
+        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/genie-install/lib"
         # Now add the supporting libraries
         # PYTHIA
-        #os.environ['LD_LIBRARY_PATH']+= os.pathsep + genie_support_ext + "/v6_424/lib"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/pythia/v6_428/lib"
         # log4cpp
         #os.environ['PATH']+= os.pathsep + self.third_party_support+ "/bin"
@@ -196,11 +200,11 @@ class saroman:
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/lhapdf-5.9.1-install/lib"
         # CLHEP
         #clhep_base_dir = self.third_party_support + "/clhep"
-        clhep_base_dir = self.third_party_support + "/install"
+        clhep_base_dir = self.third_party_support + "/install/clhep-2.1.4.1"
     #os.environ['CLHEP_BASE_DIR'] = clhep_base_dir
-        os.environ['CLHEP_BASE_DIR'] = clhep_base_dir + "/CLHEP"
+        #os.environ['CLHEP_BASE_DIR'] = clhep_base_dir + "/CLHEP"
         os.environ['PATH']+= os.pathsep + clhep_base_dir + "/bin"        
-        os.environ['PATH'] += clhep_base_dir + "/CLHEP"
+        #os.environ['PATH'] += clhep_base_dir + "/CLHEP"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + clhep_base_dir + "/lib"
         # GEANT4
         #version = "Geant4-10.0.0"
@@ -229,10 +233,17 @@ class saroman:
         os.environ['CRY_LIBDIR']=self.third_party_support + "/cry_v1.7/lib"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/cry_v1.7/lib"
         # BHEP
-        os.environ['BHEP_LIB']=self.third_party_support + "/bhep/lib"
-        os.environ['BHEP_PATH']=self.third_party_support + "/bhep/bin"
-        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/bhep/lib"
-        os.environ['PATH']+= os.pathsep + self.third_party_support + "/bhep/bin"
+        os.environ['BHEP_LIB']=self.third_party_support + "/bhep-install/lib"
+        os.environ['BHEP_PATH']=self.third_party_support + "/bhep-install/bin"
+        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/bhep-install/lib"
+        os.environ['PATH']+= os.pathsep + self.third_party_support + "/bhep-install/bin"
+
+        #libxerces
+        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/install/lib"
+
+        #recpack
+        os.environ['PATH']+= os.pathsep + self.third_party_support + "/recpack-install/bin"
+        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/recpack-install/lib"
 
         #print os.environ
         
@@ -368,18 +379,20 @@ class saroman:
         recOutLog = os.path.join(recOutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
         command = [self.exec_base+"/mind_rec/examples/fit_tracks",recConfig, str(self.Nevts)]
         self.Print_outdata_file(recOutLog,command)
+
 #######################################################################################################################
 #File specific functions
 #######################################################################################################################
 if __name__ == "__main__":
 
     s=saroman()
-    s.Set_environment()
-    s.Config_and_build_own()
-    s.Generate_field_map()
-    s.Run_genie()
-    s.Run_simulation()
-    s.Run_digitization()
-    s.Run_reconstruction()
+    #s.Set_environment()
+    s.Clean_up_own()
+    #s.Config_and_build_own()
+    #s.Generate_field_map()
+    #s.Run_genie()
+    #s.Run_simulation()
+    #s.Run_digitization()
+    #s.Run_reconstruction()
 
 #######################################################################################################################

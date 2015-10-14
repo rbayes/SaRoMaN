@@ -1,10 +1,25 @@
+#######################################################################################################################
+#Created by Patrik Hallsjo @ University of Glasgow
+#Need automatic dating through GIT, 
+#Modified on 13/10-2015
+#Created on 25/9-2015
+#######################################################################################################################
+#General python import
+#######################################################################################################################
 import os
+#######################################################################################################################
+#Importing own python files
+#######################################################################################################################
 
+#######################################################################################################################
+#Class generation
+#######################################################################################################################
 class print_config:
 
 	def __init__(self,GenerationMode):
 		self.GenerationMode = GenerationMode
 
+################################################
 	def print_file(self,filename,data):
 	    '''
 	    Print data to file filename.
@@ -60,8 +75,8 @@ JOB random_seed I 13243%(seed)d
 ## Remember to use G4_POLYSTYRENE as passive_material as well!!.
 # GEOMETRY TASD I 0
 
-### Air gaps between layers (in mm)
-GEOMETRY gap1 D 2.5
+### Air gaps between layers (in mm) must be half of the airgap!
+GEOMETRY gap1 D 2.5   
 GEOMETRY gap2 D 2.5
 GEOMETRY gap3 D 2.5
 GEOMETRY gap4 D 2.5
@@ -355,6 +370,10 @@ DATA odst_file S %(out_base)s/digi_out/nd_%(part)s%(inttype)s/nd_%(part)s%(intty
 '''% dict(dictionary, **vars(self))
 
 		return filedata
+
+#######################################################################################################################
+#File specific functions
+#######################################################################################################################
 
 
 

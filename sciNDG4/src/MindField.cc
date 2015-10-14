@@ -10,7 +10,8 @@
 // **************************************************************************
 
 #include "MindField.hh"
-#include <CLHEP/Units/GlobalSystemOfUnits.h>
+//#include <CLHEP/Units/GlobalSystemOfUnits.h>
+#include "G4SystemOfUnits.hh"
 
 MindField::MindField(double Bmag, double height, double width, bool doublew)
 {
