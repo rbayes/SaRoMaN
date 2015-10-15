@@ -1,7 +1,7 @@
 #######################################################################################################################
 #Created by Patrik Hallsjo @ University of Glasgow
 #Need automatic dating through GIT, 
-#Modified on 14/10-2015
+#Modified on 15/10-2015
 #Created on 25/9-2015
 #######################################################################################################################
 #General python import
@@ -10,15 +10,40 @@ import os
 import math
 import subprocess
 import shutil
+import sys
+import getopt
+#sys.path.append('pythonlib')
 #######################################################################################################################
 #Importing own python files
 #######################################################################################################################
-import print_config
-import field_map_generator
+from pythonlib import print_config
+from pythonlib import field_map_generator
+from pythonlib import handle_third_party
+#import print_config
+#import field_map_generator
+#import handle_third_party
 #######################################################################################################################
 #Class generation
 #######################################################################################################################
 class saroman:
+    '''
+    Class saroman handles calls to the simulation software.
+    Setup:
+    Make sure the paths are correctly set. self.exec_base, self.out_base, self.scripts_dir and self.third_party_support.
+    Also make sure all the values set in __init__ are correct for the geometry you want to simulate.
+    If you do not need to install the third party software -> set self.need_third_party_install = False
+    If you do not need to build our software -> set self.need_own_install = False
+
+    How to run:
+    At the moment, set up everything in saroman.py then simply run with python saroman.py
+    Command line commands will be implemented in the future.
+    '''
+
+    '''
+    Input same as submit script
+    perhaps make it possible to set up variables in another py file and import saroman.
+    '''
+
 
     def __init__(self):
         #Set up paths #
@@ -26,10 +51,12 @@ class saroman:
         self.exec_base = os.path.join(self.home, 'SaRoMaN')
         self.out_base  = os.path.join(self.home, 'out')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        #self.third_party_support = self.home + "/nuSTORM/third_party"
-        #self.third_party_support = self.home + "/third_party_test"
-        #self.third_party_support = '/data/neutrino05/phallsjo/third_party'
-        self.third_party_support = '/data/neutrino05/phallsjo/test'
+        self.third_party_support = '/data/neutrino05/phallsjo/test2'
+
+        #General flags
+        self.need_third_party_install = False
+        self.need_own_install = False
+        self.generate_field_map = True # If false remember to change self.field_map_name to point to your field map!
 
         #Should be implemented as input values#
         self.train_sample = 0
@@ -65,17 +92,20 @@ class saroman:
         self.MIND_rad_length_air = 303.9 #mm
 
         #Print config object, used to generate config files correctly
+        #Set to either single_particle generation or generation through genie.
         self.GenerationMode = 'GENIE' #'SINGLE_PARTICLE' #GENIE
-        self.print_config=print_config.print_config(self.GenerationMode)
+        self.print_config=print_config(self.GenerationMode)
 
         #Setup for field_map_generator.py
         self.CreateFieldMap = True
-        #   def __init__(self, Bmag, height, width, npanels):
-        self.field_map_generator = field_map_generator.field_map_generator(self.Bfield,self.MIND_ydim+self.MIND_ear_ydim,
+        self.field_map_generator = field_map_generator(self.Bfield,self.MIND_ydim+self.MIND_ear_ydim,
             self.MIND_xdim+self.MIND_ear_xdim, self.MIND_active_layers)
         self.field_map_name = 'field_map_test.res'
         self.field_map_folder = self.out_base
         self.field_map_full_name =os.path.join(self.field_map_folder,self.field_map_name)
+
+        #Setup for handle_third_party.py
+        self.handle_third_party = handle_third_party(self.exec_base,self.third_party_support)
 
         #General class variables#
         self.ASeed = str(self.seed + 1000)
@@ -93,6 +123,9 @@ class saroman:
             self.field_map_generator.Print_field_to_file(self.field_map_full_name)
 
     def Clean_up_own(self):
+        '''
+        Clean up our own software, use before building and before committing to git.
+        '''
         #sciNDG4
         command = [self.home+'/bin/scons','-c']
         subprocess.call(command, cwd = self.exec_base+'/sciNDG4')
@@ -138,10 +171,70 @@ class saroman:
         command = [self.home+'/bin/scons']
         print subprocess.list2cmdline(command)
         p5 = subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
-        
-        
+    '''        
+    def Create_folder_structure(self,name,ending):
+        OutBase = os.path.join(self.out_base, name+'_out')
+        OutConfig = os.path.join(self.out_base, name+ending)
+        OutDir = os.path.join(OutBase,'nd_'+self.part+self.inttype)
+        ConfigDir = os.path.join(OutConfig,'nd_'+self.part+self.inttype)
 
-  #  def Config_and_build_third_party(self):
+        # Check if the target directories exist if not create it
+        self.Check_make_dir(OutBase)
+        self.Check_make_dir(OutConfig)
+        self.Check_make_dir(OutDir)
+        self.Check_make_dir(ConfigDir)
+    '''
+
+    def Download_config_and_build_third_party(self):
+        '''
+        Handles the third party software
+        '''
+        self.handle_third_party.Download_and_install_genie()
+        self.handle_third_party.Download_and_install_geant()
+        self.handle_third_party.Download_and_install_depencencies_digi()
+        self.handle_third_party.Download_and_install_depencencies_rec()
+
+    def Handle_commandline_input(self,argv):
+        '''
+        Handles commandline flags, CIO are implemented, if there are no flags the code is run depending on how the variables are setup in __init__
+        '''
+        if argv==[]:
+            if self.need_third_party_install:
+                self.handle_third_party.Download_and_install_genie_depencencies()
+            self.Set_environment()
+            if self.need_third_party_install:
+                self.Download_config_and_build_third_party()
+            if self.need_own_install:
+                self.Clean_up_own()
+                self.Config_and_build_own()
+            if self.generate_field_map:
+                self.Generate_field_map()
+
+            self.Run_genie()
+            self.Run_simulation()
+            self.Run_digitization()
+            self.Run_reconstruction()
+
+        else:
+            try:
+                opts, args = getopt.getopt(argv,"CIO")
+            except getopt.GetoptError:
+                print 'saronman.py -C to clean -I to install to run with setup ok have no flags'
+                sys.exit(2)
+            for opt, arg in opts:
+                if opt == '-C':
+                    self.Set_environment()
+                    self.Clean_up_own()
+                if opt == '-I':
+                    self.handle_third_party.Download_and_install_genie_depencencies()
+                    self.Set_environment()
+                    self.Download_config_and_build_third_party()
+                    self.Clean_up_own()
+                    self.Config_and_build_own()
+                if opt== '-O':
+                    self.Set_environment()
+                    self.Clean_up_own()
+                    self.Config_and_build_own()
 
     def Print_file(self,filename,data):
         '''
@@ -199,17 +292,12 @@ class saroman:
         #os.environ['LD_LIBRARY_PATH']+= os.pathsep + genie_support_ext + "/v5_7_0/stage/lib"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/lhapdf-5.9.1-install/lib"
         # CLHEP
-        #clhep_base_dir = self.third_party_support + "/clhep"
         clhep_base_dir = self.third_party_support + "/install/clhep-2.1.4.1"
-    #os.environ['CLHEP_BASE_DIR'] = clhep_base_dir
-        #os.environ['CLHEP_BASE_DIR'] = clhep_base_dir + "/CLHEP"
-        os.environ['PATH']+= os.pathsep + clhep_base_dir + "/bin"        
-        #os.environ['PATH'] += clhep_base_dir + "/CLHEP"
+        os.environ['PATH']+= os.pathsep + clhep_base_dir + "/bin"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + clhep_base_dir + "/lib"
         # GEANT4
         #version = "Geant4-10.0.0"
         version = "Geant4-10.0.1"
-        #g4install = self.third_party_support + "/geant4.10.00-install"
         g4install = self.third_party_support + "/install"
         
         os.environ['G4INSTALL']=g4install
@@ -229,7 +317,6 @@ class saroman:
         # Support packages
         # CRY simulation information 
         os.environ['CRYPATH']=self.third_party_support + "/cry_v1.7"
-        os.environ['CRY_INCDIR']=self.third_party_support + "/cry_v1.7/include"
         os.environ['CRY_LIBDIR']=self.third_party_support + "/cry_v1.7/lib"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/cry_v1.7/lib"
         # BHEP
@@ -252,6 +339,9 @@ class saroman:
 #                           FeThickness, SciThickness, AlThickness,Gap):
 
     def Submit_run(self, seed, Nevts, pid, inttype, BField):
+        '''
+        Unused at the moment
+        '''
         self.seed = seed
         self.Nevts = Nevts
         self.BField = BField
@@ -318,7 +408,6 @@ class saroman:
                 geniedest=genieOutDir+'/ev0_'+self.ASeed+'_'+str(self.pid)+'_'+str(C12HTargetCode)+'_'+str(self.Nevts)+'.root'
                 shutil.move(geniefile, geniedest)
             
-
     def Run_simulation(self):
         mindG4OutBase = os.path.join(self.out_base, 'G4_out')
         mindG4OutConfig = os.path.join(self.out_base, 'G4_config')
@@ -336,7 +425,6 @@ class saroman:
 
         mindG4OutLog = os.path.join(mindG4OutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
 
-        #self.Shell_source(self.third_party_support+'/geant4.10.00-install/bin/geant4.sh')
         self.Shell_source(self.third_party_support+"/install/bin/geant4.sh")
 
         command = [self.exec_base+'/sciNDG4/mindG4',mindG4config]
@@ -383,16 +471,10 @@ class saroman:
 #######################################################################################################################
 #File specific functions
 #######################################################################################################################
-if __name__ == "__main__":
+#Next step, handle input. -C to clean up!
 
+if __name__ == "__main__":
     s=saroman()
-    #s.Set_environment()
-    s.Clean_up_own()
-    #s.Config_and_build_own()
-    #s.Generate_field_map()
-    #s.Run_genie()
-    #s.Run_simulation()
-    #s.Run_digitization()
-    #s.Run_reconstruction()
+    s.Handle_commandline_input(sys.argv[1:])
 
 #######################################################################################################################

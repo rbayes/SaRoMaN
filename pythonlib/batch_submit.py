@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-class batch_submission:
+class batch_submit:
 
 	def __init__(self):
 		self.seed = 1
@@ -44,5 +44,5 @@ python %(working_dir)s/saroman.py
 
 if __name__ == "__main__":
 
-    b = batch_submission()
-    b.generate_submission()
+    b = batch_submit()
+    b.generate_submit()
