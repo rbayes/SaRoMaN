@@ -1,7 +1,7 @@
 #######################################################################################################################
 #Created by Patrik Hallsjo @ University of Glasgow
 #Need automatic dating through GIT, 
-#Modified on 54/10-2015
+#Modified on 27/10-2015
 #Created on 13/10-2015
 #######################################################################################################################
 #General python import
@@ -60,7 +60,8 @@ class handle_third_party:
 		#Pythia6
 		print 'Installing Pythia6...'
 		self.Check_make_dir(self.third_party_support + '/pythia')
-		command = ['scp',self.exec_base+'/build_pythia6.sh', self.third_party_support + '/pythia']
+		command = ['wget','http://home.fnal.gov/~rhatcher/build_pythia6.sh']
+		#command = ['scp',self.exec_base+'/build_pythia6.sh', self.third_party_support + '/pythia']
 		subprocess.call(command,cwd = self.third_party_support,stdout=self.FNULL)
 		self.Shell_source_no_environ(self.third_party_support + '/pythia'+'/build_pythia6.sh',self.third_party_support + '/pythia')
 		

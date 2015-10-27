@@ -82,7 +82,7 @@ class saroman:
         self.MIND_active_mat = 'G4_POLYSTYRENE'
         self.MIND_width_active = 1.5 # cm
         self.MIND_rad_length_active = 413.1 #mm
-        self.MIND_active_layers = 3 #1
+        self.MIND_active_layers = 2 #1
         self.MIND_passive_mat = 'G4_Fe'
         self.MIND_width_passive = 3.0#1.5 # cm
         self.MIND_rad_length_passive = 17.58 #mm
@@ -93,7 +93,7 @@ class saroman:
 
         #Print config object, used to generate config files correctly
         #Set to either single_particle generation or generation through genie.
-        self.GenerationMode = 'GENIE' #'SINGLE_PARTICLE' #GENIE
+        self.GenerationMode = 'SINGLE_PARTICLE' #'SINGLE_PARTICLE' #GENIE
         self.print_config=print_config(self.GenerationMode)
 
         #Setup for field_map_generator.py
@@ -219,7 +219,7 @@ class saroman:
             try:
                 opts, args = getopt.getopt(argv,"CIO")
             except getopt.GetoptError:
-                print 'saronman.py -C to clean -I to install to run with setup ok have no flags'
+                print 'saronman.py -C to clean, -I to install, and -O to build own, to run when setups is ok have no flags'
                 sys.exit(2)
             for opt, arg in opts:
                 if opt == '-C':
