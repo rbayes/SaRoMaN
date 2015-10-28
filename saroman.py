@@ -232,11 +232,11 @@ class saroman:
                     self.Set_environment()
                     self.Clean_up_own()
                 if opt == '-I':
-                    #self.handle_third_party.Download_and_install_genie_depencencies()
+                    self.handle_third_party.Download_and_install_genie_depencencies()
                     self.Set_environment()
-                    #self.Download_config_and_build_third_party()
-                    #self.Clean_up_own()
-                    #self.Config_and_build_own()
+                    self.Download_config_and_build_third_party()
+                    self.Clean_up_own()
+                    self.Config_and_build_own()
                 if opt== '-O':
                     self.Set_environment()
                     self.Clean_up_own()

@@ -95,7 +95,7 @@ GEOMETRY isUniform I 0
 # must be entered here.
 GEOMETRY FieldMap S %(field_map_full_name)s
 
-GEOMETRY FieldScaling D %(Bfield)d
+GEOMETRY FieldScaling D %(Bfield)s
 
 ### GENERATION configuration parameters ################### 
 
@@ -160,7 +160,7 @@ RUN mag_field DV 3
 
 RUN mag_field_map S %(field_map_full_name)s
 
-RUN fieldScale D %(seed)d
+RUN fieldScale D %(Bfield)s
 ########
 
 # energy loss (MeV/cm)

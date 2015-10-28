@@ -84,7 +84,7 @@ void hit_constructor::calculate_layerZ()
   int nVertLayers = nVertPieces *_nActive;
 
   double pieceLength = _passiveLength + _nActive*_activeLength
-    + (_nActive+1)*_gapLength + (_nActive * _braceLength );
+    + (_nActive)*_gapLength + (_nActive * _braceLength );
   int npieces = (int)ceil( _detectorLength / pieceLength );
 
   //reset detector length to integer multiple of pieces.
