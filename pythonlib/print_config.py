@@ -86,10 +86,10 @@ GEOMETRY gap4 D 2.5
 GEOMETRY isUniform I 0
 
 # if uniform then [bx,by,bz]. if toroidal then [br,btheta,bphi]
-GEOMETRY field DV 3
-0.
-1.
-0.
+#GEOMETRY field DV 3
+#0.
+#1.
+#0.
 
 # If we wish to use a field map then the identity of the field map
 # must be entered here.

@@ -211,6 +211,17 @@ class handle_third_party:
 		subprocess.call('make install', shell=True, cwd = self.third_party_support+'/recpack-source',stdout=self.FNULL)
 
 		print 'RECPACK was installed successfully'
+
+	def Download_and_install_scons(self):
+		print 'Installing SCONS 1.2.0...'
+		command = ['wget','http://downloads.sourceforge.net/project/scons/scons/1.2.0/scons-1.2.0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fscons%2Ffiles%2Fscons%2F1.2.0%2F']
+		subprocess.call(command, cwd = self.third_party_support,stdout=self.FNULL)
+
+		command = ['tar','xvfz',self.third_party_support+'/scons-1.2.0.tar.gz']
+		subprocess.call(command, cwd = self.third_party_support,stdout=self.FNULL)
+
+		command = ['python','setup.py','install','--prefix='+self.third_party_support]
+		subprocess.call(command, cwd = self.third_party_support +'/scons-1.2.0',stdout=self.FNULL)
 		  
 	def Mice_script_install_emulator(self,directory,filename,url):
 		print ('Installing ' + directory + '...')

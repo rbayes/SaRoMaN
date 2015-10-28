@@ -1,7 +1,7 @@
 #######################################################################################################################
 #Created by Patrik Hallsjo @ University of Glasgow
 #Need automatic dating through GIT, 
-#Modified on 15/10-2015
+#Modified on 28/10-2015
 #Created on 25/9-2015
 #######################################################################################################################
 #General python import
@@ -12,6 +12,7 @@ import subprocess
 import shutil
 import sys
 import getopt
+import time
 #sys.path.append('pythonlib')
 #######################################################################################################################
 #Importing own python files
@@ -62,19 +63,22 @@ class saroman:
         self.train_sample = 0
         self.part = 'mu+'#'14'
         self.pid = 14
-        self.seed = 100
-        self.Nevts = 100
+        self.seed = 10000
+        self.Nevts = 10000
         self.inttype = 'CC'
         self.Bfield = 1.5
 
         #Mind geometry
+        #Different types of geometry, 3 represents a rectangular detector.
         self.MIND_type = 3#0   # Cylinder
         self.MIND_xdim = 0.96#7.0 # m
         self.MIND_ydim = 0.96#6.0 # m
         self.MIND_zdim = 2.0#13.0 # m
+        #Not used for rectangular detector
         self.MIND_vertex_xdim = 0#2.0 # m
         self.MIND_vertex_ydim = 0#2.0 # m
         self.MIND_vertex_zdim = 0#2.0 # m
+        #Used as the size of the steal plates on each side of the detector.
         self.MIND_ear_xdim  = 2.54#3.5-0.96#0.4393 # m
         self.MIND_ear_ydim = 1.04#2.0-0.96#2.8994 # m
         self.MIND_bore_diameter = 0.2 # m
@@ -82,7 +86,8 @@ class saroman:
         self.MIND_active_mat = 'G4_POLYSTYRENE'
         self.MIND_width_active = 1.5 # cm
         self.MIND_rad_length_active = 413.1 #mm
-        self.MIND_active_layers = 2 #1
+        self.MIND_npanels = 2 #Describe howmany 'parts' the magnetic field has.
+        self.MIND_active_layers = 1 #1
         self.MIND_passive_mat = 'G4_Fe'
         self.MIND_width_passive = 3.0#1.5 # cm
         self.MIND_rad_length_passive = 17.58 #mm
@@ -93,13 +98,13 @@ class saroman:
 
         #Print config object, used to generate config files correctly
         #Set to either single_particle generation or generation through genie.
-        self.GenerationMode = 'SINGLE_PARTICLE' #'SINGLE_PARTICLE' #GENIE
+        self.GenerationMode = 'SINGLE_PARTICLE' #GENIE
         self.print_config=print_config(self.GenerationMode)
 
         #Setup for field_map_generator.py
         self.CreateFieldMap = True
         self.field_map_generator = field_map_generator(self.Bfield,self.MIND_ydim+self.MIND_ear_ydim,
-            self.MIND_xdim+self.MIND_ear_xdim, self.MIND_active_layers)
+            self.MIND_xdim+self.MIND_ear_xdim, self.MIND_npanels)
         self.field_map_name = 'field_map_test.res'
         self.field_map_folder = self.out_base
         self.field_map_full_name =os.path.join(self.field_map_folder,self.field_map_name)
@@ -107,7 +112,7 @@ class saroman:
         #Setup for handle_third_party.py
         self.handle_third_party = handle_third_party(self.exec_base,self.third_party_support)
 
-        #General class variables#
+        #General class variables
         self.ASeed = str(self.seed + 1000)
 
 ################################################
@@ -127,7 +132,7 @@ class saroman:
         Clean up our own software, use before building and before committing to git.
         '''
         #sciNDG4
-        command = [self.home+'/bin/scons','-c']
+        command = [self.third_party_support+'/bin/scons','-c']
         subprocess.call(command, cwd = self.exec_base+'/sciNDG4')
 
         #digi_ND
@@ -168,7 +173,7 @@ class saroman:
         subprocess.call('make', shell=True, cwd = self.exec_base+'/mind_rec')    
         
         #sciNDG4
-        command = [self.home+'/bin/scons']
+        command = [self.third_party_support+'/bin/scons']
         print subprocess.list2cmdline(command)
         p5 = subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
     '''        
@@ -193,6 +198,7 @@ class saroman:
         self.handle_third_party.Download_and_install_geant()
         self.handle_third_party.Download_and_install_depencencies_digi()
         self.handle_third_party.Download_and_install_depencencies_rec()
+        self.handle_third_party.Download_and_install_scons()
 
     def Handle_commandline_input(self,argv):
         '''
@@ -248,10 +254,14 @@ class saroman:
         '''
         Print the command to stdout then print call output to file filename.
         '''
+        start = time.time()
         print subprocess.list2cmdline(command)
         outfile = open(filename,'w+')
+        #subprocess.call(command, stdout=outfile, cwd = self.exec_base+'/sciNDG4')
         subprocess.call(command, stdout=outfile)
         outfile.close()
+        elapsed = (time.time()-start)
+        print 'Time to run process: %s seconds' % elapsed
 
     def Shell_source(self, script):
         '''
@@ -425,8 +435,11 @@ class saroman:
 
         mindG4OutLog = os.path.join(mindG4OutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
 
+        #self.Shell_source(self.third_party_support+'/geant4.10.00-install/bin/geant4.sh') #Old
+
         self.Shell_source(self.third_party_support+"/install/bin/geant4.sh")
 
+        #command = [self.exec_base+'/sciNDG4/mindG4','-v',mindG4config]
         command = [self.exec_base+'/sciNDG4/mindG4',mindG4config]
         self.Print_outdata_file(mindG4OutLog,command)
 
@@ -452,12 +465,14 @@ class saroman:
     def Run_reconstruction(self):
         recOutBase = os.path.join(self.out_base, 'rec_out')
         recOutConfig = os.path.join(self.out_base, 'rec_param')
+        recLikelihoods = os.path.join(self.out_base, 'likelihoods')
         recOutDir = os.path.join(recOutBase,'nd_'+self.part+self.inttype)
         recConfigDir = os.path.join(recOutConfig,'nd_'+self.part+self.inttype)
 
         # Check if the target directories exist if not create it
         self.Check_make_dir(recOutBase)
         self.Check_make_dir(recOutConfig)
+        self.Check_make_dir(recLikelihoods)
         self.Check_make_dir(recOutDir)
         self.Check_make_dir(recConfigDir)
 
@@ -467,11 +482,11 @@ class saroman:
         recOutLog = os.path.join(recOutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
         command = [self.exec_base+"/mind_rec/examples/fit_tracks",recConfig, str(self.Nevts)]
         self.Print_outdata_file(recOutLog,command)
+        print 'Completed reconstruction'
 
 #######################################################################################################################
 #File specific functions
 #######################################################################################################################
-#Next step, handle input. -C to clean up!
 
 if __name__ == "__main__":
     s=saroman()

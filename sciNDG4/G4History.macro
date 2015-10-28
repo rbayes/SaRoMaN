@@ -25,17 +25,3 @@
 /vis/viewer/update viewer-0
 /tracking/storeTrajectory 1
 /vis/scene/endOfEventAction accumulate
-/vis/viewer/set/viewpointThetaPhi 120 300 deg
-/vis/viewer/refresh
-/vis/viewer/set/viewpointThetaPhi 240 300 deg
-/vis/viewer/refresh
-/vis/viewer/set/viewpointThetaPhi 240 120 deg
-/vis/viewer/refresh
-/vis/viewer/set/viewpointThetaPhi 240 300 deg
-/vis/viewer/refresh
-/vis/viewer/set/viewpointThetaPhi 420 300 deg
-/vis/viewer/refresh
-/vis/viewer/set/viewpointThetaPhi 420 150 deg
-/vis/viewer/refresh
-/vis/viewer/save image
-/vis/viewer/save imagetest

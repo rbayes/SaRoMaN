@@ -1,7 +1,7 @@
 #######################################################################################################################
 #Created by Patrik Hallsjo @ University of Glasgow
 #Need automatic dating through GIT, 
-#Modified on 13/10-2015
+#Modified on 28/10-2015
 #Created on 25/9-2015
 #######################################################################################################################
 #General python import
@@ -19,6 +19,7 @@ class field_map_generator:
 
 	def __init__(self, Bmag, height, width, npanels):
 
+		#Setup all the required units. Only stepSize can/should be changed.
 		self.mm = 1
 		self.cm = 10 * self.mm
 		self.meter = 1000*self.mm
@@ -45,7 +46,6 @@ class field_map_generator:
 			r += step
 
 	def GetFieldValue(self,x,y,z):
-		#some code
 		# Only define the magnetic field within the detector and ignore it
   		# outside of the detector. 
   		Bx = 0.
