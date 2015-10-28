@@ -63,7 +63,7 @@ class handle_third_party:
 		command = ['wget','http://home.fnal.gov/~rhatcher/build_pythia6.sh']
 		#command = ['scp',self.exec_base+'/build_pythia6.sh', self.third_party_support + '/pythia']
 		subprocess.call(command,cwd = self.third_party_support,stdout=self.FNULL)
-		self.Shell_source_no_environ(self.third_party_support + '/pythia'+'/build_pythia6.sh',self.third_party_support + '/pythia')
+		self.Shell_source_no_environ(self.third_party_support +'/build_pythia6.sh',self.third_party_support + '/pythia')
 		
 		print 'Pythia6 was installed successfully'
 
