@@ -232,11 +232,11 @@ class saroman:
                     self.Set_environment()
                     self.Clean_up_own()
                 if opt == '-I':
-                    self.handle_third_party.Download_and_install_genie_depencencies()
+                    #self.handle_third_party.Download_and_install_genie_depencencies()
                     self.Set_environment()
-                    self.Download_config_and_build_third_party()
-                    self.Clean_up_own()
-                    self.Config_and_build_own()
+                    #self.Download_config_and_build_third_party()
+                    #self.Clean_up_own()
+                    #self.Config_and_build_own()
                 if opt== '-O':
                     self.Set_environment()
                     self.Clean_up_own()
@@ -283,12 +283,12 @@ class saroman:
         os.environ['THIRD_PARTY_SUPPORT'] = self.third_party_support
 
         os.environ['PATH']+= os.pathsep + self.third_party_support + "/root/bin"
-        os.environ['MANPATH']+= os.pathsep + self.third_party_support + "/root/man"
+        os.environ['MANPATH']= os.pathsep + self.third_party_support + "/root/man"
         os.environ['SHLIB_PATH']= os.pathsep + self.third_party_support + "/root/lib"
         os.environ['DYLD_LIBRARY_PATH']= os.pathsep + self.third_party_support + "/root/lib"
         os.environ['LIBPATH']= os.pathsep + self.third_party_support + "/root/lib"
-        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/root/lib"
-        os.environ['ROOTSYS']+= os.pathsep + self.third_party_support + "/root"
+        os.environ['LD_LIBRARY_PATH']= os.pathsep + self.third_party_support + "/root/lib"
+        os.environ['ROOTSYS']= os.pathsep + self.third_party_support + "/root"
 
         #self.Shell_source(self.third_party_support + "/root/bin/thisroot.sh")
         #print os.environ
