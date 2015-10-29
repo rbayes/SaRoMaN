@@ -87,7 +87,7 @@ void SciNearDetectorGeometry::SetInputParameters()
 
   IsOctagonal = config.PeekIParam("IsOctagonal")?
     config.GetIParam("IsOctagonal"): 1;
-  if(IsOctagonal) _bracing_thickness = 0.0 * cm;
+  //if(IsOctagonal) _bracing_thickness = 0.0 * cm;
   
   _piece_length = 0;
   _TASDm_length = 0;
@@ -109,6 +109,9 @@ void SciNearDetectorGeometry::SetInputParameters()
   
   _piece_length += _passive_thickness + _number_active*_active_thickness 
     + _number_active * _bracing_thickness;
+
+  cout<<"piece "<<_piece_length<<endl;
+
   _TASDm_length += _number_active*_active_thickness;
 
   _active_displacement = std::vector<G4double> (_number_active, 0);

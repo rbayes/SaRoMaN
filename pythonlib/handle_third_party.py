@@ -1,7 +1,7 @@
 #######################################################################################################################
 #Created by Patrik Hallsjo @ University of Glasgow
 #Need automatic dating through GIT, 
-#Modified on 28/10-2015
+#Modified on 29/10-2015
 #Created on 13/10-2015
 #######################################################################################################################
 #General python import
@@ -222,6 +222,8 @@ class handle_third_party:
 
 		command = ['python','setup.py','install','--prefix='+self.third_party_support]
 		subprocess.call(command, cwd = self.third_party_support +'/scons-1.2.0',stdout=self.FNULL)
+
+		print 'SCONS was installed successfully'
 		  
 	def Mice_script_install_emulator(self,directory,filename,url):
 		print ('Installing ' + directory + '...')
@@ -239,19 +241,10 @@ class handle_third_party:
 		subprocess.call('make install', shell=True, cwd = self.third_party_support+'/build/'+directory,stdout=self.FNULL)
 
 		print (directory +' Genie was installed successfully')
-
-	def Shell_source(self, script,where):
-		'''
-		Run script as source and update environment accordingly
-		'''
-		pipe = subprocess.Popen(". %s; env" % script, stdout=subprocess.PIPE,shell=True,cwd = where)
-		output = pipe.communicate()[0]
-		env = dict((line.split("=",1) for line in output.splitlines()))
-		os.environ.update(env)
 	
 	def Shell_source_no_environ(self, script,where):
 		'''
-		Run script as source and update environment accordingly
+		Run script as source but do not update environment
 		'''
 		pipe = subprocess.Popen(". %s; env" % script, stdout=subprocess.PIPE,shell=True,cwd = where)
 		output = pipe.communicate()[0]

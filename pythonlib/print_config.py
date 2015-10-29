@@ -86,10 +86,10 @@ GEOMETRY gap4 D 2.5
 GEOMETRY isUniform I 0
 
 # if uniform then [bx,by,bz]. if toroidal then [br,btheta,bphi]
-#GEOMETRY field DV 3
-#0.
-#1.
-#0.
+GEOMETRY field DV 3
+0.
+1.
+0.
 
 # If we wish to use a field map then the identity of the field map
 # must be entered here.
@@ -197,8 +197,8 @@ RUN min_eng D 0.000016
 RUN Gen_seed D 373940592
 
 # sigma (cm)
-RUN pos_sig D 0.577
-RUN zpos_sig D 0.433
+RUN pos_sig D 0.577 # 2 / sqrt(12)
+RUN zpos_sig D 0.433 1.5 / sqrt(12)
 
 #############################################
 #  parameters for the analysis

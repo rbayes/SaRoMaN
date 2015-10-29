@@ -52,7 +52,7 @@ class saroman:
         self.exec_base = os.path.join(self.home, 'SaRoMaN')
         self.out_base  = os.path.join(self.home, 'out')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        self.third_party_support = '/data/neutrino05/phallsjo/test3'
+        self.third_party_support = '/data/neutrino05/phallsjo/test2'
 
         #General flags
         self.need_third_party_install = False
@@ -282,15 +282,16 @@ class saroman:
         #os.environ['GENIE_SUPPORT_EXT'] = genie_support_ext
         os.environ['THIRD_PARTY_SUPPORT'] = self.third_party_support
 
-        os.environ['PATH']+= os.pathsep + self.third_party_support + "/root/bin"
-        os.environ['MANPATH']= os.pathsep + self.third_party_support + "/root/man"
-        os.environ['SHLIB_PATH']= os.pathsep + self.third_party_support + "/root/lib"
-        os.environ['DYLD_LIBRARY_PATH']= os.pathsep + self.third_party_support + "/root/lib"
-        os.environ['LIBPATH']= os.pathsep + self.third_party_support + "/root/lib"
-        os.environ['LD_LIBRARY_PATH']= os.pathsep + self.third_party_support + "/root/lib"
-        os.environ['ROOTSYS']= os.pathsep + self.third_party_support + "/root"
+        #os.environ['PATH']+= os.pathsep + self.third_party_support + "/root/bin"
+        #os.environ['MANPATH']= self.third_party_support + "/root/man"
+        #os.environ['SHLIB_PATH']= self.third_party_support + "/root/lib"
+        #os.environ['DYLD_LIBRARY_PATH']= self.third_party_support + "/root/lib"
+        #os.environ['LIBPATH']= self.third_party_support + "/root/lib"
+        #os.environ['LD_LIBRARY_PATH']= self.third_party_support + "/root/lib"
+        #os.environ['ROOTSYS']= self.third_party_support + "/root"
+        #os.environ['PYTHONPATH']= self.third_party_support + "/root/lib"
 
-        #self.Shell_source(self.third_party_support + "/root/bin/thisroot.sh")
+        self.Shell_source(self.third_party_support + "/root/bin/thisroot.sh")
         #print os.environ
         
         os.environ['GENIE'] = self.third_party_support + "/genie2.8.6"
@@ -449,7 +450,10 @@ class saroman:
 
         self.Shell_source(self.third_party_support+"/install/bin/geant4.sh")
 
+        #Uncomment to run visually
         #command = [self.exec_base+'/sciNDG4/mindG4','-v',mindG4config]
+        #subprocess.call(command)
+        
         command = [self.exec_base+'/sciNDG4/mindG4',mindG4config]
         self.Print_outdata_file(mindG4OutLog,command)
 
