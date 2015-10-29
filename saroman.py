@@ -63,8 +63,8 @@ class saroman:
         self.train_sample = 0
         self.part = 'mu-'#'14'
         self.pid = -14
-        self.seed = 1000
-        self.Nevts = 1000
+        self.seed = 100
+        self.Nevts = 100
         self.inttype = 'CC'
         self.Bfield = 1.5
 
@@ -84,16 +84,17 @@ class saroman:
         self.MIND_bore_diameter = 0.2 # m
         #Mind internal dimensions
         self.MIND_active_mat = 'G4_POLYSTYRENE'
-        self.MIND_width_active = 1.5 # cm
+        self.MIND_thickness_active = 1.5 # cm
+        self.MIND_width_active = 1.5 #cm
         self.MIND_rad_length_active = 413.1 #mm
         self.MIND_npanels = 2 #Describe howmany 'parts' the magnetic field has.
         self.MIND_active_layers = 1 #1
         self.MIND_passive_mat = 'G4_Fe'
-        self.MIND_width_passive = 3.0#1.5 # cm
+        self.MIND_thickness_passive = 3.0#1.5 # cm
         self.MIND_rad_length_passive = 17.58 #mm
         self.MIND_bracing_mat = 'G4_Al'
-        self.MIND_width_bracing = 0.1 # cm
-        self.MIND_width_air = 0.5 # cm
+        self.MIND_thickness_bracing = 0.1 # cm
+        self.MIND_thickness_air = 0.5 # cm
         self.MIND_rad_length_air = 303.9 #mm
 
         #Print config object, used to generate config files correctly

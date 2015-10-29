@@ -110,8 +110,6 @@ void SciNearDetectorGeometry::SetInputParameters()
   _piece_length += _passive_thickness + _number_active*_active_thickness 
     + _number_active * _bracing_thickness;
 
-  cout<<"piece "<<_piece_length<<endl;
-
   _TASDm_length += _number_active*_active_thickness;
 
   _active_displacement = std::vector<G4double> (_number_active, 0);
@@ -220,7 +218,7 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   }
   else if(IsOctagonal == 3) {
     G4Box* piece_solid = 
-      new G4Box("PIECE", _piece_width/2., _piece_height/2., _piece_length/2.);
+      new G4Box("PIECE", (_piece_width+_ear_width)/2., (_piece_height+_ear_height)/2., _piece_length/2.);
     piece_logic = 
       new G4LogicalVolume(piece_solid, G4Material::GetMaterial("G4_AIR"), 
 			  "PIECE", 0, 0, 0, true);

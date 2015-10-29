@@ -76,8 +76,8 @@ JOB random_seed I 13243%(seed)d
 # GEOMETRY TASD I 0
 
 ### Air gaps between layers (in mm) must be half of the airgap!
-GEOMETRY gap1 D 2.5   
-GEOMETRY gap2 D 2.5
+GEOMETRY gap1 D 5.0   
+GEOMETRY gap2 D 0
 GEOMETRY gap3 D 2.5
 GEOMETRY gap4 D 2.5
 
@@ -325,8 +325,8 @@ RUN Eng_Res D 0.11
 # seed value for random generator
 CON Gen_seed D 107311191
 
-CON rec_boxX D 2.0
-CON rec_boxY D 2.0
+CON rec_boxX D %(MIND_width_active)s
+CON rec_boxY D %(MIND_width_active)s
 
 # minimum energy at plane to be detected.(MeV)
 CON min_eng D 0.000016
@@ -354,17 +354,17 @@ DATA odst_file S %(out_base)s/digi_out/nd_%(part)s%(inttype)s/nd_%(part)s%(intty
 
 #Mind internal dimensions
 %(preParam)s active_material S %(MIND_active_mat)s
-%(preParam)s active_thickness D %(MIND_width_active)s //widthSc
+%(preParam)s active_thickness D %(MIND_thickness_active)s //widthSc
 %(preParam)s x0Sc D %(MIND_rad_length_active)s
 %(preParam)s active_layers I %(MIND_active_layers)s //nlayers
 %(preParam)s passive_material S %(MIND_passive_mat)s
-%(preParam)s passive_thickness D %(MIND_width_passive)s //widthI
+%(preParam)s passive_thickness D %(MIND_thickness_passive)s //widthI
 %(preParam)s x0Fe D %(MIND_rad_length_passive)s
 
 %(preParam)s bracing_material S %(MIND_bracing_mat)s 
-%(preParam)s bracing_thickness D %(MIND_width_bracing)s // widthAl
+%(preParam)s bracing_thickness D %(MIND_thickness_bracing)s // widthAl
 
-%(preParam)s air_gap D %(MIND_width_air)s //withA
+%(preParam)s air_gap D %(MIND_thickness_air)s //withA
 %(preParam)s x0AIR D %(MIND_rad_length_air)s
 
 '''% dict(dictionary, **vars(self))
