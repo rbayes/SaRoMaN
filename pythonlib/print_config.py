@@ -78,8 +78,8 @@ JOB random_seed I 13243%(seed)d
 ### Air gaps between layers (in mm) must be half of the airgap!
 GEOMETRY gap1 D 5.0   
 GEOMETRY gap2 D 0
-GEOMETRY gap3 D 2.5
-GEOMETRY gap4 D 2.5
+#GEOMETRY gap3 D 2.5
+#GEOMETRY gap4 D 2.5
 
 ### MAgnetic field. Still uniform vector.(T)
 ## A single bit to turn the uniform field off in favour of a toroidal field
@@ -128,7 +128,7 @@ GENERATION bspot DV 2
 PHYSICS production_cut D 30.
 #
 ### Minimum Kinetic energy for a particle to be tracked (MeV).
-PHYSICS minimum_kinEng D 100.
+PHYSICS minimum_kinEng D 300. #100.
 '''% dict(dictionary, **vars(self))
 
 		self.print_file(filename,filedata)
@@ -177,7 +177,7 @@ RUN de_dx_min D 0.575
 RUN de_dx_scint D 0.205
 
 # Position resolution for detector (cm).
-RUN pos_res D 0.75
+RUN pos_res D 1.5 #0.75
 
 # Step size for track fitting (cm).
 RUN StepSize D 1.
@@ -188,17 +188,17 @@ RUN detect S tracking
 ########
 # For hit clustering.(edge in cm)
 RUN do_clust I 1
-RUN rec_boxX D 2.0
+RUN rec_boxX D 1.5 #2.0
 
 # min energy at plane for detection (MeV) ***must be same as in digi!!***
-RUN min_eng D 0.000016
+RUN min_eng D %(MIND_min_eng_at_plane)s
 
-# Seed for smear on cluster position.NOT USED!! NEEDS TIDIED!
-RUN Gen_seed D 373940592
+# Seed for smear on cluster position
+#RUN Gen_seed D 373940592
 
 # sigma (cm)
-RUN pos_sig D 0.577 # 2 / sqrt(12)
-RUN zpos_sig D 0.433 1.5 / sqrt(12)
+RUN pos_sig D %(MIND_width_sigma)s #0.433 #0.577 # 2 / sqrt(12)
+RUN zpos_sig D %(MIND_thickness_sigma)s #0.433 #1.5 / sqrt(12)
 
 #############################################
 #  parameters for the analysis
@@ -329,7 +329,7 @@ CON rec_boxX D %(MIND_width_active)s
 CON rec_boxY D %(MIND_width_active)s
 
 # minimum energy at plane to be detected.(MeV)
-CON min_eng D 0.000016
+CON min_eng D %(MIND_min_eng_at_plane)s
 
 DATA idst_files SV 1
 %(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d.dst.root

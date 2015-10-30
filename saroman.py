@@ -79,13 +79,15 @@ class saroman:
         self.MIND_vertex_ydim = 0#2.0 # m
         self.MIND_vertex_zdim = 0#2.0 # m
         #Used as the size of the steal plates on each side of the detector.
-        self.MIND_ear_xdim  = 2.54#3.5-0.96#0.4393 # m
+        self.MIND_ear_xdim = 2.54#3.5-0.96#0.4393 # m
         self.MIND_ear_ydim = 1.04#2.0-0.96#2.8994 # m
         self.MIND_bore_diameter = 0.2 # m
         #Mind internal dimensions
         self.MIND_active_mat = 'G4_POLYSTYRENE'
         self.MIND_thickness_active = 1.5 # cm
+        self.MIND_thickness_sigma = self.MIND_thickness_active / math.sqrt(12)
         self.MIND_width_active = 1.5 #cm
+        self.MIND_width_sigma = self.MIND_width_active / math.sqrt(12)
         self.MIND_rad_length_active = 413.1 #mm
         self.MIND_npanels = 2 #Describe howmany 'parts' the magnetic field has.
         self.MIND_active_layers = 1 #1
@@ -96,6 +98,7 @@ class saroman:
         self.MIND_thickness_bracing = 0.1 # cm
         self.MIND_thickness_air = 0.5 # cm
         self.MIND_rad_length_air = 303.9 #mm
+        self.MIND_min_eng_at_plane = 0.000016 #MeV
 
         #Print config object, used to generate config files correctly
         #Set to either single_particle generation or generation through genie.
