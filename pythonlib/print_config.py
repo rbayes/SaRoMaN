@@ -163,18 +163,9 @@ RUN mag_field_map S %(field_map_full_name)s
 RUN fieldScale D %(Bfield)s
 ########
 
-# energy loss (MeV/cm)
-# 1.5 cm Fe, 2 cm Sc, 1.0 cm Air
-# RUN de_dx_min D 0.5323 
-# 2 cm Fe, 2 cm Sc
-# RUN de_dx_min D 0.637  
-# 1.5 cm Fe, 1.5 cm Sc, 0.5 cm Air
-# RUN de_dx_min D 0.6484
-# 1.5 cm Fe, 1.5 cm Sc, 0.5 cm Air, 0.1 cm Aluminum
-RUN de_dx_min D 0.575
-# 3 cm Fe, 2 cm Sc
-# RUN de_dx_min D 0.757
-RUN de_dx_scint D 0.205
+# energy loss (MeV/mm)
+RUN de_dx_scint D %(MIND_active_de_dx)s
+RUN de_dx_min D %(MIND_module_de_dx)s
 
 # Position resolution for detector (cm).
 RUN pos_res D 1.5 #0.75

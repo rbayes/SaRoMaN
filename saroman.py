@@ -63,8 +63,8 @@ class saroman:
         self.train_sample = 0
         self.part = 'mu-'#'14'
         self.pid = -14
-        self.seed = 100
-        self.Nevts = 100
+        self.seed = 1000
+        self.Nevts = 1000
         self.inttype = 'CC'
         self.Bfield = 1.5
 
@@ -83,7 +83,9 @@ class saroman:
         self.MIND_ear_ydim = 1.04#2.0-0.96#2.8994 # m
         self.MIND_bore_diameter = 0.2 # m
         #Mind internal dimensions
+        #de_dx found at pdg.lbl.gov/2015/AtomicNuclearProperties
         self.MIND_active_mat = 'G4_POLYSTYRENE'
+        self.MIND_active_de_dx = 0.2052 #MeV/mm
         self.MIND_thickness_active = 1.5 # cm
         self.MIND_thickness_sigma = self.MIND_thickness_active / math.sqrt(12)
         self.MIND_width_active = 1.5 #cm
@@ -92,13 +94,22 @@ class saroman:
         self.MIND_npanels = 2 #Describe howmany 'parts' the magnetic field has.
         self.MIND_active_layers = 1 #1
         self.MIND_passive_mat = 'G4_Fe'
+        self.MIND_passive_de_dx = 1.143 #MeV/mm
         self.MIND_thickness_passive = 3.0#1.5 # cm
         self.MIND_rad_length_passive = 17.58 #mm
         self.MIND_bracing_mat = 'G4_Al'
+        self.MIND_bracing_de_dx = 0.4358 #MeV/mm
         self.MIND_thickness_bracing = 0.1 # cm
         self.MIND_thickness_air = 0.5 # cm
         self.MIND_rad_length_air = 303.9 #mm
         self.MIND_min_eng_at_plane = 0.000016 #MeV
+        self.MIND_module_length = (self.MIND_thickness_active*self.MIND_active_layers +
+                                   self.MIND_thickness_passive+self.MIND_thickness_bracing +
+                                   self.MIND_thickness_air)
+
+        self.MIND_module_de_dx = (self.MIND_thickness_active*self.MIND_active_layers*self.MIND_active_de_dx +
+                                  self.MIND_thickness_passive*self.MIND_passive_de_dx +
+                                  self.MIND_thickness_bracing*self.MIND_bracing_de_dx)/self.MIND_module_length
 
         #Print config object, used to generate config files correctly
         #Set to either single_particle generation or generation through genie.
