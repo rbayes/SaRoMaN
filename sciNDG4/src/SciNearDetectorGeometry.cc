@@ -51,7 +51,6 @@ void SciNearDetectorGeometry::SetInputParameters()
 {
   const MindParamStore& config =
     MindConfigService::Instance().Geometry();
-  G4GDMLParser * gdm = new G4GDMLParser();
   
   // Parameters for MIND muon catcher.
   _piece_width       = config.GetDParam("MIND_x") * m;
@@ -165,7 +164,7 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   
   // 
 
-
+  G4GDMLParser * gdm = new G4GDMLParser();
   std::vector<G4TwoVector> MindSection;
   
   if(IsOctagonal == 1){ 
