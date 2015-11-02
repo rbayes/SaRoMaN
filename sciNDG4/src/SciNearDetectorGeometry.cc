@@ -33,6 +33,7 @@
 #include <G4SDManager.hh>
 #include <G4ChordFinder.hh>
 #include <G4UserLimits.hh>
+#include <G4GDMLParser.hh>
 
 //#include <G4PVParameterised.hh>
 
@@ -50,6 +51,7 @@ void SciNearDetectorGeometry::SetInputParameters()
 {
   const MindParamStore& config =
     MindConfigService::Instance().Geometry();
+  G4GDMLParser * gdm = new G4GDMLParser();
   
   // Parameters for MIND muon catcher.
   _piece_width       = config.GetDParam("MIND_x") * m;
@@ -568,7 +570,8 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
 	SetDipoleField( *vertex_logic );
       }  
   }
-  // gdm->Write("MIND_detector",detector_logic);
+
+  gdm->Write("MIND_detector.gdml",detector_logic);
 
   return detector_logic;
 }
