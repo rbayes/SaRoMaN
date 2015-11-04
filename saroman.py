@@ -1,7 +1,7 @@
 #######################################################################################################################
 #Created by Patrik Hallsjo @ University of Glasgow
 #Need automatic dating through GIT, 
-#Modified on 28/10-2015
+#Modified on 4/11-2015
 #Created on 25/9-2015
 #######################################################################################################################
 #General python import
@@ -45,14 +45,13 @@ class saroman:
     perhaps make it possible to set up variables in another py file and import saroman.
     '''
 
-
     def __init__(self):
         #Set up paths #
         self.home = os.getenv("HOME") 
         self.exec_base = os.path.join(self.home, 'SaRoMaN')
         self.out_base  = os.path.join(self.home, 'out')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        self.third_party_support = '/data/neutrino05/phallsjo/test2'
+        self.third_party_support = '/data/neutrino05/phallsjo/third_party'
 
         #General flags
         self.need_third_party_install = False
@@ -63,8 +62,8 @@ class saroman:
         self.train_sample = 0
         self.part = 'mu-'#'14'
         self.pid = -14
-        self.seed = 1000
-        self.Nevts = 1000
+        self.seed = 10
+        self.Nevts = 10
         self.inttype = 'CC'
         self.Bfield = 1.5
 
@@ -101,8 +100,9 @@ class saroman:
         self.MIND_bracing_de_dx = 0.4358 #MeV/mm
         self.MIND_thickness_bracing = 0.1 # cm
         self.MIND_thickness_air = 0.5 # cm
+        self.MIND_thickness_air_mm = 10*self.MIND_thickness_air
         self.MIND_rad_length_air = 303.9 #mm
-        self.MIND_min_eng_at_plane = 0.000016 #MeV
+        self.MIND_min_eng_at_plane = 0#0.000016 #MeV
         self.MIND_module_length = (self.MIND_thickness_active*self.MIND_active_layers +
                                    self.MIND_thickness_passive+self.MIND_thickness_bracing +
                                    self.MIND_thickness_air)
@@ -129,6 +129,72 @@ class saroman:
 
         #General class variables
         self.ASeed = str(self.seed + 1000)
+
+        #Config file variables not generalized
+        self.config_digi_seed = 107311191
+        self.config_digi_eng_res = 0.11 #(%%)
+        self.config_digi_gaus_sigma = 1.0 #(cm)
+
+        self.config_rec_likelihood = 1 #1 if we require output of likelihood info
+        self.config_rec_max_multOcc_plane = 10
+        self.config_rec_plane_occupancy = 10
+        self.config_rec_min_iso_prop = 0.8
+        self.config_rec_min_check_nodes = 3
+        self.config_rec_max_seed_hits = 20
+        self.config_rec_min_seed_hits = 7
+        self.config_rec_pat_rec = 1 # Do Pattern recognition (0=false, 1=true)
+        self.config_rec_fac_refit = 10000
+        self.config_rec_refit = 1 # fit data twice (0=false, 1=true)
+        self.config_rec_z_cut = 300 #cm
+        self.config_rec_x_cut = 50 #cm
+        self.config_rec_y_cut = 50 #cm
+        self.config_rec_low_fit_cut2 = 0.6
+        self.config_rec_low_fit_cut0 = 0.8
+        self.config_rec_high_pass_hits = 500
+        self.config_rec_low_pass_hits = 6
+        self.config_rec_max_n_trajs = 4
+        self.config_rec_max_coincidence = 0.5
+        self.config_rec_accept_chi = 20
+        self.config_rec_max_traj = 40
+        self.config_rec_max_sep = 7 #cm
+        self.config_rec_min_blobOcc = 2
+        self.config_rec_max_blobSkip = 0.2
+        self.config_rec_min_use_prop = 0.7
+        self.config_rec_max_consec_missed_planes = 3
+        self.config_rec_pat_rec_max_outliners = 10
+        self.config_rec_pat_rec_max_chi = 20
+        self.config_rec_chi2node_max = 20
+        self.config_rec_max_outliners = 5
+        self.config_rec_chi2fit_max = 50
+        # verbosities for recpack services
+        self.config_rec_vfit = 0
+        self.config_rec_vmat = 0
+        self.config_rec_vnav = 0
+        self.config_rec_vmod = 0
+        self.config_rec_vsim = 0
+        self.config_rec_model = 'particle/helix'
+        self.config_rec_kfitter = 'kalman'
+        self.config_rec_gen_seed = 373940592
+        self.config_rec_boxX = 1.5 #cm
+        self.config_rec_do_clust = 1
+        self.config_rec_detect = 'tracking'
+        self.config_rec_step_size = 1 #cm
+        self.config_rec_pos_res = 1.5 #cm
+        self.config_rec_meas_type = 'xyz'
+        self.config_rec_WLSatten = 5000
+        # relative density, Sc/Fe, AIR/Sc.
+        self.config_rec_rel_denSI = 0.135
+        self.config_rec_rel_denAS = 0.001
+
+        self.config_mindG4_min_kilEng = 300 #MeV
+        self.config_mindG4_prod_cut = 30 #mm
+        self.config_mindG4_vertex_location = 'GAUSS'
+        self.config_mindG4_isUniform = 0
+        
+        
+        
+
+        
 
 ################################################
     def Check_make_dir(self,dirname):
@@ -190,7 +256,7 @@ class saroman:
         #sciNDG4
         command = [self.third_party_support+'/bin/scons']
         print subprocess.list2cmdline(command)
-        p5 = subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
+        subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
     '''        
     def Create_folder_structure(self,name,ending):
         OutBase = os.path.join(self.out_base, name+'_out')
@@ -272,7 +338,6 @@ class saroman:
         start = time.time()
         print subprocess.list2cmdline(command)
         outfile = open(filename,'w+')
-        #subprocess.call(command, stdout=outfile, cwd = self.exec_base+'/sciNDG4')
         subprocess.call(command, stdout=outfile)
         outfile.close()
         elapsed = (time.time()-start)
@@ -297,18 +362,11 @@ class saroman:
         #os.environ['GENIE_SUPPORT_EXT'] = genie_support_ext
         os.environ['THIRD_PARTY_SUPPORT'] = self.third_party_support
 
-        #os.environ['PATH']+= os.pathsep + self.third_party_support + "/root/bin"
-        #os.environ['MANPATH']= self.third_party_support + "/root/man"
-        #os.environ['SHLIB_PATH']= self.third_party_support + "/root/lib"
-        #os.environ['DYLD_LIBRARY_PATH']= self.third_party_support + "/root/lib"
-        #os.environ['LIBPATH']= self.third_party_support + "/root/lib"
-        #os.environ['LD_LIBRARY_PATH']= self.third_party_support + "/root/lib"
-        #os.environ['ROOTSYS']= self.third_party_support + "/root"
-        #os.environ['PYTHONPATH']= self.third_party_support + "/root/lib"
-
+        #ROOT
         self.Shell_source(self.third_party_support + "/root/bin/thisroot.sh")
         #print os.environ
-        
+
+        #GENIE
         os.environ['GENIE'] = self.third_party_support + "/genie2.8.6"
         os.environ['GENIE_INCDIR']=self.third_party_support + "/genie-install/include/GENIE"
         os.environ['GENIE_LIBDIR']=self.third_party_support + "/genie-install/lib"
@@ -332,10 +390,8 @@ class saroman:
         os.environ['PATH']+= os.pathsep + clhep_base_dir + "/bin"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + clhep_base_dir + "/lib"
         # GEANT4
-        #version = "Geant4-10.0.0"
         version = "Geant4-10.0.1"
         g4install = self.third_party_support + "/install"
-        
         os.environ['G4INSTALL']=g4install
         os.environ['G4WORKDIR']=g4install
         os.environ['G4SYSTEM']="Linux-g++"
@@ -445,6 +501,12 @@ class saroman:
                 shutil.move(geniefile, geniedest)
             
     def Run_simulation(self):
+        #Used to remove the .gdml file which is created by Genie each run.
+        gdmlFile = os.path.join(self.exec_base,'MIND_detector.gdml')
+
+        if os.path.exists(gdmlFile):
+            os.remove(gdmlFile)
+
         mindG4OutBase = os.path.join(self.out_base, 'G4_out')
         mindG4OutConfig = os.path.join(self.out_base, 'G4_config')
         mindG4OutDir = os.path.join(mindG4OutBase,'nd_'+self.part+self.inttype)
@@ -460,8 +522,6 @@ class saroman:
         self.print_config.print_mindG4_config(vars(self),mindG4config)
 
         mindG4OutLog = os.path.join(mindG4OutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
-
-        #self.Shell_source(self.third_party_support+'/geant4.10.00-install/bin/geant4.sh') #Old
 
         self.Shell_source(self.third_party_support+"/install/bin/geant4.sh")
 
