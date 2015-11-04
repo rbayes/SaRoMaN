@@ -1,7 +1,7 @@
 #######################################################################################################################
 #Created by Patrik Hallsjo @ University of Glasgow
 #Need automatic dating through GIT, 
-#Modified on 29/10-2015
+#Modified on 4/11-2015
 #Created on 13/10-2015
 #######################################################################################################################
 #General python import
@@ -61,7 +61,6 @@ class handle_third_party:
 		print 'Installing Pythia6...'
 		self.Check_make_dir(self.third_party_support + '/pythia')
 		command = ['wget','http://home.fnal.gov/~rhatcher/build_pythia6.sh']
-		#command = ['scp',self.exec_base+'/build_pythia6.sh', self.third_party_support + '/pythia']
 		subprocess.call(command,cwd = self.third_party_support,stdout=self.FNULL)
 		self.Shell_source_no_environ(self.third_party_support +'/build_pythia6.sh',self.third_party_support + '/pythia')
 		
@@ -70,9 +69,7 @@ class handle_third_party:
 		#ROOT
 		print 'Installing ROOT...'
 		command = ['git','clone','http://root.cern.ch/git/root.git']
-		subprocess.call(command, cwd = self.third_party_support,stdout=self.FNULL)       
-		#command = ['git','tag','-l'] #Is this just visual?
-		#subprocess.call(command, cwd = self.third_party_support + '/root')
+		subprocess.call(command, cwd = self.third_party_support,stdout=self.FNULL)
 		command = ['git','checkout','-b','v5-34-34','v5-34-34']
 		subprocess.call(command, cwd = self.third_party_support + '/root',stdout=self.FNULL)
 		command = self.third_party_support+'/root/configure linuxx8664gcc --enable-pythia6 --with-pythia6-libdir='+self.third_party_support+'/pythia/v6_428/lib --enable-python'
@@ -191,12 +188,7 @@ class handle_third_party:
 	def Download_and_install_depencencies_rec(self):
 		#RECPACK-v1r2p0
 		print 'Installing RECPACK...'
-		#Set up dependencies correctly, just needed for testing during writing!  
-		#clhep_base_dir = self.third_party_support + "/install/clhep-2.1.4.1"
-		#os.environ['PATH']+= os.pathsep + clhep_base_dir + "/bin"
-		#os.environ['LD_LIBRARY_PATH']= os.pathsep + clhep_base_dir + "/lib" 
-		#self.Shell_source(self.third_party_support + '/root/bin'+'/thisroot.sh',self.third_party_support + '/root')
-
+	
 		command = ['svn','export','svn://next.ific.uv.es/svn/recpack/alpha/trunk/recpack','recpack-source']
 		subprocess.call(command, cwd = self.third_party_support,stdout=self.FNULL)
 
