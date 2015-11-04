@@ -97,11 +97,10 @@ bool fitter::Execute(bhep::particle& part,int evNo){
   ///create clusters or fill measurement vector
   ok = CreateMeasurements(part);
   
-  
   ///if pattern recognition 
   if (_patternRec) {
     if ((int)_meas.size() < _min_seed_hits) {
-      _failEvent = 7; 
+      _failEvent = 1; 
       ok = false; 
     }
   } 
@@ -114,7 +113,7 @@ bool fitter::Execute(bhep::particle& part,int evNo){
   
   if (!ok){
     _m.message("CreateMeasurements not ok", bhep::VERBOSE);
-
+    _failEvent = 2; 
     return true;
   }
   
@@ -224,8 +223,8 @@ bool fitter::Execute(bhep::particle& part,int evNo){
       }
       
       
-      if (_fitted) 
-	if (_failType!=3) _failType = 0;      
+      //if (_fitted) 
+      //if (_failType!=3) _failType = 0;      
     }
     
     
@@ -577,7 +576,7 @@ void fitter::rec_had_edep(int j){
   EVector hadCentroid = EVector(3,0);
   std::vector<cluster*> hadHits;
   // create a new trajectory based on the hadron hits alone.
-  Trajectory* hadTraj = new Trajectory();
+  
   double minZ=999999.9, maxZ=-99999.9;
   
   _nonMuonEdep.push_back(0.0);
@@ -638,7 +637,7 @@ void fitter::rec_had_edep(int j){
   if(hadHits.size() !=0){
     for(int ih=0;ih<(int)hadHits.size();ih++){
       RecObject* ro = dynamic_cast<RecObject*>(hadHits[ih]);
-      hadTraj->add_node(Node(*ro));
+      _hadTrajs.add_node(Node(*ro));
       EVector hadPos = EVector(3,0);
       hadPos[0] = hadHits[ih]->position()[0];
       hadPos[1] = hadHits[ih]->position()[1];
@@ -701,22 +700,22 @@ void fitter::rec_had_edep(int j){
   _showerXtent[j]   = maxZ - minZ;
 
   // Can only add the hadron trajectory once
-  /*
-  if(0){
-    hadTraj->set_quality("failType",10);
-    hadTraj->set_quality("intType",10);
-    hadTraj->set_quality("nplanes,"int((maxZ - minZ)/(_geom.getPieceWidth())));
-    hadTraj->set_quality("freeplanes",0);
-    hadTraj->set_quality("reseed",0);
-    hadTraj->set_quality("xtent",maxZ - minZ);
-    hadTraj->set_quality("initialqP", 0.0);
-    hadTraj->set_quality("fitted", 0);
-    hadTraj->set_quality("vertZ", minZ);
-    hadTraj->set_quality("fitcheck", 0);
+  
+  
+  _hadTrajs.set_quality("failType",10);
+  _hadTrajs.set_quality("intType",10);
+  _hadTrajs.set_quality("nplanes",int((maxZ - minZ)/(_geom.getPieceWidth())));
+  _hadTrajs.set_quality("freeplanes",0);
+  _hadTrajs.set_quality("reseed",0);
+  _hadTrajs.set_quality("xtent",maxZ - minZ);
+  _hadTrajs.set_quality("initialqP", 0.0);
+  _hadTrajs.set_quality("fitted", 0);
+  _hadTrajs.set_quality("vertZ", minZ);
+  _hadTrajs.set_quality("fitcheck", 0);
     
-    trajs.push_back(hadTraj);
-  }
-  */
+  // trajs.push_back(hadTraj);
+  
+  
   _m.message("Rec hadron Unit direction components:", _showerDir[j][0], _showerDir[j][1], _showerDir[j][2],bhep::VERBOSE);
   
 }

@@ -170,6 +170,10 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
   _Edep.clear();
   _HTime.clear();
   // _positionStart.clear();
+
+  _XHadPos.clear();
+  _YHadPos.clear();
+  _ZHadPos.clear();
   
  
   for (int i = 0;i<2;i++){
@@ -596,6 +600,11 @@ void MINDplotter::define_tree_branches() {
   //statTree->Branch("FittedNodes",&_node,"fitNode[trajNo][nallhits]/B");
   //statTree->Branch("HadronNodes",&_had,"hadN[trajNo][nallhits]/B");
   statTree->Branch("PatRecChi", &_pChi, "maxChiMu/D:MinChiHad/D:MaxConsecHol/D");
+
+
+  statTree->Branch("XHadPos", &_XHadPos,32000,0);
+  statTree->Branch("YHadPos", &_YHadPos, 32000,0);
+  statTree->Branch("ZHadPos", &_ZHadPos,32000,0);
   
   
 }
@@ -1136,6 +1145,24 @@ void MINDplotter::hadron_direction(fitter& fit) {
     else 
       _hadE[2][i] = 0.;
   }
+
+
+  ///positions of hits
+  Trajectory& traj = fit.get_hadTrajs();
+
+  for (int iHits = 0;iHits < traj.size();iHits++){
+	
+	const Measurement& meas = traj.node(iHits).measurement();
+
+	  _XHadPos.push_back(meas.position()[0]);
+	  _YHadPos.push_back(meas.position()[1]);
+	  _ZHadPos.push_back(meas.position()[2]);
+
+      }
+
+             
+
+
 }
 
 //*************************************************************************************

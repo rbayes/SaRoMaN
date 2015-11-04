@@ -43,7 +43,7 @@ public:
   //Getters.    
   
   std::vector<Trajectory*>&  get_trajs(){return _trajs; }///
-
+  Trajectory& get_hadTrajs() {return _hadTrajs;}
  
   // dict::dictionary <double> getQualityMap(){ if (_reseed_ok) return _traj2->qualitymap(); 
   //else return _traj->qualitymap(); }
@@ -215,6 +215,7 @@ protected:
   Trajectory _traj2;
   Trajectory _traj3;
   std::vector<Trajectory*> _trajs;  //
+  Trajectory _hadTrajs;
   
 
 

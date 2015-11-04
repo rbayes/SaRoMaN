@@ -653,7 +653,7 @@ bool event_classif::muon_extraction_through_PatterRec(vector<cluster*>& hits,
     } else  {
       if ( (int)muontraj.size() < _min_seed_hits) {
 	_intType = 5;
-	if (0) // (!_isTASD)
+	if (!_isTASD) // (!_isTASD)
 	  ok = invoke_cell_auto( hits, muontraj, hads);
 	else ok = false;
 	  if ( !ok ) _failType = 4;
@@ -747,7 +747,7 @@ bool event_classif::chargeCurrent_analysis(vector<cluster*>& hits,
   } else {
     if ( (int)muontraj.size() < _min_seed_hits ) {
       _intType = 5;
-      if (0) // (!_isTASD)
+      if (!_isTASD)
 	ok = invoke_cell_auto( hits, muontraj, hads);
       else ok = false;
       if ( !ok ) _failType = 4;

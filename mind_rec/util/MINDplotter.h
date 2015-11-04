@@ -152,6 +152,10 @@ private:
   std::vector< vector<double> > _Edep;
   std::vector< vector<double> > _HTime;
 
+  std::vector<double> _XHadPos;
+  std::vector<double> _YHadPos;
+  std::vector<double> _ZHadPos;
+
  
   int _mus[10][2500];
   bool _cand[10][2500];
