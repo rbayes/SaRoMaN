@@ -62,8 +62,8 @@ class saroman:
         self.train_sample = 0
         self.part = 'mu-'#'14'
         self.pid = -14
-        self.seed = 10
-        self.Nevts = 10
+        self.seed = 100
+        self.Nevts = 100
         self.inttype = 'CC'
         self.Bfield = 1.5
 
@@ -408,7 +408,8 @@ class saroman:
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + g4install + "/lib64"
         # Support packages
         # CRY simulation information 
-        os.environ['CRYPATH']=self.third_party_support + "/cry_v1.7"
+        os.environ['CRYPATH']=self.third_party_support + "/cry_v1.7/src"
+        os.environ['CRY_INCDIR']=self.third_party_support + "/cry_v1.7/src"
         os.environ['CRY_LIBDIR']=self.third_party_support + "/cry_v1.7/lib"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/cry_v1.7/lib"
         # BHEP
@@ -417,12 +418,18 @@ class saroman:
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/bhep-install/lib"
         os.environ['PATH']+= os.pathsep + self.third_party_support + "/bhep-install/bin"
 
-        #libxerces
-        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/install/lib"
-
         #recpack
         os.environ['PATH']+= os.pathsep + self.third_party_support + "/recpack-install/bin"
         os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/recpack-install/lib"
+
+        #xerces
+        os.environ['XERCES_LIBDIR']= self.third_party_support + "/install/lib"
+        os.environ['XERCES_INCDIR']= self.third_party_support + "/install/include"
+        os.environ['LD_LIBRARY_PATH']+= os.pathsep + self.third_party_support + "/install/lib"
+
+        #Expat
+        os.environ['EXPAT_LIBDIR']= self.third_party_support + "/install/lib"
+        os.environ['EXPAT_INCDIR']= self.third_party_support + "/install/include"
 
         #print os.environ
         

@@ -103,11 +103,11 @@ vars.AddVariables(
 
     PathVariable('LOG4CPP_INCDIR',
                  'Path to log4cpp headers directory.',
-                 USER_PATH+'/nuSTORM/third_party/include'),
+                 DEFAULT_PATH),
 
     PathVariable('LOG4CPP_LIBDIR',
                  'Path to log4cpp installation',
-		 USER_PATH+'/nuSTORM/third_party/lib'),
+		 DEFAULT_PATH),
 
     PathVariable('G4INCLUDE',
                  'Path to Geant4 headers directory',
@@ -127,11 +127,11 @@ vars.AddVariables(
 
     PathVariable('CRY_INCDIR',
 		 'Path to CRY headers directory',
-		 USER_PATH+'/nuSTORM/third_party/cry_v1.7/src'),
+		 DEFAULT_PATH),
 
     PathVariable('CRY_LIBDIR',
 		 'Path to CRY installation',
-		 USER_PATH+'/nuSTORM/third_party/cry_v1.7/lib'),
+		 DEFAULT_PATH),
 
     PathVariable('XERCES_INCDIR',
                  'Path to xerces headers directory',
@@ -345,7 +345,8 @@ if not env['LIBPATH']:
 	env.Append(CPPPATH = env['CRY_INCDIR'])
     else:
 	try:
-	    env.MergeFlags('-I'+USER_PATH+'/nuSTORM/third_party/cry_v1.7/include')
+	    env.Append(CPPPATH = env['ENV']['CRY_INCDIR'])
+	    #env.MergeFlags('-I'+USER_PATH+'/nuSTORM/third_party/cry_v1.7/include')
 	except OSError:
 	    Abort("CRY could not be configured.")
     
@@ -354,7 +355,8 @@ if not env['LIBPATH']:
 	env.Append(LIBS = "CRY")
     else:
 	try:
-	    env.Append(LIBPATH = USER_PATH+"/nuSTORM/third_party/cry_v1.7/lib")
+	    env.Append(LIBPATH = env['ENV']['CRY_LIBDIR'])
+	    #env.Append(LIBPATH = USER_PATH+"/nuSTORM/third_party/cry_v1.7/lib")
 	    env.Append(LIBS = 'CRY')
 	except OSError:
 	    Abort("CRY could not be configured.")
@@ -366,7 +368,8 @@ if not env['LIBPATH']:
 	env.Append(CPPPATH = env['XERCES_INCDIR'])
     else:
 	try:
-	    env.MergeFlags('-I/data/neutrino04/common_SW/xerces-c-3.1.1/include')
+	    env.Append(CPPPATH = env['ENV']['XERCES_INCDIR'])
+	    #env.MergeFlags('-I/data/neutrino04/common_SW/xerces-c-3.1.1/include')
 	except OSError:
 	    Abort("XERCES could not be configured.")
     
@@ -375,8 +378,10 @@ if not env['LIBPATH']:
 	env.Append(LIBS = "XERCES")
     else:
 	try:
-	    env.Append(LIBPATH = "/data/neutrino04/common_SW/xerces-c-3.1.1/lib")
-	    env.Append(LIBS = 'xerces-c')
+	    env.Append(LIBPATH = env['ENV']['XERCES_LIBDIR'])
+	    env.Append(LIBS = "xerces-c")
+	    #env.Append(LIBPATH = "/data/neutrino04/common_SW/xerces-c-3.1.1/lib")
+	    #env.Append(LIBS = 'xerces-c')
 	except OSError:
 	    Abort("XERCES could not be configured.")
 	
@@ -386,7 +391,8 @@ if not env['LIBPATH']:
 	env.Append(CPPPATH = env['EXPAT_INCDIR'])
     else:
 	try:
-	    env.MergeFlags('-I/data/neutrino04/common_SW/expat/include')
+	    env.Append(CPPPATH = env['ENV']['EXPAT_INCDIR'])
+	    #env.MergeFlags('-I/data/neutrino04/common_SW/expat/include')
 	except OSError:
 	    Abort("EXPAT could not be configured.")
     
@@ -395,8 +401,10 @@ if not env['LIBPATH']:
 	env.Append(LIBS = "EXPAT")
     else:
 	try:
-	    env.Append(LIBPATH = "/data/neutrino04/common_SW/expat/lib")
-	    env.Append(LIBS = 'expat')
+	    env.Append(LIBPATH = env['ENV']['EXPAT_LIBDIR'])
+	    env.Append(LIBS = "expat")
+	    #env.Append(LIBPATH = "/data/neutrino04/common_SW/expat/lib")
+	    #env.Append(LIBS = 'expat')
 	except OSError:
 	    Abort("EXPAT could not be configured.")
 
@@ -433,7 +441,8 @@ env['CPPPATH'] += ['#include']
 
 # create library and add it to LIBPATH and LIBS
 src = Glob('#src/*.cc')
-src += Glob(USER_PATH+'/nuSTORM/third_party/cry_v1.7/src/*.cc')
+src += Glob(env['ENV']['CRYPATH']+'/*.cc')
+#src += Glob(USER_PATH+'/nuSTORM/third_party/cry_v1.7/src/*.cc')
 lib = env.Library('MindG4', src)
 
 env['LIBPATH'] += ['#']
