@@ -206,7 +206,7 @@ class handle_third_party:
 
 	def Download_and_install_scons(self):
 		print 'Installing SCONS 1.2.0...'
-		command = ['wget','http://downloads.sourceforge.net/project/scons/scons/1.2.0/scons-1.2.0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fscons%2Ffiles%2Fscons%2F1.2.0%2F']
+		command = ['wget','-O','scons-1.2.0.tar.gz','http://downloads.sourceforge.net/project/scons/scons/1.2.0/scons-1.2.0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fscons%2Ffiles%2Fscons%2F1.2.0%2F']
 		subprocess.call(command, cwd = self.third_party_support,stdout=self.FNULL)
 
 		command = ['tar','xvfz',self.third_party_support+'/scons-1.2.0.tar.gz']
