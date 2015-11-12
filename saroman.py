@@ -133,6 +133,9 @@ class saroman:
 
         #Setup for xml_parser.py
         self.xml_parser = xml_parser(self.xml_file_path,self.parsed_file_path)
+        self.useGDML = 0
+        if self.parse_gdml:
+            self.useGDML = 1
 
         #General class variables
         self.ASeed = str(self.seed + 1000)

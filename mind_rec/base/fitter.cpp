@@ -1321,20 +1321,7 @@ void fitter::ReadParam(){
   _lowFit2 = _store.fetch_dstore("low_fit_cut2");
 
   //read xml_parsed file
-
   _xml_parsed_path = _store.fetch_sstore("xml_parsed");
-  //cout<<"PARSED PATH: "<<_xml_parsed_path<<endl;
-  //_xml_parsed_path = "/afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/parsedGdml.log";
-
-  cout<<"MODEL: "<<_model<<endl;
-  cout<<"PARSED PATH: "<<_xml_parsed_path<<endl;
-
-  //std::ifstream input(_xml_parsed_path.c_str());
-  //std::string line;
-  
-  //while( std::getline( input, line ) ) {
-  //  cout<<line<<'\n';
-  //}
 
   std::ifstream file;
   file.open (_xml_parsed_path.c_str());
