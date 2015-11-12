@@ -1290,7 +1290,7 @@ void fitter::ReadParam(){
     
   _m.message("+++ ReadParam function of fitter ++++",bhep::VERBOSE);
         
-  _model = _store.find_sstore("model");//"particle/helix"; 
+  _model = _store.fetch_sstore("model");//"particle/helix"; 
   dim=6; // ??????
     
 
@@ -1320,6 +1320,49 @@ void fitter::ReadParam(){
   _lowFit1 = _store.fetch_dstore("low_fit_cut0");
   _lowFit2 = _store.fetch_dstore("low_fit_cut2");
 
+  //read xml_parsed file
+
+  _xml_parsed_path = _store.fetch_sstore("xml_parsed");
+  //cout<<"PARSED PATH: "<<_xml_parsed_path<<endl;
+  //_xml_parsed_path = "/afs/phas.gla.ac.uk/user/p/phallsjo/SaRoMaN/parsedGdml.log";
+
+  cout<<"MODEL: "<<_model<<endl;
+  cout<<"PARSED PATH: "<<_xml_parsed_path<<endl;
+
+  //std::ifstream input(_xml_parsed_path.c_str());
+  //std::string line;
+  
+  //while( std::getline( input, line ) ) {
+  //  cout<<line<<'\n';
+  //}
+
+  std::ifstream file;
+  file.open (_xml_parsed_path.c_str());
+
+  string word;
+  string temp;
+  double x;
+  double y;
+  double z;
+  std::vector<double> pos_vector;
+  while(file >> word)
+    {
+      pos_vector.clear();
+      file >> temp;
+      x = atof(temp.c_str());
+      pos_vector.push_back(x);
+      file >> y;
+      y = atof(temp.c_str());
+      pos_vector.push_back(y);
+      file >> z;
+      z = atof(temp.c_str());
+      pos_vector.push_back(z);
+
+      _xml_data_map[word] = pos_vector;
+
+      //cout<<word<<" "<< _xml_data_map[word][0]<<" "<< _xml_data_map[word][1]<<" "<< _xml_data_map[word][2]<<endl;
+    }
+  
       
 }
 

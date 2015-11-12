@@ -23,6 +23,10 @@
 #include <TGraphErrors.h>
 #include <TF1.h>
 
+#include <map>
+#include <iostream>
+#include <fstream>
+
 using namespace Recpack;
 
 class fitter{
@@ -173,6 +177,15 @@ protected:
   bool _reseed_ok;
   bool _reseed_called ;
   bool _fitted;
+
+  //read xml_parsed file
+
+  string _xml_parsed_path;
+
+  std::map<string,std::vector<double> > _xml_data_map;
+
+  
+
 
   //------------------ Physics -----------------//
     
