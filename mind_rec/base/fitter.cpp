@@ -871,7 +871,7 @@ cluster*  fitter::GetMeasurement(bhep::hit& hit){
   cluster* me = new cluster();
   me->set_name(meastype);
   me->set_hv(HyperVector(hit_pos,cov,RP::xyz));
-  me->set_name("volume", "Detector");
+  me->set_name("volume", "mother");
   me->set_position( meas_pos );
   //Add the hit energy deposit as a key to the Measurement.
   const dict::Key Edep = "E_dep";
@@ -1319,37 +1319,6 @@ void fitter::ReadParam(){
   _lowPass = _store.fetch_istore("low_Pass_hits");
   _lowFit1 = _store.fetch_dstore("low_fit_cut0");
   _lowFit2 = _store.fetch_dstore("low_fit_cut2");
-
-  //read xml_parsed file
-  _xml_parsed_path = _store.fetch_sstore("xml_parsed");
-
-  std::ifstream file;
-  file.open (_xml_parsed_path.c_str());
-
-  string word;
-  string temp;
-  double x;
-  double y;
-  double z;
-  std::vector<double> pos_vector;
-  while(file >> word)
-    {
-      pos_vector.clear();
-      file >> temp;
-      x = atof(temp.c_str());
-      pos_vector.push_back(x);
-      file >> y;
-      y = atof(temp.c_str());
-      pos_vector.push_back(y);
-      file >> z;
-      z = atof(temp.c_str());
-      pos_vector.push_back(z);
-
-      _xml_data_map[word] = pos_vector;
-
-      //cout<<word<<" "<< _xml_data_map[word][0]<<" "<< _xml_data_map[word][1]<<" "<< _xml_data_map[word][2]<<endl;
-    }
-  
       
 }
 

@@ -9,6 +9,11 @@
 
 //#include <string.h>
 
+//USING THE GDML PARSED FILE
+#include <map>
+#include <iostream>
+#include <fstream>
+
 using namespace Recpack;
 
 class MINDsetup: public NSetupSk{
@@ -42,6 +47,12 @@ public:
   void setDeDx(double d){de_dx = d;}
   EVector getBField(EVector pos){return BFieldMap.vector(pos);}
   double getPieceWidth() {return _pieceWidth;}
+
+  Volume* mother;
+  Volume* det;
+  Volume* vdet;
+  Volume* Fe_slab;
+
  
 protected:
     
@@ -89,21 +100,24 @@ protected:
     
   double B_int;
   EVector BField;
+  double fieldScale;
   MINDfieldMapReader BFieldMap;
    
   //-------------------------------------------------------------//
   
   //------------------- PROPERTIES OF MATERIALS -----------------//
     
-  double X0Fe, X0Sc, X0AIR, X0Eff;//members for if/when geom more strict.
-  double _wFe;
+  double X0Fe, X0Sc, X0AIR;//members for if/when geom more strict.
   double de_dx;
+  double _wFe;
 
   //for de/dx map
   double de_dx_scint;
-  double de_dx_min;
+  double de_dx_fe;
+  //double de_dx_min;
   DeDxMap* _de_dx_map;
   DeDxMap* _de_dx_map_scint;
+  std::string Bmap;
   
   EVector _zaxis;
   
@@ -119,6 +133,15 @@ protected:
   double resx,resy,resz;
   double StepSize;
 
+
+
+  //------------------------- GDML PARSED FILE ----------------------//
+
+  string _gdml_parsed_path;
+
+  std::map<string,std::vector<double> > _gdml_solid_map;
+
+  std::map<string,std::vector<double> > _gdml_pos_map;
 
 };
 

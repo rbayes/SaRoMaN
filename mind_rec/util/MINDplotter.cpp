@@ -706,7 +706,7 @@ bool MINDplotter::extrap_to_vertex(const Trajectory& traj,
   //cout<<"1st fitted node Z="<<ste.vector()[2]<<"  ;tru vextexZ="<<pos[2]<<endl;
 
   /// Add the surfaceof vertex and prpagate to that surface
-  fitObj.man().geometry_svc().setup().add_surface("Detector","vertex",&surf);
+  fitObj.man().geometry_svc().setup().add_surface("mother","vertex",&surf);
   bool ok = fitObj.man().navigation_svc().propagate(surf,ste,l);
   fitObj.man().geometry_svc().setup().remove_surface("vertex");
 
