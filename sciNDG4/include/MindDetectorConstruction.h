@@ -13,6 +13,14 @@
 #define __DETECTOR_CONSTRUCTION__
 
 #include <G4VUserDetectorConstruction.hh>
+#include <G4GDMLParser.hh>
+#include "MindBarSD.h"
+#include "MindFieldMapR.hh"
+#include <G4SDManager.hh>
+#include <G4FieldManager.hh>
+#include <G4ChordFinder.hh>
+#include <G4UserLimits.hh>
+
 
 class G4VPhysicalVolume;
 class SciNearDetectorGeometry;
@@ -39,10 +47,18 @@ public:
   { return _detector; }
 
 private:
+  void SetVolumeInformation(G4LogicalVolume* base, G4String detectorName);
+  void SetAuxInformation(G4String basename, G4LogicalVolume* myvol,
+			 const G4GDMLAuxListType auxlist);
+  void SetNullField(G4LogicalVolume& detector_logic);
+  void SetMagneticField(G4LogicalVolume& vol);
   SciNearDetectorGeometry* _detector;
+  G4GDMLParser _gdml;
   std::string _gdml_file_name;
   bool _write_gdml;
   bool _use_gdml;
+  std::vector<MindBarSD*> sensDetList;
+  
 };
 
 #endif

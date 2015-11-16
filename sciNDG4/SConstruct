@@ -119,11 +119,11 @@ vars.AddVariables(
 
     PathVariable('OGLPATH',
                  'Path to OpenGL libraries and headers',
-                 '/usr/X11R6'),
+                 DEFAULT_PATH),
 
     PathVariable('X11PATH',
                  'Path to X11 libraries and headers',
-                 '/usr/X11R6'),
+                 DEFAULT_PATH),
 
     PathVariable('CRY_INCDIR',
 		 'Path to CRY headers directory',
