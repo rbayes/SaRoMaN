@@ -47,15 +47,15 @@ class saroman:
 
     def __init__(self):
         #Set up paths #
-        self.home = os.getenv("HOME") 
+        self.home = os.cwd() # '/data/neutrino05/rbayes/MIND' # 
         self.exec_base = os.path.join(self.home, 'SaRoMaN')
         self.out_base  = os.path.join(self.home, 'out')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        self.third_party_support = '/data/neutrino05/phallsjo/third_party'
+        self.third_party_support = os.path.join(self.home, 'third_party' 
 
         #General flags
         self.need_third_party_install = False
-        self.need_own_install = False
+        self.need_own_install = True
         self.generate_field_map = True # If false remember to change self.field_map_name to point to your field map!
 
         #Should be implemented as input values#
@@ -350,7 +350,7 @@ class saroman:
         pipe = subprocess.Popen(". %s; env" % script, stdout=subprocess.PIPE,shell=True)
         output = pipe.communicate()[0]
         #print output
-        env = dict((line.split("=",1) for line in output.splitlines()))
+        env = dict((line.split("=",1) for line in output.splitlines() if len(line) > 3))
         os.environ.update(env)
 
     def Set_environment(self):
