@@ -25,3 +25,14 @@
 /vis/viewer/update viewer-0
 /tracking/storeTrajectory 1
 /vis/scene/endOfEventAction accumulate
+/vis/viewer/set/viewpointThetaPhi 270 0 deg
+/vis/viewer/refresh
+/run/beamOn
+/vis/scene/notifyHandlers scene-0
+/run/beamOn
+/vis/drawView
+/vis/viewer/set/viewpointThetaPhi 0 0 deg
+/vis/viewer/panTo 0 0 cm
+/vis/viewer/zoomTo 1
+/vis/viewer/dollyTo 0 cm
+/vis/viewer/refresh

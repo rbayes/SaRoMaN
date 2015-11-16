@@ -175,6 +175,7 @@ RUN fieldScale D %(Bfield)s
 
 # energy loss (MeV/mm)
 RUN de_dx_scint D %(MIND_active_de_dx)s
+RUN de_dx_fe D %(MIND_passive_de_dx)s
 RUN de_dx_min D %(MIND_module_de_dx)s
 
 # Position resolution for detector (cm).

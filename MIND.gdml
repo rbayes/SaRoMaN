@@ -410,9 +410,9 @@
     <volume name="Detector">
       <materialref ref="G4_AIR0x19316e30"/>
       <solidref ref="DETECTOR_solid"/>
-      <physvol name="S0_physi">
+      <physvol name="SciPlate0_physi">
         <volumeref ref="ACTIVE"/>
-        <position name="S0_pos" x="0.0" y="0.0" z="-DetectorLength/2 + 4*BarDepth/2"/>
+        <position name="SciPlate0_pos" x="0.0" y="0.0" z="-DetectorLength/2 + 4*BarDepth/2"/>
       </physvol>
       <physvol name="SFFFS0_physi">
         <volumeref ref="SFFFS"/>
@@ -444,9 +444,9 @@
 		  z="-DetectorLength/2 + 64*BarDepth + 31.5 * (FeDepth
 		     + 2*AlWidth + Gap0) + 2*Gap1"/>
       </physvol>
-      <physvol name="S1_physi">
+      <physvol name="SciPlate1_physi">
         <volumeref ref="ACTIVE"/>
-        <position name="S1_pos" x="0.0" y="0.0"
+        <position name="SciPlate1_pos" x="0.0" y="0.0"
 		  z="-DetectorLength/2 + 72*BarDepth + 33 * (FeDepth
 		     + 2*AlWidth + Gap0) + 3*Gap1"/>
       </physvol>
