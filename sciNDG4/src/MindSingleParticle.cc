@@ -47,9 +47,13 @@ void MindSingleParticle::Initialize()
   if ( _vtx_location == "FIXED" || _vtx_location == "GAUSS"){
     std::vector<double> inVert = config.GetVParam("fvert");
     _fvec = G4ThreeVector( inVert[0], inVert[1], inVert[2] );
+  
+    if (_vtx_location == "GAUSS"){
+      _RMS = config.GetVParam("bspot");
+    }
   }
-  if (_vtx_location == "GAUSS"){
-    _RMS = config.GetVParam("bspot");
+  else {
+    _fvec = G4ThreeVector( 0., 0., -2000.);
   }
 
   _evCount[0] = 0; _evCount[1] = 0;
@@ -67,15 +71,15 @@ void MindSingleParticle::Initialize()
 
 void MindSingleParticle::GeneratePrimaryVertex(G4Event* event)
 {
-  G4int region_code = SelectVertexRegion();
+  // G4int region_code = SelectVertexRegion();
   // particle is generated at time zero
   G4double time = 0.;
   
   for (bhep::vdouble::iterator it1=_had4P.begin();it1 != _had4P.end();it1++)
     (*it1) = 0.;
 
-  G4double length = 
-    MindConfigService::Instance().Geometry().GetDParam("MIND_z") * mm;
+  // G4double length = 
+  //   MindConfigService::Instance().Geometry().GetDParam("MIND_z") * mm;
   // G4ThreeVector particle_position = G4ThreeVector(0., 0., -length/2.);
   
     // get bhep transient event from singleton
@@ -85,19 +89,19 @@ void MindSingleParticle::GeneratePrimaryVertex(G4Event* event)
   MindDetectorConstruction* detConstr = (MindDetectorConstruction*) 
     G4RunManager::GetRunManager()->GetUserDetectorConstruction();
   
-  G4String region_name;
+  // G4String region_name;
   
-  if (region_code == 0) region_name = "ACTIVE";
-  else region_name = "PASSIVE";
+  // if (region_code == 0) region_name = "ACTIVE";
+  // else region_name = "PASSIVE";
   
   G4ThreeVector position;
-  if(_vtx_location != "GAUSS") // Something clever
-    position = detConstr->GetDetectorGeometry()->
-      GetVertex( region_name );
- 
-  else if( _vtx_location == "GAUSS"){
-    position = detConstr->GetDetectorGeometry()->
-      GaussianBeamSpot(_fvec, _RMS[0], _RMS[1]);
+   
+  if( _vtx_location == "GAUSS"){
+    double x = G4RandGauss::shoot(_fvec[0], _RMS[0]);
+    double y = G4RandGauss::shoot(_fvec[1], _RMS[1]);
+    position = _fvec;
+    position[0] = x;
+    position[1] = y;
   }
   // G4cout<<position.x()<<"\t"<<position.y()<<"\t"<<position.z()<<"\n";
   if ( _vtx_location == "FIXED" )
@@ -157,47 +161,6 @@ void MindSingleParticle::GeneratePrimaryVertex(G4Event* event)
 
   event->AddPrimaryVertex(vertex);
 }
-
-
-G4int MindSingleParticle::SelectVertexRegion()
-{
-  if      ( _tasd ) return 0;
-
-  if      (_vtx_location == "ACTIVE") return 0;
-  
-  else if (_vtx_location == "PASSIVE") return 1;
-
-  else if (_vtx_location == "RANDOM") {
-    
-    // Randomly select whether vertex should be located in
-    // passive or active material
-    
-    static G4double passive_target_prob = GetTargetProb();
-    
-    if (G4UniformRand() <= passive_target_prob) return 1;
-    else return 0;
-  }
-
-  else if (_vtx_location == "FIXED" || _vtx_location == "GAUSS" ) {
-    if ( _evCount[0] == 0 && _evCount[1] == 0 ){
-    MindDetectorConstruction* detConstr = (MindDetectorConstruction*) 
-      G4RunManager::GetRunManager()->GetUserDetectorConstruction();
-    _fvecReg = detConstr->
-      GetDetectorGeometry()->GetRegion( _fvec[2] );
-    }
-
-    return _fvecReg;
-  }
-}
-
-G4double MindSingleParticle::GetTargetProb()
-{
-  MindDetectorConstruction* detConstr = (MindDetectorConstruction*) 
-    G4RunManager::GetRunManager()->GetUserDetectorConstruction();
-  
-  return (detConstr->GetDetectorGeometry()->GetPassiveTargetProb());
-}
-
 
 
 G4ThreeVector MindSingleParticle::GenerateRandomDirection()
