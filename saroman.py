@@ -20,6 +20,7 @@ import time
 from pythonlib import print_config
 from pythonlib import field_map_generator
 from pythonlib import handle_third_party
+from pythonlib import xml_parser
 #import print_config
 #import field_map_generator
 #import handle_third_party
@@ -51,19 +52,22 @@ class saroman:
         self.exec_base = os.path.join(self.home, 'SaRoMaN')
         self.out_base  = os.path.join(self.home, 'out')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        self.third_party_support = os.path.join(self.home, 'third_party' 
+        self.third_party_support = os.path.join(self.home, 'third_party') 
+        self.xml_file_path = os.path.join(self.exec_base,'MIND.gdml')
+        self.parsed_file_path  = os.path.join(self.exec_base,'parsedGdml.log')
 
         #General flags
         self.need_third_party_install = False
         self.need_own_install = True
         self.generate_field_map = True # If false remember to change self.field_map_name to point to your field map!
+        self.parse_gdml = True
 
         #Should be implemented as input values#
         self.train_sample = 0
         self.part = 'mu-'#'14'
         self.pid = -14
-        self.seed = 100
-        self.Nevts = 100
+        self.seed = 10
+        self.Nevts = 10
         self.inttype = 'CC'
         self.Bfield = 1.5
 
@@ -126,6 +130,12 @@ class saroman:
 
         #Setup for handle_third_party.py
         self.handle_third_party = handle_third_party(self.exec_base,self.third_party_support)
+
+        #Setup for xml_parser.py
+        self.xml_parser = xml_parser(self.xml_file_path,self.parsed_file_path)
+        self.useGDML = 0
+        if self.parse_gdml:
+            self.useGDML = 1
 
         #General class variables
         self.ASeed = str(self.seed + 1000)
@@ -296,6 +306,8 @@ class saroman:
                 self.Config_and_build_own()
             if self.generate_field_map:
                 self.Generate_field_map()
+            if self.parse_gdml:
+                self.xml_parser.Parse_file()
 
             self.Run_genie()
             self.Run_simulation()

@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define>
+      <constant name="FeWidth" value="3500"/>
+      <constant name="FeHeight" value="2000"/>
+      <constant name="FeDepth" value="30"/>
+      <constant name="SciWidth" value="2800"/>
+      <constant name="SciHeight" value="2000"/>
+      <constant name="SciDepth" value="30"/>
+      <constant name="BarDepth" value="7.5"/>
+      <constant name="BarWidthX1" value="150"/>
+      <constant name="BarWidthX2" value="200"/>
+      <constant name="BarWidthY1" value="10"/>
+      <constant name="BarWidthY2" value="30"/>
+      <constant name="AlWidth" value="1"/>
+      <constant name="Gap0" value="1"/>
+      <constant name="Gap1" value="500"/>
+      <constant name="DetectorLength" value="33 * (FeDepth + 2*AlWidth + Gap0) + 18*4*BarDepth + 3*Gap1"/>
+  </define>
+
+  <materials>
+    <isotope N="54" Z="26" name="Fe540x1931f340">
+      <atom unit="g/mole" value="53.9396"/>
+    </isotope>
+    <isotope N="56" Z="26" name="Fe560x1931f3b0">
+      <atom unit="g/mole" value="55.9349"/>
+    </isotope>
+    <isotope N="57" Z="26" name="Fe570x1931f420">
+      <atom unit="g/mole" value="56.9354"/>
+    </isotope>
+    <isotope N="58" Z="26" name="Fe580x193228d0">
+      <atom unit="g/mole" value="57.9333"/>
+    </isotope>
+    <element name="Fe0x19322640">
+      <fraction n="0.05845" ref="Fe540x1931f340"/>
+      <fraction n="0.91754" ref="Fe560x1931f3b0"/>
+      <fraction n="0.02119" ref="Fe570x1931f420"/>
+      <fraction n="0.00282" ref="Fe580x193228d0"/>
+    </element>
+    <material name="G4_Fe0x1931f240" state="solid">
+      <MEE unit="eV" value="286"/>
+      <D unit="g/cm3" value="7.874"/>
+      <fraction n="1" ref="Fe0x19322640"/>
+    </material>
+    <isotope N="12" Z="6" name="C120x19317200">
+      <atom unit="g/mole" value="12"/>
+    </isotope>
+    <isotope N="13" Z="6" name="C130x193172b0">
+      <atom unit="g/mole" value="13.0034"/>
+    </isotope>
+    <element name="C0x19316fa0">
+      <fraction n="0.9893" ref="C120x19317200"/>
+      <fraction n="0.0107" ref="C130x193172b0"/>
+    </element>
+    <isotope N="1" Z="1" name="H10x19323de0">
+      <atom unit="g/mole" value="1.00782503081372"/>
+    </isotope>
+    <isotope N="2" Z="1" name="H20x193245e0">
+      <atom unit="g/mole" value="2.01410199966617"/>
+    </isotope>
+    <element name="H0x19324360">
+      <fraction n="0.999885" ref="H10x19323de0"/>
+      <fraction n="0.000115" ref="H20x193245e0"/>
+    </element>
+    <material name="G4_POLYSTYRENE0x19324240" state="solid">
+      <MEE unit="eV" value="68.7"/>
+      <D unit="g/cm3" value="1.06"/>
+      <fraction n="0.922577329294378" ref="C0x19316fa0"/>
+      <fraction n="0.0774226707056217" ref="H0x19324360"/>
+    </material>
+    <material Z="13" name="G4_Al0x19323860" state="solid">
+      <MEE unit="eV" value="166"/>
+      <D unit="g/cm3" value="2.699"/>
+      <atom unit="g/mole" value="26.9815"/>
+    </material>
+    <isotope N="14" Z="7" name="N140x19317540">
+      <atom unit="g/mole" value="14.0031"/>
+    </isotope>
+    <isotope N="15" Z="7" name="N150x193175e0">
+      <atom unit="g/mole" value="15.0001"/>
+    </isotope>
+    <element name="N0x19317310">
+      <fraction n="0.99632" ref="N140x19317540"/>
+      <fraction n="0.00368" ref="N150x193175e0"/>
+    </element>
+    <isotope N="16" Z="8" name="O160x19317500">
+      <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O170x193178c0">
+      <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O180x19317950">
+      <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="O0x19317620">
+      <fraction n="0.99757" ref="O160x19317500"/>
+      <fraction n="0.00038" ref="O170x193178c0"/>
+      <fraction n="0.00205" ref="O180x19317950"/>
+    </element>
+    <isotope N="36" Z="18" name="Ar360x19317800">
+      <atom unit="g/mole" value="35.9675"/>
+    </isotope>
+    <isotope N="38" Z="18" name="Ar380x19317c10">
+      <atom unit="g/mole" value="37.9627"/>
+    </isotope>
+    <isotope N="40" Z="18" name="Ar400x19317d00">
+      <atom unit="g/mole" value="39.9624"/>
+    </isotope>
+    <element name="Ar0x19317990">
+      <fraction n="0.003365" ref="Ar360x19317800"/>
+      <fraction n="0.000632" ref="Ar380x19317c10"/>
+      <fraction n="0.996003" ref="Ar400x19317d00"/>
+    </element>
+    <material name="G4_AIR0x19316e30" state="gas">
+      <MEE unit="eV" value="85.7"/>
+      <D unit="g/cm3" value="0.00120479"/>
+      <fraction n="0.000124000124000124" ref="C0x19316fa0"/>
+      <fraction n="0.755267755267755" ref="N0x19317310"/>
+      <fraction n="0.231781231781232" ref="O0x19317620"/>
+      <fraction n="0.0128270128270128" ref="Ar0x19317990"/>
+    </material>
+    <material name="G4_Galactic0x19324780" state="gas">
+      <T unit="K" value="2.73"/>
+      <P unit="pascal" value="3e-18"/>
+      <MEE unit="eV" value="21.8"/>
+      <D unit="g/cm3" value="1e-25"/>
+      <fraction n="1" ref="H0x19324360"/>
+    </material>
+  </materials>
+
+<solids>
+    <box lunit="mm" name="FePlate_solid" x="FeWidth" y="FeHeight" z="FeDepth"/>
+    <box lunit="mm" name="PASSIVE_solid" x="FeWidth" y="FeHeight" z="FeDepth + 2*AlWidth"/>
+    <box lunit="mm" name="SciPlate_solid" x="SciWidth" y="SciHeight" z="SciDepth"/>
+    <box lunit="mm" name="SciPlane_solid" x="SciWidth" y="SciHeight" z="BarDepth"/>
+    <box lunit="mm" name="BarX1_solid" x="BarWidthX1" y="SciHeight" z="BarDepth"/>
+    <box lunit="mm" name="BarX2_solid" x="BarWidthX2" y="SciHeight" z="BarDepth"/>
+    <box lunit="mm" name="BarXPair_solid" x="BarWidthX1+BarWidthX2" y="SciHeight" z="BarDepth"/>
+    <box lunit="mm" name="BarY1_solid" x="SciWidth" y="BarWidthY1" z="BarDepth"/>
+    <box lunit="mm" name="BarY2_solid" x="SciWidth" y="BarWidthY2" z="BarDepth"/>
+    <box lunit="mm" name="BarYPair_solid" x="SciWidth" y="BarWidthY1+BarWidthY2" z="BarDepth"/>
+    <box lunit="mm" name="AlPlane_solid" x="FeWidth" y="FeHeight" z="AlWidth"/>
+    <box lunit="mm" name="SFFFS_solid" x="FeWidth" y="FeHeight" z="2*SciDepth + 3*FeDepth + 6*AlWidth + 4*Gap0"/>
+    <box lunit="mm" name="SF_solid" x="FeWidth" y="FeHeight" z="SciDepth + FeDepth + 2*AlWidth + Gap0"/>
+    <box lunit="mm" name="SFF_solid" x="FeWidth" y="FeHeight" z="SciDepth + 2*FeDepth + 4*AlWidth + 2*Gap0"/>
+    <box lunit="mm" name="SFFF_solid" x="FeWidth" y="FeHeight" z="SciDepth + 3*FeDepth + 6*AlWidth + 3*Gap0"/>
+    <box lunit="mm" name="SFModule_solid" x="FeWidth" y="FeHeight" z="3*(SciDepth + FeDepth + 2*AlWidth + Gap0)"/>
+    <box lunit="mm" name="SFFModule_solid" x="FeWidth" y="FeHeight" z="3*(SciDepth + 2*FeDepth + 4*AlWidth + 2*Gap0)"/>
+    <box lunit="mm" name="SFFFModule_solid" x="FeWidth" y="FeHeight" z="6*(SciDepth + 3*FeDepth + 6*AlWidth + 3*Gap0)"/>
+    <box lunit="mm" name="DETECTOR_solid" x="FeWidth" y="FeHeight" z="33 * (FeDepth + 2*AlWidth + Gap0) + 18*SciDepth + 3*Gap1"/>
+    <box lunit="mm" name="WORLD_solid" x="200000" y="200000" z="200000"/>
+  </solids>
+
+  <structure>
+    <volume name="FePlate">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="FePlate_solid"/>
+    </volume>
+    <volume name="BRACE">
+        <materialref ref="G4_Al0x19323860"/>
+        <solidref ref="AlPlane_solid"/>
+    </volume>
+    <volume name="PASSIVE">
+      <materialref ref="G4_Fe0x1931f240"/>
+      <solidref ref="PASSIVE_solid"/>
+      <physvol name="Brace0_physi">
+        <volumeref ref="BRACE"/>
+        <position name="Brace0_pos" x="0.0" y="0.0" z="-(FeDepth + AlWidth)/2"/>
+      </physvol>
+      <physvol name="FePlate_physi">
+        <volumeref ref="FePlate"/>
+        <position name="FePlate_pos" x="0.0" y="0.0" z="0.0"/>
+      </physvol>
+      <physvol name="Brace1_physi">
+        <volumeref ref="BRACE"/>
+        <position name="Brace1_pos" x="0.0" y="0.0" z="(FeDepth + AlWidth)/2"/>
+      </physvol>
+    </volume>
+    
+    <!-- Define bars for scintillator planes -->
+    <volume name="BarX1">
+        <materialref ref="G4_POLYSTYRENE0x19324240"/>
+        <solidref ref="BarX1_solid"/>
+    </volume>
+    <volume name="BarX2">
+        <materialref ref="G4_POLYSTYRENE0x19324240"/>
+        <solidref ref="BarX2_solid"/>
+    </volume>
+    <volume name="BarY1">
+        <materialref ref="G4_POLYSTYRENE0x19324240"/>
+        <solidref ref="BarY1_solid"/>
+    </volume>
+    <volume name="BarY2">
+        <materialref ref="G4_POLYSTYRENE0x19324240"/>
+        <solidref ref="BarY2_solid"/>
+    </volume>
+    <volume name="BarXPair1">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="BarXPair_solid"/>
+        <physvol name="BarX11_phys">
+            <volumeref ref="BarX1"/>
+            <position name="BarX11_pos" unit="mm" x="-BarWidthX2/2" y="0.0" z="0.0"/>
+        </physvol>
+        <physvol name="BarX21_phys">
+            <volumeref ref="BarX2"/>
+            <position name="BarX21_pos" unit="mm" x="BarWidthX1/2" y="0.0" z="0.0"/>
+        </physvol>
+    </volume>
+    <volume name="BarXPair2">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="BarXPair_solid"/>
+        <physvol name="BarX12_phys">
+            <volumeref ref="BarX1"/>
+            <position name="BarX12_pos" unit="mm" x="BarWidthX2/2" y="0.0" z="0.0"/>
+        </physvol>
+        <physvol name="BarX22_phys">
+            <volumeref ref="BarX2"/>
+            <position name="BarX222_pos" unit="mm" x="-BarWidthX1/2" y="0.0" z="0.0"/>
+        </physvol>
+    </volume>
+    <volume name="BarYPair1">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="BarYPair_solid"/>
+        <physvol name="BarY11_phys">
+            <volumeref ref="BarY1"/>
+            <position name="BarY11_pos" unit="mm" x="-BarWidthY2/2" y="0.0" z="0.0"/>
+        </physvol>
+        <physvol name="BarY21_phys">
+            <volumeref ref="BarY2"/>
+            <position name="BarY21_pos" unit="mm" x="BarWidthY1/2" y="0.0" z="0.0"/>
+        </physvol>
+    </volume>
+    <volume name="BarYPair2">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="BarYPair_solid"/>
+        <physvol name="BarY12_phys">
+            <volumeref ref="BarY1"/>
+            <position name="BarY12_pos" unit="mm" x="BarWidthY2/2" y="0.0" z="0.0"/>
+        </physvol>
+        <physvol name="BarY22_phys">
+            <volumeref ref="BarY2"/>
+            <position name="BarY22_pos" unit="mm" x="-BarWidthY1/2" y="0.0" z="0.0"/>
+        </physvol>
+    </volume>
+    
+    <!-- Start replicating volumes -->
+    <volume name="X1plane">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciPlane_solid"/>
+      <replicavol number="8">
+        <volumeref ref="BarXPair1"/>
+        <replicate_along_axis>
+            <direction x="1"/>
+            <width unit="mm" value="BarWidthX1 + BarWidthX2"/>
+            <offset unit="mm" value="0"/>
+        </replicate_along_axis>
+      </replicavol>
+    </volume>
+    
+    <volume name="X2plane">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciPlane_solid"/>
+      <replicavol number="8">
+        <volumeref ref="BarXPair2"/>
+        <replicate_along_axis>
+            <direction x="1"/>
+            <width unit="mm" value="BarWidthX1 + BarWidthX2"/>
+            <offset unit="mm" value="0"/>
+        </replicate_along_axis>
+      </replicavol>
+    </volume>
+    
+    <volume name="Y1plane">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciPlane_solid"/>
+      <replicavol number="50">
+        <volumeref ref="BarYPair1"/>
+        <replicate_along_axis>
+            <direction y="1"/>
+            <width unit="mm" value="BarWidthY1 + BarWidthY2"/>
+            <offset unit="mm" value="0"/>
+        </replicate_along_axis>
+      </replicavol>
+    </volume>
+    
+    <volume name="Y2plane">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciPlane_solid"/>
+      <replicavol number="50">
+        <volumeref ref="BarYPair2"/>
+        <replicate_along_axis>
+            <direction y="1"/>
+            <width unit="mm" value="BarWidthY1 + BarWidthY2"/>
+            <offset unit="mm" value="0"/>
+        </replicate_along_axis>
+      </replicavol>
+    </volume>
+    
+    
+    <!-- Scintillating planes -->
+    <volume name="ACTIVE">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciPlate_solid"/>
+      <physvol name="X1plane_physi">
+        <volumeref ref="X1plane"/>
+        <position name="X1plane_pos" x="0.0" y="0.0" z="-3/2*BarDepth"/>
+      </physvol>
+      <physvol name="X2plane_physi">
+        <volumeref ref="X2plane"/>
+        <position name="X2plane_pos" x="0.0" y="0.0" z="-1/2*BarDepth"/>
+      </physvol>
+      <physvol name="Y1plane_physi">
+        <volumeref ref="Y1plane"/>
+        <position name="Y1plane_pos" x="0.0" y="0.0" z="1/2*BarDepth"/>
+      </physvol>
+      <physvol name="Y2plane_physi">
+        <volumeref ref="Y2plane"/>
+        <position name="Y2plane_pos" x="0.0" y="0.0" z="3/2*BarDepth"/>
+      </physvol>
+    </volume>
+    
+    <!-- Specific Module types -->
+    <volume name="SF">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SF_solid"/>
+        <physvol name="Scint0_physi">
+            <volumeref ref="ACTIVE"/>
+            <position name="Scint0_pos" x="0.0" y="0.0" z="-(FeDepth + 2*AlWidth + Gap0)/2"/>
+	</physvol>
+        <physvol name="Fe0_physi">
+            <volumeref ref="PASSIVE"/>
+            <position name="Fe0_pos" x="0.0" y="0.0" z="2*BarDepth + Gap0/2"/>
+        </physvol>
+    </volume>
+    <volume name="SFF">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SFF_solid"/>
+        <physvol name="SFF_physi">
+            <volumeref ref="SF"/>
+            <position name="SF0_pos" x="0.0" y="0.0" z="-(FeDepth + 2*AlWidth + Gap0)/2"/>
+        </physvol>
+        <physvol name="Fe1_physi">
+            <volumeref ref="PASSIVE"/>
+            <position name="Fe1_pos" x="0.0" y="0.0" z="(FeDepth + 2*AlWidth + 4*BarDepth + 2*Gap0)/2"/>
+        </physvol>
+    </volume>
+    <volume name="SFFF">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SFFF_solid"/>
+        <physvol name="SFFF_physi">
+            <volumeref ref="SFF"/>
+            <position name="SFF0_pos" x="0.0" y="0.0" z="-(FeDepth + 2*AlWidth + Gap0)/2"/>
+        </physvol>
+        <physvol name="Fe2_physi">
+            <volumeref ref="PASSIVE"/>
+            <position name="Fe2_pos" x="0.0" y="0.0" z="(2*(FeDepth + 2*AlWidth) + 4*BarDepth + 3*Gap0)/2"/>
+        </physvol>
+    </volume>
+    <volume name="SFFFS">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SFFFS_solid"/>
+        <physvol name="SFFFS_physi">
+            <volumeref ref="SFFF"/>
+            <position name="SFFF0_pos" x="0.0" y="0.0" z="-(4*BarDepth + Gap0)/2"/>
+        </physvol>
+        <physvol name="Sci1_physi">
+            <volumeref ref="ACTIVE"/>
+            <position name="Sci2_pos" x="0.0" y="0.0" z="(3*(FeDepth + 2*AlWidth) + 4*BarDepth + 4*Gap0)/2"/>
+        </physvol>
+    </volume>
+
+    <volume name="SFModule">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SFModule_solid"/>
+        <replicavol number="3">
+            <volumeref ref="SF"/>
+            <replicate_along_axis>
+                <direction z="1"/>
+                <width unit="mm" value="FeDepth + 2*AlWidth + Gap0 + 4*BarDepth"/>
+                <offset unit="mm" value="0"/>
+            </replicate_along_axis>
+        </replicavol>
+    </volume>
+    <volume name="SFFModule">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SFFModule_solid"/>
+            <replicavol number="3">
+            <volumeref ref="SFF"/>
+            <replicate_along_axis>
+                <direction z="1"/>
+                <width unit="mm" value="2*(FeDepth + 2*AlWidth + Gap0) + 4*BarDepth"/>
+                <offset unit="mm" value="0"/>
+            </replicate_along_axis>
+        </replicavol>
+    </volume>
+    <volume name="SFFFModule">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SFFFModule_solid"/>
+        <replicavol number="6">
+        <volumeref ref="SFFF"/>
+        <replicate_along_axis>
+          <direction z="1"/>
+          <width unit="mm" value="3*(FeDepth + 2*AlWidth + Gap0) + 4*BarDepth"/>
+          <offset unit="mm" value="0"/>
+        </replicate_along_axis>
+        </replicavol>
+    </volume>
+    
+    <volume name="Detector">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="DETECTOR_solid"/>
+      <physvol name="S0_physi">
+        <volumeref ref="ACTIVE"/>
+        <position name="S0_pos" x="0.0" y="0.0" z="-DetectorLength/2 + 4*BarDepth/2"/>
+      </physvol>
+      <physvol name="SFFFS0_physi">
+        <volumeref ref="SFFFS"/>
+        <position name="SFFFS0_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 8*BarDepth + 3 * (FeDepth
+		     + 2*AlWidth + Gap0)/2 + Gap1"/>
+      </physvol>
+      <physvol name="SFModule_physi">
+        <volumeref ref="SFModule"/>
+        <position name="SFModule_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 18*BarDepth + 4.5 * (FeDepth
+		     + 2*AlWidth + Gap0) + 2*Gap1"/>
+      </physvol>
+      <physvol name="SFFModule_physi">
+        <volumeref ref="SFFModule"/>
+        <position name="SFFModule_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 30*BarDepth + 9 * (FeDepth +
+		     2*AlWidth + Gap0) + 2*Gap1"/>
+      </physvol>
+      <physvol name="SFFFModule_physi">
+        <volumeref ref="SFFFModule"/>
+        <position name="SFFFModule_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 48*BarDepth + 21 * (FeDepth
+		     + 2*AlWidth + Gap0) + 2*Gap1"/>
+      </physvol>
+      <physvol name="SFFFS1_physi">
+        <volumeref ref="SFFFS"/>
+        <position name="SFFFS1_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 64*BarDepth + 31.5 * (FeDepth
+		     + 2*AlWidth + Gap0) + 2*Gap1"/>
+      </physvol>
+      <physvol name="S1_physi">
+        <volumeref ref="ACTIVE"/>
+        <position name="S1_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 72*BarDepth + 33 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
+      </physvol>
+    </volume>
+    
+    <volume name="WORLD0x19325900">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="WORLD_solid"/>
+      <physvol name="DETECTOR_physi">
+        <volumeref ref="Detector"/>
+      </physvol>
+    </volume>
+  </structure>
+  
+  <setup name="Default" version="1.0">
+    <world ref="WORLD0x19325900"/>
+  </setup>
+  
+</gdml>

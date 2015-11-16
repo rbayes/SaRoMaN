@@ -81,6 +81,12 @@ GEOMETRY gap2 D 0
 #GEOMETRY gap3 D 2.5
 #GEOMETRY gap4 D 2.5
 
+### GDML
+#GEOMETRY useGDML I  %(useGDML)s
+#GEOMETRY writeGDML I 0
+#GEOMETRY GDMLFileName S %(xml_file_path)s
+
+
 ### MAgnetic field. Still uniform vector.(T)
 ## A single bit to turn the uniform field off in favour of a toroidal field
 GEOMETRY isUniform I 0
@@ -142,6 +148,9 @@ PHYSICS minimum_kinEng D 300. #100.
 #############################################
 #  parameters for the setup
 #############################################
+
+#Parsed xml_file
+RUN xml_parsed S %(parsed_file_path)s
 
 # relative density, Sc/Fe, AIR/Sc.
 RUN rel_denSI D %(config_rec_rel_denSI)s

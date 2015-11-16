@@ -163,8 +163,6 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
   double hst = _ear_height - _piece_height/2.;
   
   // 
-
-  G4GDMLParser * gdm = new G4GDMLParser();
   std::vector<G4TwoVector> MindSection;
   
   if(IsOctagonal == 1){ 
@@ -569,8 +567,6 @@ G4LogicalVolume* SciNearDetectorGeometry::DefineDetector()
 	SetDipoleField( *vertex_logic );
       }  
   }
-
-  gdm->Write("MIND_detector.gdml",detector_logic);
 
   return detector_logic;
 }
