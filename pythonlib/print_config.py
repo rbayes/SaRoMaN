@@ -329,6 +329,9 @@ CON Gen_seed D %(config_digi_seed)s
 CON rec_boxX D %(MIND_width_active)s
 CON rec_boxY D %(MIND_width_active)s
 
+# Attenuation in Wavelength shifting fibre
+CON WLSatten D %(config_rec_WLSatten)s
+
 # minimum energy at plane to be detected.(MeV)
 CON min_eng D %(MIND_min_eng_at_plane)s
 

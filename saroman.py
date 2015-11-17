@@ -52,7 +52,7 @@ class saroman:
         self.exec_base = self.home
         self.out_base  = os.path.join(self.home, 'out')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        self.third_party_support = os.path.join(self.home, 'third_party') 
+        self.third_party_support = '/data/neutrino05/phallsjo/third_party' #os.path.join(self.home, 'third_party') 
         self.xml_file_path = os.path.join(self.exec_base,'MIND.gdml')
         self.parsed_file_path  = os.path.join(self.exec_base,'parsedGdml.log')
 
@@ -242,14 +242,14 @@ class saroman:
         '''
         #digi_ND
         #run configure and autogen in that context.
-        #command = self.exec_base+'/digi_ND/autogen.sh'
-        #print command
-        #subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
-        #subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
-        #command = self.exec_base+'/digi_ND/configure'
-        #print command
-        #subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
-        #subprocess.call('make', shell=True, cwd = self.exec_base+'/digi_ND')
+        command = self.exec_base+'/digi_ND/autogen.sh'
+        print command
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        command = self.exec_base+'/digi_ND/configure'
+        print command
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        subprocess.call('make', shell=True, cwd = self.exec_base+'/digi_ND')
 
         #mind_rec
         #run configure and autogen in that context.
@@ -264,9 +264,9 @@ class saroman:
         subprocess.call('make', shell=True, cwd = self.exec_base+'/mind_rec')    
         
         #sciNDG4
-        #command = [self.third_party_support+'/bin/scons']
-        #print subprocess.list2cmdline(command)
-        #subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
+        command = [self.third_party_support+'/bin/scons']
+        print subprocess.list2cmdline(command)
+        subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
     '''        
     def Create_folder_structure(self,name,ending):
         OutBase = os.path.join(self.out_base, name+'_out')
