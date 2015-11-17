@@ -113,8 +113,8 @@ void MindEventAction::ProcessHits(G4HCofThisEvent* HCE)
   G4SDManager* SDman  = G4SDManager::GetSDMpointer();
   G4int collection_id = SDman->GetCollectionID("MindCollection");
   
-  MindHitsCollection* THC =
-    (MindHitsCollection*)(HCE->GetHC(collection_id));
+  MindBarHitsCollection* THC =
+    (MindBarHitsCollection*)(HCE->GetHC(collection_id));
   
   for (G4int i=0; i<(THC->entries()); i++) {
   
