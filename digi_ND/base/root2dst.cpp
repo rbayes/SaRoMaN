@@ -20,7 +20,7 @@ root2dst::root2dst(bhep::prlevel vlevel, bhep::gstore* store){
   dataIn = NULL;
 
   if ( store != NULL ){
-    _construct = new hit_constructor( *store );
+    _construct = new gdml_hit_constructor( *store );
     _doVox = true;
   } else _doVox = false;
   
