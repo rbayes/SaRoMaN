@@ -206,7 +206,7 @@ cluster* hit_clusterer::make_cluster(double zpos, bhep::hit* dep)
    //// For new recpack
   EMatrix meas_cov(3,3,0);
   me->set_hv(HyperVector(meas_pos,_cov,_measType));
-  me->set_name(RP::setup_volume, "Detector");
+  me->set_name(RP::setup_volume, "mother");
   me->set_position_hv( HyperVector(meas_pos, _cov, RP::xyz) );
   ////
   
@@ -236,7 +236,7 @@ cluster* hit_clusterer::make_cluster(const EVector& vec,
   ////
   EMatrix meas_cov(3,3,0);
   me->set_hv(HyperVector(vec,_cov,_measType));
-  me->set_name(RP::setup_volume, "Detector");
+  me->set_name(RP::setup_volume, "mother");
   me->set_position_hv( HyperVector(vec, _cov, RP::xyz) );
   ///
   

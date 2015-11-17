@@ -22,6 +22,8 @@ MINDsetup::MINDsetup() {
 MINDsetup::~MINDsetup() {
 //*************************************************************
 
+  delete mother;
+
 }
 
 
@@ -95,7 +97,7 @@ void MINDsetup::createGeom(){
     Volume* mother = new Box(pos,xaxis,yaxis,
     MOTHER_x/2,MOTHER_y/2,MOTHER_z/2);
   */
-  Volume* mother;
+  //Volume* mother;
   if(OctGeom==1)
     mother = new MINDplate(pos,xaxis,yaxis,
 			   MOTHER_x/2,MOTHER_y/2,MOTHER_z/2,
@@ -121,12 +123,15 @@ void MINDsetup::createGeom(){
 
   // Create detector volume
 
-  const dict::Key vol_name = "Detector";
+  //dict::Key vol_name = "Detector";
+  //const dict::Key vol_name = "Detector";
   const dict::Key vert_name = "VertDetector";
   // Volume* det = new Box(pos,xaxis,yaxis,MIND_x/2,MIND_y/2,MIND_z/2);
-
-  Volume* det;
-  Volume* vdet;
+    
+  dict::Key vol_name;
+  //Volume* det;
+  //Volume* vdet;
+  
   if(OctGeom==1)
     det = new MINDplate(pos,xaxis,yaxis,MIND_x/2,MIND_y/2,MIND_z/2,
 				EAR_width, EAR_height);
@@ -142,24 +147,35 @@ void MINDsetup::createGeom(){
       vdet = new Box(vpos, zaxis, xaxis, VERT_z/2., VERT_x/2., VERT_y/2.);
   }
   _msetup.message("MIND volume generated",bhep::VERBOSE);
- 
-  // add volume
-  
-  _gsetup.add_volume("mother",vol_name,det);
-  if(VERT_z > 0)
-    _gsetup.add_volume("mother",vert_name,vdet);
-  // _gsetup.set_volume_property(vol_name,"X0",X0AIR);
-  //Introduce IRON scintillator sandwiches.
-  // int nplanes = (int)( MIND_z / (IRON_z + nScint * SCINT_z) );
-  
-  // for (int iplane = 0;iplane < _npieces;iplane++) {
-  
-  //     add_slab(iplane, vol_name);
-  
-  //   }
-  
-  
-  
+
+  for(map<string, std::vector<double> >::const_iterator it = _gdml_pos_map.begin();
+      it != _gdml_pos_map.end(); ++it)
+    {
+      std::map<string,std::vector<double> >::iterator it_int;
+      vol_name = it->first;
+      pos[0]= it->second[0];
+      pos[1]= it->second[1];
+      pos[2]= it->second[2];
+
+      if(isdigit(it->first.at(it->first.length() -1)))
+	{
+	  //If the string ends on a digit, remove it before using as a key
+	  it_int =_gdml_solid_map.find(it->first.substr(0,it->first.length()-1));
+	} 
+      else
+	{
+	  it_int =_gdml_solid_map.find(it->first);
+	}
+      
+      if(it_int!= _gdml_solid_map.end())
+	{
+	  //cout << it_int->first<<endl;
+	  det = new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
+			it_int->second[0]/2, it_int->second[1]/2);
+	  _gsetup.add_volume("mother",vol_name,det);
+	}
+      //  std::cout << it->first << " " << it->second[0] << " " << it->second[1] << " "  <<it->second[2]<< "\n";
+    }
 }
 
 //*************************************************************
@@ -181,13 +197,14 @@ void MINDsetup::add_slab(int plane, const dict::Key det_vol){
   
   // Volume* Fe_slab = new Box(fe_pos,xaxis,yaxis,MIND_x/2,MIND_y/2,IRON_z/2);
   
-  Volume* Fe_slab = new MINDplate(fe_pos,xaxis,yaxis,MIND_x/2,MIND_y/2,
+  Fe_slab = new MINDplate(fe_pos,xaxis,yaxis,MIND_x/2,MIND_y/2,
 				  IRON_z/2, EAR_width, EAR_height);
   
   _gsetup.add_volume(det_vol,iron_name,Fe_slab);
   
   _gsetup.set_volume_property(iron_name,"X0",X0Fe);
   
+  /*
   //SCINT
   EVector scint_pos(3,0);
   Volume *Sc_slab[nScint];
@@ -209,7 +226,7 @@ void MINDsetup::add_slab(int plane, const dict::Key det_vol){
     _gsetup.set_volume_property(scint_name,"X0",X0Sc);
 
   }
-
+  */
   //Scintillator.
   // plane_pos[2] = mind_front + _pieceWidth * plane + IRON_z + SCINT_z/2;
 //   const dict::Key scint_name = "SCINT_plane"+bhep::to_string(plane_pos[2]);
@@ -269,7 +286,7 @@ void MINDsetup::addProperties(){
 
   _zaxis = EVector(3,0);
   _zaxis[2]=1;
-  
+  /*
   // _gsetup.set_volume_property("mother","BField",BField);
   const dict::Key vol_name = "Detector";
   const dict::Key vert_name = "VertDetector";
@@ -318,13 +335,71 @@ void MINDsetup::addProperties(){
 
 //   // _gsetup.set_volume_property(vol_name,"de_dx",de_dx);
 //   _msetup.message("+++de/dx added to MIND:",de_dx,bhep::VERBOSE);
-  
+*/
+   
+  // dict::Key vol_name;
+  string current_string;
+  dict::Key vol_name;
  
+  for(map<string, std::vector<double> >::const_iterator it = _gdml_solid_map.begin();
+      it != _gdml_solid_map.end(); ++it)
+    {
+      string name = it->first;
+      int numScint=0;
+      int numFe=0;
+      vol_name = it->first;
+      
+      for(unsigned int len= 0; len < name.length(); len++)
+	{
+	  current_string = name.at(len);
+	  if("S" == current_string)
+	    {
+	      numScint++;
+	    }
+	  else if("F" == current_string)
+	    {
+	      numFe++;
+	    }
+	  else
+	    {
+	      break;
+	    }
+	}
+      
+      if (numScint != 0 || numFe != 0)
+	{
+	  // Calculate the appropriate properties and add them to the boxes
+	  //cout<<"YES"<<endl;
+	  
+	  // Should be done in readParam
+
+	  double wSc = SCINT_z / (SCINT_z + AIR_z*(numScint+1)*rel_denAS);
+	  double X01 = (X0Sc*X0AIR) / (wSc*(X0AIR-X0Sc) + X0Sc);
+	  double wFe = IRON_z/(IRON_z + ((SCINT_z+AIR_z)*numScint+AIR_z)*rel_denSI*(wSc*(1-rel_denAS)+rel_denAS));
+	  
+	  _wFe = wFe;
+
+	  double X0Eff = 1./(wFe/X0Fe + wSc/X01);
+
+	  //double length = numScint * AIR_z +numScint * SCINT_z + numFe * IRON_z;
+	  double length = it->second[2];
+
+	  double de_dx = (numScint * SCINT_z * de_dx_scint + numFe * IRON_z * de_dx_fe)/length;
+
+	  fieldScale *= IRON_z > 0 ? IRON_z/length : 1.0;
+	  
+	  BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
+
+	  _de_dx_map = new DeDxMap(de_dx*MeV/mm);
+	  _de_dx_map_scint = new DeDxMap(de_dx_scint*MeV/mm);
+
+	  _gsetup.set_volume_property(vol_name,RP::de_dx_map,*_de_dx_map);
+	  _gsetup.set_volume_property(vol_name,"X0",X0Eff);
+	  _gsetup.set_volume_property_to_sons("mother",RP::BFieldMap,BFieldMap);
+
+	}
+    }  
 }
-
-
-
-
 
 void MINDsetup::readParam(){
 
@@ -398,6 +473,16 @@ void MINDsetup::readParam(){
     //                       |  MAGNETIC FIELD |                    //
     // -------------------------------------------------------------//
     
+    fieldScale = 1.0;
+    if (_pstore.find_dstore("fieldScale") ) {
+      fieldScale = _pstore.fetch_dstore("fieldScale");
+      std::cout<<"Field Scaling is "<<fieldScale<<std::endl;
+    }
+
+    Bmap = _pstore.fetch_sstore("mag_field_map");
+	  
+
+    /*
     bhep::vdouble field = _pstore.fetch_vstore("mag_field");
     BField = EVector(3,0);
     BField[0] = field[0] * tesla; BField[1] = field[1] * tesla;
@@ -426,7 +511,7 @@ void MINDsetup::readParam(){
       BFieldMap = MINDfieldMapReader(fieldScale, OctGeom, MIND_x, MIND_y);
       B_int = fieldScale * tesla;
     }
-   
+    */
     //_msetup.message("Magnetic field intensity:",B_int/tesla,"tesla",c);
     
     // -------------------------------------------------------------//
@@ -435,22 +520,10 @@ void MINDsetup::readParam(){
     
     X0Fe = _pstore.fetch_dstore("x0Fe") * mm;
     X0Sc = _pstore.fetch_dstore("x0Sc") * mm;
-    X0AIR = _pstore.fetch_dstore("x0AIR") * m;
+    X0AIR = _pstore.fetch_dstore("x0AIR") * mm;
 
-    double wSc = SCINT_z / (SCINT_z + AIR_z*(nScint+1)*rel_denAS);
-    double X01 = (X0Sc*X0AIR) / (wSc*(X0AIR-X0Sc) + X0Sc);
-    _wFe = IRON_z/(IRON_z + ((SCINT_z+AIR_z)*nScint+AIR_z)*rel_denSI*(wSc*(1-rel_denAS)+rel_denAS));
-    // _wFe = IRON_z/(IRON_z + rel_denSI*(SCINT_z+rel_denAS*AIR_z));
-
-    X0Eff = 1./(_wFe/X0Fe + wSc/X01);
-
-    //de_dx = _pstore.fetch_dstore("de_dx") * MeV/cm;
-    //de_dx = 1./(_wFe/de_dxFe + wSc/de_dxFe);
-
-    // changed to introduce the de_dx map
-    de_dx_scint = _pstore.find_dstore("de_dx_scint")?
-      _pstore.fetch_dstore("de_dx_scint") * MeV/mm : 0.205 * MeV/mm;
-    de_dx_min = _pstore.fetch_dstore("de_dx_min") * MeV/mm;
+    de_dx_scint = _pstore.fetch_dstore("de_dx_scint") * MeV/mm;
+    de_dx_fe = _pstore.fetch_dstore("de_dx_fe") * MeV/mm;
 
     _msetup.message("Radiation length:",X0Fe/cm,"cm",c);
 
@@ -470,6 +543,61 @@ void MINDsetup::readParam(){
     else{
       StepSize = 0.;
     }
+
+
+    // -------------------------------------------------------------//
+    //                  |  USE THE GDML PARSED FILE    |            //
+    // -------------------------------------------------------------//
+
+  //read gdml_parsed file
+  _gdml_parsed_path = _pstore.fetch_sstore("xml_parsed");
+
+  std::ifstream file;
+  file.open (_gdml_parsed_path.c_str());
+
+  string word;
+  string temp;
+  string type;
+  double x;
+  double y;
+  double z;
+  std::vector<double> temp_vector;
+  while(file >> type)
+    {
+      if (type == "SOLID")
+	{
+	  file >> word;
+	  temp_vector.clear();
+	  file >> temp;
+	  x = mm*atof(temp.c_str());
+	  temp_vector.push_back(x);
+	  file >> temp;
+	  y = mm*atof(temp.c_str());
+	  temp_vector.push_back(y);
+	  file >> temp;
+	  z = mm*atof(temp.c_str());
+	  temp_vector.push_back(z);
+	  _gdml_solid_map[word] = temp_vector;
+	}
+      else if (type == "POS")
+	{
+	  file >> word;
+	  temp_vector.clear();
+	  file >> temp;
+	  x = mm*(double)atof(temp.c_str());
+	  temp_vector.push_back(x);
+	  file >> temp;
+	  y = mm*(double)atof(temp.c_str());
+	  temp_vector.push_back(y);
+	  file >> temp;
+	  z = mm*(double)atof(temp.c_str());
+	  temp_vector.push_back(z);
+	  _gdml_pos_map[word] = temp_vector;
+	}
+    
+
+    }
+
 
 }
 

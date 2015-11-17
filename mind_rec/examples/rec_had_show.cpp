@@ -161,7 +161,7 @@ Measurement* getMeasurement(bhep::hit& hit)
   Measurement* me = new Measurement();
   me->set_name(meastype);
   me->set_hv(HyperVector(hit_pos,cov));
-  me->set_name("volume", "Detector");
+  me->set_name("volume", "mother");
   me->set_position( meas_pos );
 
   //Add the hit energy deposit as a key to the Measurement.
