@@ -74,7 +74,7 @@ void gdml_hit_constructor::calculate_layerZ()
 {
   // should read this from root
 
-  /*
+  
   //Fill vector with all possible scint z positions.
   double vertModlength = _nActive*_activeLength + _nActive*_gapLength;
   int nVertPieces = (int)ceil(_vertexDetdepth/vertModlength);
@@ -137,7 +137,7 @@ void gdml_hit_constructor::calculate_layerZ()
     _zLayer.push_back( z );
 
   }
-  */
+  
 }
 
 void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
