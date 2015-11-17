@@ -48,8 +48,8 @@ class saroman:
 
     def __init__(self):
         #Set up paths #
-        self.home = os.cwd() # '/data/neutrino05/rbayes/MIND' # 
-        self.exec_base = os.path.join(self.home, 'SaRoMaN')
+        self.home = os.getcwd() # '/data/neutrino05/rbayes/MIND' # 
+        self.exec_base = self.home
         self.out_base  = os.path.join(self.home, 'out')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
         self.third_party_support = os.path.join(self.home, 'third_party') 
@@ -58,7 +58,7 @@ class saroman:
 
         #General flags
         self.need_third_party_install = False
-        self.need_own_install = True
+        self.need_own_install = False
         self.generate_field_map = True # If false remember to change self.field_map_name to point to your field map!
         self.parse_gdml = True
 
