@@ -10,7 +10,7 @@
 #include "MindEventAction.h"
 #include "MindConfigService.h"
 #include "MindParamStore.h"
-#include "MindSD.h"
+#include "MindBarSD.h"
 #include "MindUtils.h"
 #include "MindLookupTable.h"
 
@@ -130,6 +130,19 @@ void MindEventAction::ProcessHits(G4HCofThisEvent* HCE)
     G4double time = (*THC)[i]->GetHitTime();
     bhit->add_property("time", time);
 
+    G4double transbarpos = (*THC)[i]->GetBarOrientation()==1 ?
+      (*THC)[i]->GetBarTranslation()[1] : (*THC)[i]->GetBarTranslation()[0];
+    bhit->add_property("barPosT", transbarpos);
+
+    G4double longbarpos = (*THC)[i]->GetBarTranslation()[2];
+    bhit->add_property("barPosZ", longbarpos);
+
+    G4int barorientation = (*THC)[i]->GetBarOrientation();
+    bhit->add_property("IsYBar", barorientation);
+
+    G4String module = (*THC)[i]->GetModule();
+    bhit->add_property("detmodule", module);
+    
     pstatus = MindLookupTable::Instance().find_particle( (*THC)[i]->GetTrackID() );
 
     if ( pstatus == 0 ){
