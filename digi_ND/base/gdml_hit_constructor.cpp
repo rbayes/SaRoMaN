@@ -43,14 +43,14 @@ gdml_hit_constructor::gdml_hit_constructor(const bhep::gstore& store)
 gdml_hit_constructor::~gdml_hit_constructor()
 {
 }
-
+/*
 void gdml_hit_constructor::reset()
 {
   //Clear out map.correct??
   _voxels.clear();
 
 }
-
+*/
 void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
 			      std::vector<bhep::hit*>& rec_hit)
 {
@@ -63,16 +63,18 @@ void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
   sort( sortedHits.begin(), sortedHits.end(), forwardSort() );
   
   //sort into voxels map.
-  parse_to_map( sortedHits );
+  //parse_to_map( sortedHits );
   
   //Make rec_hits from vox.
-  construct_hits( rec_hit );
+  //construct_hits( rec_hit );
+
+  construct_hits(sortedHits, rec_hit);
   
 }
 
 void gdml_hit_constructor::calculate_layerZ()
 {
-  // should read this from root
+  // should read this from root or gdml.
 
   
   //Fill vector with all possible scint z positions.
@@ -139,7 +141,7 @@ void gdml_hit_constructor::calculate_layerZ()
   }
   
 }
-
+/*
 void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
 {
   //Sort hits into voxel map.
@@ -167,7 +169,7 @@ void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
   }
   
 }
-
+*/
 double gdml_hit_constructor::find_plane(bhep::hit& curHit)
 {
   //find the appropriate z position by comparison to
@@ -185,7 +187,7 @@ double gdml_hit_constructor::find_plane(bhep::hit& curHit)
   
   return (*_zIt);
 }
-
+/*
 int gdml_hit_constructor::calculate_vox_no(bhep::hit& curHit)
 {
   //calculate the correct voxel number.
@@ -200,7 +202,32 @@ int gdml_hit_constructor::calculate_vox_no(bhep::hit& curHit)
 	 
   return vox_num;
 }
+*/
 
+void gdml_hit_constructor::construct_hits(const std::vector<bhep::hit*>& hits std::vector<bhep::hit*>& rec_hit)
+{
+  //copy hits so they can be sorted in z.
+  std::vector<bhep::hit*> sortedHits = hits;
+  sort( sortedHits.begin(), sortedHits.end(), forwardSort() );
+
+  // For each (sorted) hit, take the x,y,z positions smear these given the smearing and attenuation.
+
+  for (std::vector<bhep::hit*>::iterator sortedHitIter = sortedHits.begin() ; sortedHitIter != sortedHits.end(); ++sortedHitIter)
+    {
+      bhep::hit* vhit = get_vhit(sortedHitIter->x()[0],sortedHitIter->x()[1],sortedHitIter->x()[2]);
+
+      if ( vhit != NULL )
+	{
+	  rec_hit.push_back( vhit );
+	}
+
+    }
+
+
+
+}
+
+ /*
 void gdml_hit_constructor::construct_hits(std::vector<bhep::hit*>& rec_hit)
 {
   //takes the voxels which have been filled and make
@@ -228,7 +255,9 @@ void gdml_hit_constructor::construct_hits(std::vector<bhep::hit*>& rec_hit)
   
 }
 
-bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
+ */
+
+bhep::hit* gdml_hit_constructor::get_vhit(double voxX,double voxY, double z,
 				     const std::multimap<int,bhep::hit*>& map1)
 {
   //Makes a rec_hit from the voxel position and adds the relevant points.
@@ -246,8 +275,8 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   double yedge = _detectorY/2.;
   double smearingFactor = 0.06;
   
-  double voxX = icol*_voxXdim + _voxXdim/2 - _detectorX/2;
-  double voxY = _detectorY/2 - (irow*_voxYdim + _voxYdim/2);
+  //double voxX = icol*_voxXdim + _voxXdim/2 - _detectorX/2;
+  //double voxY = _detectorY/2 - (irow*_voxYdim + _voxYdim/2);
   
   Point3D hitPos( voxX, voxY, z );
   
@@ -255,7 +284,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   vhit->set_point( hitPos );
 
   vhit->add_property( "voxel", vox );
-
+  /*
   std::multimap<int,bhep::hit*>::const_iterator hIt;
   for (hIt = map1.equal_range(vox).first;hIt != map1.equal_range(vox).second;hIt++)
     {
@@ -277,6 +306,8 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
       //std::cout<<(*hIt).second->x()[0]<<"\t"<<(*hIt).second->x()[1]<<"\t"<<(*hIt).second->x()[2]<<"\t"
       //	       <<(*hIt).second->ddata( "EnergyDep" )<<std::endl;
     }
+*/
+
   //Do attenuations.
   double xE1, xE2, yE1, yE2;
   double Xphot, Yphot;

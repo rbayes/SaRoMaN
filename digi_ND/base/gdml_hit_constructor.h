@@ -51,17 +51,17 @@ class gdml_hit_constructor
   //find vox number of hit.
   int calculate_vox_no(bhep::hit& curHit);
   //Make the rec hits.
-  void construct_hits(std::vector<bhep::hit*>& rec_hit);
+  void construct_hits(std::vector<bhep::hit*>& sortedHits,std::vector<bhep::hit*>& rec_hit);
   //make an individual rec hit.
-  bhep::hit* get_vhit(int vox, double z, const std::multimap<int,bhep::hit*>& map1);
+  bhep::hit* get_vhit(double voxX, double voxY, double z, const std::multimap<int,bhep::hit*>& map1);
   
   //Random Generator for the smear.
   TRandom3 _ranGen;
 
   //vector of plane z positions.
-  std::vector<double> _zLayer;
+  //std::vector<double> _zLayer;
   //iterator for z planes.
-  std::vector<double>::iterator _zIt;
+  //std::vector<double>::iterator _zIt;
 
   //Parameters related to current MIND setup.
   double _detectorLength;
@@ -77,7 +77,7 @@ class gdml_hit_constructor
   int _nActive;
   int OctGeom;
   double _minEng;
-  int _attLength;
+  double _attLength;
   
   //EMatrix _cov;
 
@@ -90,7 +90,7 @@ class gdml_hit_constructor
   int _nVox;
 
   //Container wchich will define voxels.
-  std::map<double, std::multimap<int, bhep::hit*> > _voxels;
+  //std::map<double, std::multimap<int, bhep::hit*> > _voxels;
   
 };
 
