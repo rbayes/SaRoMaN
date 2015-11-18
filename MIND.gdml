@@ -7,8 +7,8 @@
       <constant name="FeDepth" value="30"/>
       <constant name="SciWidth" value="2800"/>
       <constant name="SciHeight" value="2000"/>
-      <constant name="SciDepth" value="30"/>
       <constant name="BarDepth" value="7.5"/>
+      <constant name="SciDepth" value="4*BarDepth"/>
       <constant name="BarWidthX1" value="150"/>
       <constant name="BarWidthX2" value="200"/>
       <constant name="BarWidthY1" value="10"/>
@@ -16,7 +16,7 @@
       <constant name="AlWidth" value="1"/>
       <constant name="Gap0" value="1"/>
       <constant name="Gap1" value="500"/>
-      <constant name="DetectorLength" value="33 * (FeDepth + 2*AlWidth + Gap0) + 18*4*BarDepth + 3*Gap1"/>
+      <constant name="DetectorLength" value="33 * (FeDepth + 2*AlWidth + Gap0) + 18*SciDepth + 3*Gap1"/>
   </define>
 
   <materials>
@@ -156,6 +156,7 @@
     <volume name="FePlate">
         <materialref ref="G4_AIR0x19316e30"/>
         <solidref ref="FePlate_solid"/>
+	<auxiliary auxtype="EMField" auxvalue="MagMap"/>
     </volume>
     <volume name="BRACE">
         <materialref ref="G4_Al0x19323860"/>
@@ -182,18 +183,26 @@
     <volume name="BarX1">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarX1_solid"/>
+	<auxiliary auxtype="SD" auxvalue="Bar"/>
+	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
     <volume name="BarX2">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarX2_solid"/>
+	<auxiliary auxtype="SD" auxvalue="Bar"/>
+	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
     <volume name="BarY1">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarY1_solid"/>
+	<auxiliary auxtype="SD" auxvalue="Bar"/>
+	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
     <volume name="BarY2">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarY2_solid"/>
+	<auxiliary auxtype="SD" auxvalue="Bar"/>
+	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
     <volume name="BarXPair1">
         <materialref ref="G4_AIR0x19316e30"/>
@@ -410,9 +419,9 @@
     <volume name="Detector">
       <materialref ref="G4_AIR0x19316e30"/>
       <solidref ref="DETECTOR_solid"/>
-      <physvol name="SciPlate0_physi">
+      <physvol name="S0_physi">
         <volumeref ref="ACTIVE"/>
-        <position name="SciPlate0_pos" x="0.0" y="0.0" z="-DetectorLength/2 + 4*BarDepth/2"/>
+        <position name="S0_pos" x="0.0" y="0.0" z="-DetectorLength/2 + 4*BarDepth/2"/>
       </physvol>
       <physvol name="SFFFS0_physi">
         <volumeref ref="SFFFS"/>
@@ -444,9 +453,9 @@
 		  z="-DetectorLength/2 + 64*BarDepth + 31.5 * (FeDepth
 		     + 2*AlWidth + Gap0) + 2*Gap1"/>
       </physvol>
-      <physvol name="SciPlate1_physi">
+      <physvol name="S1_physi">
         <volumeref ref="ACTIVE"/>
-        <position name="SciPlate1_pos" x="0.0" y="0.0"
+        <position name="S1_pos" x="0.0" y="0.0"
 		  z="-DetectorLength/2 + 72*BarDepth + 33 * (FeDepth
 		     + 2*AlWidth + Gap0) + 3*Gap1"/>
       </physvol>

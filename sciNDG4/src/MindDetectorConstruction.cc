@@ -164,7 +164,6 @@ void MindDetectorConstruction::SetAuxInformation(G4String basename,
   do {
     try {
       if ((*vit).type.contains("SD")){
-	sensdetname += (*vit).value;
 	G4VSensitiveDetector* mydet = SDMgr->FindSensitiveDetector(sensdetname);
 	if ( mydet ){
 	  myvol->SetSensitiveDetector(mydet);
@@ -182,6 +181,7 @@ void MindDetectorConstruction::SetAuxInformation(G4String basename,
     } catch (...) { 
       continue;
     }
+    vit++;
   } while (vit != auxlist.end());	  
 }
 
