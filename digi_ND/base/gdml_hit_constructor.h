@@ -40,7 +40,7 @@ class gdml_hit_constructor
  private:
 
   //reset
-  void reset();
+  //void reset();
 
   //calculate z position of layers.
   void calculate_layerZ();
@@ -51,17 +51,17 @@ class gdml_hit_constructor
   //find vox number of hit.
   int calculate_vox_no(bhep::hit& curHit);
   //Make the rec hits.
-  void construct_hits(std::vector<bhep::hit*>& sortedHits,std::vector<bhep::hit*>& rec_hit);
+  void construct_hits(const std::vector<bhep::hit*>& hits,std::vector<bhep::hit*>& rec_hit);
   //make an individual rec hit.
-  bhep::hit* get_vhit(double voxX, double voxY, double z, const std::multimap<int,bhep::hit*>& map1);
+  bhep::hit* get_vhit(bhep::hit* curr_hit);
   
   //Random Generator for the smear.
   TRandom3 _ranGen;
 
   //vector of plane z positions.
-  //std::vector<double> _zLayer;
+  std::vector<double> _zLayer;
   //iterator for z planes.
-  //std::vector<double>::iterator _zIt;
+  std::vector<double>::iterator _zIt;
 
   //Parameters related to current MIND setup.
   double _detectorLength;
