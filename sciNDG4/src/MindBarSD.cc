@@ -29,9 +29,9 @@ MindBarSD::MindBarSD(G4String name): G4VSensitiveDetector(name)
     token = s.substr(0, pos);
     _volumelist.push_back(token);
     s.erase(0, pos + delimiter.length());
-    std::cout<<token<<std::endl;
+    // std::cout<<token<<std::endl;
   }
-  std::cout<<s<<std::endl;
+  // std::cout<<s<<std::endl;
   _volumelist.push_back(s);
 }
 
@@ -54,20 +54,12 @@ void MindBarSD::Initialize(G4HCofThisEvent* HCE)
 G4bool MindBarSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 {
   G4TouchableHandle theTouchable = step->GetPreStepPoint()->GetTouchableHandle();
-  G4ThreeVector barTrans = theTouchable->GetTranslation();
-  G4ThreeVector planeTrans = theTouchable->GetTranslation(1);
-  std::cout<<" Bar Translation = ("<<barTrans[0]
-	   <<","<<barTrans[1]<<","<<barTrans[2]<<")\n";
-  std::cout<<" Plane Translation = ("<<planeTrans[0]
-	   <<","<<planeTrans[1]<<","<<planeTrans[2]<<")\n";
-  G4double barOffset = 0;
 
   // G4Solid* modulesolid = theTouchable->GetVolume(1);
   // Get the z-dimension of the solid
   
   // if (_volumelist[2].contains
   // Record plane z position as part of the bar translation
-  barTrans[2] = planeTrans[2];
     
 
   G4double edep = step->GetTotalEnergyDeposit();
@@ -79,7 +71,27 @@ G4bool MindBarSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   // G4cout<<edep<<"\t"<<step->GetPostStepPoint()->GetPosition()[2]<<G4endl;
   hit->SetEnergyDeposit(edep);
   hit->SetHitTime(time);
-  hit->SetBarTranslation(barTrans);
+
+  G4ThreeVector pos = step->GetPostStepPoint()->GetPosition();
+  G4ThreeVector copyTrans = theTouchable->GetTranslation();
+  /*
+  G4ThreeVector barTrans = theTouchable->GetTranslation(1);
+  G4ThreeVector modTrans = theTouchable->GetTranslation(2);
+  G4ThreeVector detTrans = theTouchable->GetTranslation(3);
+  std::cout<<" hit position = ("<<pos[0]
+	   <<","<<pos[1]<<","<<pos[2]<<")\n";
+  std::cout<<" Copy Translation = ("<<copyTrans[0]
+	   <<","<<barTrans[1]<<","<<copyTrans[2]<<")\n";
+  std::cout<<" Bar Translation = ("<<barTrans[0]
+	   <<","<<barTrans[1]<<","<<barTrans[2]<<")\n\n";
+  std::cout<<" Module Translation = ("<<modTrans[0]
+	   <<","<<modTrans[1]<<","<<modTrans[2]<<")\n";
+  std::cout<<" Detector Translation = ("<<detTrans[0]
+	   <<","<<detTrans[1]<<","<<detTrans[2]<<")\n\n";
+  */
+  G4double barOffset = 0;
+
+  hit->SetBarTranslation(copyTrans);
   hit->SetModule(_volumelist[2]);
   if(_volumelist.back().contains("Y")){
     hit->SetBarOrientation(1);

@@ -156,6 +156,7 @@
     <volume name="FePlate">
         <materialref ref="G4_AIR0x19316e30"/>
         <solidref ref="FePlate_solid"/>
+	<auxiliary auxtype="EMField" auxvalue="MagMap"/>
     </volume>
     <volume name="BRACE">
         <materialref ref="G4_Al0x19323860"/>
@@ -182,26 +183,26 @@
     <volume name="BarX1">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarX1_solid"/>
-	<auxiliary type="SD" value="Bar"/>
-	<auxiliary type="Attenuation" value="5000"/>
+	<auxiliary auxtype="SD" auxvalue="Bar"/>
+	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
     <volume name="BarX2">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarX2_solid"/>
-	<auxiliary type="SD" value="Bar"/>
-	<auxiliary type="Attenuation" value="5000"/>
+	<auxiliary auxtype="SD" auxvalue="Bar"/>
+	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
     <volume name="BarY1">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarY1_solid"/>
-	<auxiliary type="SD" value="Bar"/>
-	<auxiliary type="Attenuation" value="5000"/>
+	<auxiliary auxtype="SD" auxvalue="Bar"/>
+	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
     <volume name="BarY2">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarY2_solid"/>
-	<auxiliary type="SD" value="Bar"/>
-	<auxiliary type="Attenuation" value="5000"/>
+	<auxiliary auxtype="SD" auxvalue="Bar"/>
+	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
     <volume name="BarXPair1">
         <materialref ref="G4_AIR0x19316e30"/>

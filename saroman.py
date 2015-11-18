@@ -52,13 +52,13 @@ class saroman:
         self.exec_base = self.home
         self.out_base  = os.path.join(self.home, 'out')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        self.third_party_support = '/data/neutrino05/phallsjo/third_party' #os.path.join(self.home, 'third_party') 
+        self.third_party_support = os.path.join(self.home, 'third_party') 
         self.xml_file_path = os.path.join(self.exec_base,'MIND.gdml')
         self.parsed_file_path  = os.path.join(self.exec_base,'parsedGdml.log')
 
         #General flags
         self.need_third_party_install = False
-        self.need_own_install = False
+        self.need_own_install = True
         self.generate_field_map = True # If false remember to change self.field_map_name to point to your field map!
         self.parse_gdml = True
 
