@@ -233,11 +233,11 @@
         <solidref ref="BarYPair_solid"/>
         <physvol name="BarY11_phys">
             <volumeref ref="BarY1"/>
-            <position name="BarY11_pos" unit="mm" x="-BarWidthY2/2" y="0.0" z="0.0"/>
+            <position name="BarY11_pos" unit="mm" y="-BarWidthY2/2" x="0.0" z="0.0"/>
         </physvol>
         <physvol name="BarY21_phys">
             <volumeref ref="BarY2"/>
-            <position name="BarY21_pos" unit="mm" x="BarWidthY1/2" y="0.0" z="0.0"/>
+            <position name="BarY21_pos" unit="mm" y="BarWidthY1/2" x="0.0" z="0.0"/>
         </physvol>
     </volume>
     <volume name="BarYPair2">
@@ -245,11 +245,11 @@
         <solidref ref="BarYPair_solid"/>
         <physvol name="BarY12_phys">
             <volumeref ref="BarY1"/>
-            <position name="BarY12_pos" unit="mm" x="BarWidthY2/2" y="0.0" z="0.0"/>
+            <position name="BarY12_pos" unit="mm" y="BarWidthY2/2" x="0.0" z="0.0"/>
         </physvol>
         <physvol name="BarY22_phys">
             <volumeref ref="BarY2"/>
-            <position name="BarY22_pos" unit="mm" x="-BarWidthY1/2" y="0.0" z="0.0"/>
+            <position name="BarY22_pos" unit="mm" y="-BarWidthY1/2" x="0.0" z="0.0"/>
         </physvol>
     </volume>
     

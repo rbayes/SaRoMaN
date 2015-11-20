@@ -115,7 +115,9 @@ void MindEventAction::ProcessHits(G4HCofThisEvent* HCE)
   
   MindBarHitsCollection* THC =
     (MindBarHitsCollection*)(HCE->GetHC(collection_id));
-  
+
+  // std::cout<<(THC->entries())<<std::endl;
+
   for (G4int i=0; i<(THC->entries()); i++) {
   
     bhep::hit* bhit = new bhep::hit("tracking");
@@ -136,13 +138,10 @@ void MindEventAction::ProcessHits(G4HCofThisEvent* HCE)
 
     G4double longbarpos = (*THC)[i]->GetBarTranslation()[2];
     bhit->add_property("barPosZ", longbarpos);
-
+    
     G4int barorientation = (*THC)[i]->GetBarOrientation();
     bhit->add_property("IsYBar", barorientation);
 
-    G4String module = (*THC)[i]->GetModule();
-    bhit->add_property("detmodule", module);
-    
     pstatus = MindLookupTable::Instance().find_particle( (*THC)[i]->GetTrackID() );
 
     if ( pstatus == 0 ){

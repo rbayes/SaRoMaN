@@ -82,7 +82,7 @@ MindFieldMapR::MindFieldMapR(G4String Bmap, double fieldScaling,
 	   <<" data points, for "<<_Xmin<<" < x < "<<_Xmax
 	   <<" and "<<dtmap[_Xmin].size()<<" data points, for "
 	   <<_Ymin<<" < y < "<<_Ymax<< std::endl;
-  std::cout<<tesla<<std::endl;
+  // std::cout<<tesla<<std::endl;
   bfile.close();
 }
 
