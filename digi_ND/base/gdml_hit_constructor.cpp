@@ -36,7 +36,7 @@ gdml_hit_constructor::gdml_hit_constructor(const bhep::gstore& store)
 
   _attLength = store.fetch_dstore("WLSatten");
 
-  calculate_layerZ();
+  // calculate_layerZ();
   
 }
 
@@ -56,6 +56,8 @@ void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
 {
   //First clear out map.
   //reset();
+
+  cout<<"In execute in gdml_hit_constructor.cpp"<<endl;
   
   //copy hits so they can be sorted in z.
   std::vector<bhep::hit*> sortedHits = hits;
@@ -72,75 +74,6 @@ void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
   
 }
 
-void gdml_hit_constructor::calculate_layerZ()
-{
-  // should read this from root or gdml.
-
-  
-  //Fill vector with all possible scint z positions.
-  double vertModlength = _nActive*_activeLength + _nActive*_gapLength;
-  int nVertPieces = (int)ceil(_vertexDetdepth/vertModlength);
-  _vertexDetdepth = nVertPieces * vertModlength;
-  
-  int nVertLayers = nVertPieces *_nActive;
-
-  double pieceLength = _passiveLength + _nActive*_activeLength
-    + (_nActive)*_gapLength + (_nActive * _braceLength );
-  int npieces = (int)ceil( _detectorLength / pieceLength );
-
-  //reset detector length to integer multiple of pieces.
-  _detectorLength = npieces * pieceLength;
-
-  int nLayers = npieces * _nActive;
-
-  double z;
-  
-  for (int iLayer = 0;iLayer < nVertLayers;iLayer++){
-    
-    z = 0;
-    
-    for (int j = 0;j < _nActive;j++){
-
-      z += _gapLength + _activeLength;
-
-      if ( (iLayer-j) % _nActive == 0 ){
-	int block_no = (iLayer-j) / _nActive;
-	z += vertModlength*block_no 
-	  - _activeLength/2;
-	break;
-      }
-
-    }
-    z -= (_detectorLength + _vertexDetdepth)/2.;
-
-    _zLayer.push_back( z );
-  }
-
-  for (int iLayer = 0;iLayer < nLayers;iLayer++){
-
-    z = 0;
-
-    for (int j = 0;j < _nActive;j++){
-
-      z += _gapLength + _activeLength;
-
-      if ( (iLayer-j) % _nActive == 0 ){
-	int block_no = (iLayer-j) / _nActive;
-	z += pieceLength*block_no + _passiveLength
-	  - _activeLength/2;
-	break;
-      }
-
-    }
-
-    z -= _detectorLength/2;
-    z += _vertexDetdepth/2;
-    
-    _zLayer.push_back( z );
-
-  }
-  
-}
 /*
 void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
 {
@@ -170,34 +103,25 @@ void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
   
 }
 */
-double gdml_hit_constructor::find_plane(bhep::hit& curHit)
-{
-  //find the appropriate z position by comparison to
-  //Layer z.
-  
-  double modDiff = fabs( curHit.x()[2] - (*_zIt) );
-  std::cout<<"X = "<<curHit.x()[0]<<", Y = "<<curHit.x()[1]<<", Z of hit "<<curHit.x()[2]<<std::endl;
-  while ( (int)modDiff > (int)_activeLength/2. && _zIt != _zLayer.end()){
-
-    _zIt++;
-
-    modDiff = fabs( curHit.x()[2] - (*_zIt) );
-    
-  }
-  
-  return (*_zIt);
-}
 
 void gdml_hit_constructor::construct_hits(const std::vector<bhep::hit*>& hits, std::vector<bhep::hit*>& rec_hit)
 {
+
+cout<<"In construct_hits in gdml_hit_constructor.cpp"<<endl;
+
   //copy hits so they can be sorted in z.
   std::vector<bhep::hit*> sortedHits = hits;
+  cout<<hits.size()<<endl;
+  cout<<sortedHits.size()<<endl;
   sort( sortedHits.begin(), sortedHits.end(), forwardSort() );
 
   // For each (sorted) hit, take the x,y,z positions smear these given the smearing and attenuation.
 
   for (std::vector<bhep::hit*>::iterator sortedHitIter = sortedHits.begin() ; sortedHitIter != sortedHits.end(); ++sortedHitIter)
     {
+
+      cout<<"In for loop in execute in gdml_hit_constructor.cpp"<<endl;
+
       bhep::hit* vhit = get_vhit((*sortedHitIter));
 
       if ( vhit != NULL )
@@ -211,6 +135,8 @@ void gdml_hit_constructor::construct_hits(const std::vector<bhep::hit*>& hits, s
 
  bhep::hit* gdml_hit_constructor::get_vhit(bhep::hit* curr_hit)
 {
+cout<<"In get_vhit in gdml_hit_constructor.cpp"<<endl;
+
   double x = curr_hit->x()[0];
   double y = curr_hit->x()[1];
   double z = curr_hit->x()[2];
@@ -251,9 +177,12 @@ void gdml_hit_constructor::construct_hits(const std::vector<bhep::hit*>& hits, s
   } else if ( curr_hit->mother_particle().name() == "lepton_shower" )
     muProp += 0.5;
   
-  //std::cout<<(*hIt).second->x()[0]<<"\t"<<(*hIt).second->x()[1]<<"\t"<<(*hIt).second->x()[2]<<"\t"
-  //	       <<(*hIt).second->ddata( "EnergyDep" )<<std::endl;
+  // std::cout<<x<<"\t"<y<<"\t"<<z<<"\t"<<std::endl;
   
+  cout<<curr_hit->x()[0]<<endl;
+  cout<<curr_hit->x()[1]<<endl;
+  cout<<curr_hit->x()[2]<<endl;
+
 
   //Do attenuations.
   double xE1, xE2, yE1, yE2;

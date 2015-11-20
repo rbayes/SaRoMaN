@@ -42,14 +42,6 @@ class gdml_hit_constructor
   //reset
   //void reset();
 
-  //calculate z position of layers.
-  void calculate_layerZ();
-  //function which puts hits into the map.
-  void parse_to_map(const std::vector<bhep::hit*> hits);
-  //find plane of hit.
-  double find_plane(bhep::hit& curHit);
-  //find vox number of hit.
-  int calculate_vox_no(bhep::hit& curHit);
   //Make the rec hits.
   void construct_hits(const std::vector<bhep::hit*>& hits,std::vector<bhep::hit*>& rec_hit);
   //make an individual rec hit.

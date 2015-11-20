@@ -378,8 +378,12 @@ particle* root2dst::create_digital_representation(const vector<particle*>& tru_p
     vector<bhep::hit*> vox;
     vector<bhep::hit*>::iterator voxIt;
     
+    cout<<tru_parts.size()<<endl;
+
     for (int iPart = 0;iPart < (int)tru_parts.size();iPart++){
       temp_hit = tru_parts[iPart]->hits(detect);
+
+       cout<<temp_hit.size()<<endl;
       
       if ( part_hits.size() == 0 && temp_hit.size() != 0 )
 	part_hits = temp_hit;
