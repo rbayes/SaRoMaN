@@ -113,7 +113,7 @@ G4VPhysicalVolume* MindDetectorConstruction::Construct()
   else if( _use_gdml ){
     _gdml.Read(_gdml_file_name);
     world_physi = dynamic_cast<G4PVPlacement*>(_gdml.GetWorldVolume());
-    SetNullField(*world_physi->GetLogicalVolume());
+    // SetNullField(*world_physi->GetLogicalVolume());
     G4String detectorName = "MIND/";
     SetVolumeInformation(world_physi->GetLogicalVolume(), detectorName);
   }
@@ -164,12 +164,12 @@ void MindDetectorConstruction::SetAuxInformation(G4String basename,
   do {
     try {
       if ((*vit).type.contains("SD")){
-	G4VSensitiveDetector* mydet = SDMgr->FindSensitiveDetector(sensdetname);
+	G4VSensitiveDetector* mydet = SDMgr->FindSensitiveDetector((*vit).value);
 	if ( mydet ){
 	  myvol->SetSensitiveDetector(mydet);
 	} else {
 	  G4cout << sensdetname << " detector not found. Defining detector." << G4endl;
-	  sensDetList.push_back( new MindBarSD(sensdetname) );
+	  sensDetList.push_back( new MindBarSD((*vit).value) );
 	  SDMgr->AddNewDetector(sensDetList.back());
 	  G4VSensitiveDetector* mydet = SDMgr->FindSensitiveDetector(sensdetname);
 	  myvol->SetSensitiveDetector(mydet);
