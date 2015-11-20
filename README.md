@@ -41,14 +41,22 @@ feasibility of the communication of hits in this format needs to be
 evaluated.
 
 List of external packages required;
-* GENIE
-* GEANT4
-* RecPack
-* bhep?
-* LHAPDF
-* Xerces
-* expat
-* others?
+* Python 2.4.3
+* gcc (GCC) 4.1.2 20080704
+* Log4cpp version? z3 co
+* LHAPDF 5.9.1
+* PYNTHIA6
+* ROOT v5-34-34
+* GENIE R-2.8.6
+* xerces-c-3.1.2
+* expat-2.1.0
+* bhep v3r0p0
+* CRY v1.7
+* GEANT 4.10.00.p01
+* CLHEP 2.1.4.1
+* RECPACK v1r2p0
+* SCONS 1.2.0
+*
 
 The workspace should be composed of the following packages
 
