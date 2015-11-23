@@ -3,17 +3,25 @@
 
   <define>
       <constant name="FeWidth" value="3500"/>
-      <constant name="FeHeight" value="2000"/>
+      <constant name="FeHeight" value="2100"/>
       <constant name="FeDepth" value="30"/>
-      <constant name="SciWidth" value="2800"/>
+      <constant name="SciWidth" value="2900"/>
       <constant name="SciHeight" value="2000"/>
+      <constant name="SciX1Width" value="2720"/>
+      <constant name="SciX2Width" value="2760"/>
+      <constant name="SciY1Width" value="2880"/>
+      <constant name="SciY2Width" value="2880"/>
+      <constant name="SciX1Height" value="1950"/>
+      <constant name="SciX2Height" value="1950"/>
+      <constant name="SciY1Height" value="1878.72"/>
+      <constant name="SciY2Height" value="1850.01"/>
       <constant name="BarDepth" value="7.5"/>
       <constant name="SciDepth" value="4*BarDepth"/>
-      <constant name="BarWidthX1" value="150"/>
-      <constant name="BarWidthX2" value="200"/>
-      <constant name="BarWidthY1" value="10"/>
-      <constant name="BarWidthY2" value="30"/>
-      <constant name="AlWidth" value="1"/>
+      <constant name="BarWidthX1" value="210"/>
+      <constant name="BarWidthX2" value="340"/>
+      <constant name="BarWidthY1" value="30"/>
+      <constant name="BarWidthY2" value="39.14"/>
+      <constant name="AlWidth" value="3"/>
       <constant name="Gap0" value="1"/>
       <constant name="Gap1" value="500"/>
       <constant name="DetectorLength" value="33 * (FeDepth + 2*AlWidth + Gap0) + 18*SciDepth + 3*Gap1"/>
@@ -133,12 +141,15 @@
     <box lunit="mm" name="FePlate_solid" x="FeWidth" y="FeHeight" z="FeDepth"/>
     <box lunit="mm" name="PASSIVE_solid" x="FeWidth" y="FeHeight" z="FeDepth + 2*AlWidth"/>
     <box lunit="mm" name="SciPlate_solid" x="SciWidth" y="SciHeight" z="SciDepth"/>
-    <box lunit="mm" name="SciPlane_solid" x="SciWidth" y="SciHeight" z="BarDepth"/>
-    <box lunit="mm" name="BarX1_solid" x="BarWidthX1" y="SciHeight" z="BarDepth"/>
-    <box lunit="mm" name="BarX2_solid" x="BarWidthX2" y="SciHeight" z="BarDepth"/>
+    <box lunit="mm" name="SciX1Plane_solid" x="SciX1Width" y="SciX1Height" z="BarDepth"/>
+    <box lunit="mm" name="SciX2Plane_solid" x="SciX2Width" y="SciX2Height" z="BarDepth"/>
+    <box lunit="mm" name="SciY1Plane_solid" x="SciY1Width" y="SciY1Height" z="BarDepth"/>
+    <box lunit="mm" name="SciY2Plane_solid" x="SciY2Width" y="SciY2Height" z="BarDepth"/>
+    <box lunit="mm" name="BarX1_solid" x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+    <box lunit="mm" name="BarX2_solid" x="BarWidthX2" y="SciX1Height" z="BarDepth"/>
     <box lunit="mm" name="BarXPair_solid" x="BarWidthX1+BarWidthX2" y="SciHeight" z="BarDepth"/>
-    <box lunit="mm" name="BarY1_solid" x="SciWidth" y="BarWidthY1" z="BarDepth"/>
-    <box lunit="mm" name="BarY2_solid" x="SciWidth" y="BarWidthY2" z="BarDepth"/>
+    <box lunit="mm" name="BarY1_solid" x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+    <box lunit="mm" name="BarY2_solid" x="SciY2Width" y="BarWidthY2" z="BarDepth"/>
     <box lunit="mm" name="BarYPair_solid" x="SciWidth" y="BarWidthY1+BarWidthY2" z="BarDepth"/>
     <box lunit="mm" name="AlPlane_solid" x="FeWidth" y="FeHeight" z="AlWidth"/>
     <box lunit="mm" name="SFFFS_solid" x="FeWidth" y="FeHeight" z="2*SciDepth + 3*FeDepth + 6*AlWidth + 4*Gap0"/>
@@ -186,24 +197,28 @@
 	<auxiliary auxtype="SD" auxvalue="Bar"/>
 	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
+    <!--
     <volume name="BarX2">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarX2_solid"/>
 	<auxiliary auxtype="SD" auxvalue="Bar"/>
 	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
+    -->
     <volume name="BarY1">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarY1_solid"/>
 	<auxiliary auxtype="SD" auxvalue="Bar"/>
 	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
     </volume>
+    <!--
     <volume name="BarY2">
         <materialref ref="G4_POLYSTYRENE0x19324240"/>
         <solidref ref="BarY2_solid"/>
 	<auxiliary auxtype="SD" auxvalue="Bar"/>
 	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
-    </volume>
+    </volume> -->
+    <!--
     <volume name="BarXPair1">
         <materialref ref="G4_AIR0x19316e30"/>
         <solidref ref="BarXPair_solid"/>
@@ -252,56 +267,56 @@
             <position name="BarY22_pos" unit="mm" y="-BarWidthY1/2" x="0.0" z="0.0"/>
         </physvol>
     </volume>
-    
+    -->
     <!-- Start replicating volumes -->
     <volume name="X1plane">
       <materialref ref="G4_AIR0x19316e30"/>
-      <solidref ref="SciPlane_solid"/>
+      <solidref ref="SciX1Plane_solid"/>
       <replicavol number="8">
-        <volumeref ref="BarXPair1"/>
+        <volumeref ref="BarX1"/>
         <replicate_along_axis>
             <direction x="1"/>
-            <width unit="mm" value="BarWidthX1 + BarWidthX2"/>
-            <offset unit="mm" value="0"/>
+            <width unit="mm" value="BarWidthX2"/>
+            <offset unit="mm" value="BarWidthX1/2 - BarWidthX2"/>
         </replicate_along_axis>
       </replicavol>
     </volume>
     
     <volume name="X2plane">
       <materialref ref="G4_AIR0x19316e30"/>
-      <solidref ref="SciPlane_solid"/>
+      <solidref ref="SciX2Plane_solid"/>
       <replicavol number="8">
-        <volumeref ref="BarXPair2"/>
+        <volumeref ref="BarX1"/>
         <replicate_along_axis>
             <direction x="1"/>
-            <width unit="mm" value="BarWidthX1 + BarWidthX2"/>
-            <offset unit="mm" value="0"/>
+            <width unit="mm" value="BarWidthX2"/>
+            <offset unit="mm" value="BarWidthX2 - BarWidthX2/2"/>
         </replicate_along_axis>
       </replicavol>
     </volume>
     
     <volume name="Y1plane">
       <materialref ref="G4_AIR0x19316e30"/>
-      <solidref ref="SciPlane_solid"/>
-      <replicavol number="50">
-        <volumeref ref="BarYPair1"/>
+      <solidref ref="SciY1Plane_solid"/>
+      <replicavol number="48">
+        <volumeref ref="BarY1"/>
         <replicate_along_axis>
             <direction y="1"/>
-            <width unit="mm" value="BarWidthY1 + BarWidthY2"/>
-            <offset unit="mm" value="0"/>
+            <width unit="mm" value="BarWidthY2"/>
+            <offset unit="mm" value="BarWidthY1/2 - BarWidthY2"/>
         </replicate_along_axis>
       </replicavol>
     </volume>
     
     <volume name="Y2plane">
       <materialref ref="G4_AIR0x19316e30"/>
-      <solidref ref="SciPlane_solid"/>
-      <replicavol number="50">
-        <volumeref ref="BarYPair2"/>
+      <solidref ref="SciY1Plane_solid"/>
+      <replicavol number="47">
+        <volumeref ref="BarY1"/>
         <replicate_along_axis>
             <direction y="1"/>
-            <width unit="mm" value="BarWidthY1 + BarWidthY2"/>
-            <offset unit="mm" value="0"/>
+            <width unit="mm" value="BarWidthY2"/>
+            <offset unit="mm" value="BarWidthY2 - BarWidthY1/2"/>
         </replicate_along_axis>
       </replicavol>
     </volume>
