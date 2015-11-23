@@ -20,6 +20,8 @@ MindBarSD::MindBarSD(G4String name): G4VSensitiveDetector(name)
   G4String HCname;
   collectionName.insert(HCname="MindCollection");
   
+  std::cout<<collectionName.size()<<std::endl;
+  
   std::string delimiter = "/";
   
   size_t pos = 0;
@@ -31,7 +33,6 @@ MindBarSD::MindBarSD(G4String name): G4VSensitiveDetector(name)
     s.erase(0, pos + delimiter.length());
     // std::cout<<token<<std::endl;
   }
-  // std::cout<<s<<std::endl;
   _volumelist.push_back(s);
 }
 
@@ -74,30 +75,29 @@ G4bool MindBarSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
   G4ThreeVector pos = step->GetPostStepPoint()->GetPosition();
   G4ThreeVector copyTrans = theTouchable->GetTranslation();
+  G4String volName = theTouchable->GetVolume()->GetName();
+  G4int copyNo = theTouchable->GetCopyNumber();
+  
   /*
-  G4ThreeVector barTrans = theTouchable->GetTranslation(1);
-  G4ThreeVector modTrans = theTouchable->GetTranslation(2);
-  G4ThreeVector detTrans = theTouchable->GetTranslation(3);
+  std::cout << volName;
   std::cout<<" hit position = ("<<pos[0]
-	   <<","<<pos[1]<<","<<pos[2]<<")\n";
+  	   <<","<<pos[1]<<","<<pos[2]<<"), copyNo = "<<copyNo;
   std::cout<<" Copy Translation = ("<<copyTrans[0]
-	   <<","<<barTrans[1]<<","<<copyTrans[2]<<")\n";
-  std::cout<<" Bar Translation = ("<<barTrans[0]
-	   <<","<<barTrans[1]<<","<<barTrans[2]<<")\n\n";
-  std::cout<<" Module Translation = ("<<modTrans[0]
-	   <<","<<modTrans[1]<<","<<modTrans[2]<<")\n";
-  std::cout<<" Detector Translation = ("<<detTrans[0]
-	   <<","<<detTrans[1]<<","<<detTrans[2]<<")\n\n";
+  	   <<","<<copyTrans[1]<<","<<copyTrans[2]<<")\n";
   */
+  
   G4double barOffset = 0;
 
   hit->SetBarTranslation(copyTrans);
+  
   hit->SetModule(_volumelist[2]);
-  if(_volumelist.back().contains("Y")){
+  if(volName.contains("BarY")){
+    // std::cout << volName << std::endl;
     hit->SetBarOrientation(1);
   } else {
     hit->SetBarOrientation(0);
   }
+  hit->SetBarNumber(copyNo);
 
   _MHCollection->insert(hit);
 }

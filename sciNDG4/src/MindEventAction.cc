@@ -142,6 +142,9 @@ void MindEventAction::ProcessHits(G4HCofThisEvent* HCE)
     G4int barorientation = (*THC)[i]->GetBarOrientation();
     bhit->add_property("IsYBar", barorientation);
 
+    G4int barcopynumber = (*THC)[i]->GetBarNumber();
+    bhit->add_property("barNumber", barcopynumber);
+
     pstatus = MindLookupTable::Instance().find_particle( (*THC)[i]->GetTrackID() );
 
     if ( pstatus == 0 ){
