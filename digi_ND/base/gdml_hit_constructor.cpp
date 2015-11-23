@@ -1,5 +1,4 @@
 #include <gdml_hit_constructor.h>
-#include <limits>
 
 // #include <CLHEP/Random/RandGauss.h>
 #include <TRandom3.h>
@@ -36,45 +35,91 @@ gdml_hit_constructor::gdml_hit_constructor(const bhep::gstore& store)
 
   _attLength = store.fetch_dstore("WLSatten");
 
-  // calculate_layerZ();
   
 }
 
 gdml_hit_constructor::~gdml_hit_constructor()
 {
 }
-/*
+
 void gdml_hit_constructor::reset()
 {
   //Clear out map.correct??
   _voxels.clear();
 
 }
-*/
+
 void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
 			      std::vector<bhep::hit*>& rec_hit)
 {
   //First clear out map.
-  //reset();
-
-  cout<<"In execute in gdml_hit_constructor.cpp"<<endl;
+  reset();
   
   //copy hits so they can be sorted in z.
   std::vector<bhep::hit*> sortedHits = hits;
 
   sort( sortedHits.begin(), sortedHits.end(), forwardSort() );
   
-  //sort into voxels map.
-  //parse_to_map( sortedHits );
-  
-  //Make rec_hits from vox.
-  //construct_hits( rec_hit );
+  // Calculate the z-position as the average of the z of the 4 layers of scintilating bars.
+  calculate_layerZ(sortedHits);
 
-  construct_hits(sortedHits, rec_hit);
+  //sort into voxels map.
+  parse_to_map( sortedHits );
+
+  //Make rec_hits from vox.
+  construct_hits( rec_hit );
   
 }
 
-/*
+void gdml_hit_constructor::calculate_layerZ(const std::vector<bhep::hit*>& hits)
+{
+  // Get in z-pos sorted hits.
+
+  //  cout<<"Find plane, transbarpos: "<<curHit.ddata( "barPosT" )<<endl;
+
+  //cout<<"Find plane, longbarpos: "<<curHit.ddata( "barPosZ" )<<endl;
+
+  // Find the closest bars and take an average.
+
+  std::vector<bhep::hit*>::const_iterator hitIt;
+  double previousBarPosZ = _detectorLength;
+  int counter;
+  double sumPos;
+
+  for (hitIt = hits.begin();hitIt != hits.end();hitIt++){ 
+    double currLongBarPosZ = (*hitIt)->ddata( "barPosZ" );
+
+    //cout<<"In digi calculate_layerZ, currZ is: "<<currLongBarPosZ<<endl;
+    //cout<<"In digi calculate_layerZ, prevZ is: "<<previousBarPosZ<<endl;
+
+    if(previousBarPosZ == _detectorLength)
+      {
+	previousBarPosZ = currLongBarPosZ;
+	sumPos =  currLongBarPosZ;
+	counter = 1;
+      }
+    else
+      {
+	if( fabs(currLongBarPosZ - previousBarPosZ) < 4 * _activeLength)
+	  {
+	    sumPos +=  currLongBarPosZ;
+	    counter++;
+	  }
+	else
+	  {
+	    _zLayer.push_back( sumPos/counter );
+	    cout<<"In digi calculate_layerZ, z is: "<<sumPos/counter<<endl;
+	    
+	    previousBarPosZ = currLongBarPosZ;
+	    sumPos = currLongBarPosZ;
+	    counter = 1;
+	  }
+      }
+    
+  }
+  
+}
+
 void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
 {
   //Sort hits into voxel map.
@@ -91,9 +136,13 @@ void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
     _zIt = _zLayer.begin();
     //find plane.
     zpos = find_plane( *(*hitIt) );
+
+    cout<<"zpos in parse_to_map: "<<zpos<<endl;
     
     //get Vox number;
     voxNo = calculate_vox_no( *(*hitIt) );
+
+    cout<<"voxNo in parse_to_map: "<<voxNo<<endl;
 
     //Add voxel to map (or hit to existing voxel).
     if ( voxNo >= 0)
@@ -102,121 +151,142 @@ void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
   }
   
 }
-*/
 
-void gdml_hit_constructor::construct_hits(const std::vector<bhep::hit*>& hits, std::vector<bhep::hit*>& rec_hit)
+double gdml_hit_constructor::find_plane(bhep::hit& curHit)
 {
+  //find the appropriate z position by comparison to
+  //Layer z.
+  
+  double modDiff = fabs( curHit.x()[2] - (*_zIt) );
 
-cout<<"In construct_hits in gdml_hit_constructor.cpp"<<endl;
+  std::cout<<"X = "<<curHit.x()[0]<<", Y = "<<curHit.x()[1]<<", Z of hit "<<curHit.x()[2]<<std::endl;
+  while ( (int)modDiff > (int) 4*_activeLength/2. && _zIt != _zLayer.end()){
 
-  //copy hits so they can be sorted in z.
-  std::vector<bhep::hit*> sortedHits = hits;
-  cout<<hits.size()<<endl;
-  cout<<sortedHits.size()<<endl;
-  sort( sortedHits.begin(), sortedHits.end(), forwardSort() );
+    _zIt++;
 
-  // For each (sorted) hit, take the x,y,z positions smear these given the smearing and attenuation.
-
-  for (std::vector<bhep::hit*>::iterator sortedHitIter = sortedHits.begin() ; sortedHitIter != sortedHits.end(); ++sortedHitIter)
-    {
-
-      cout<<"In for loop in execute in gdml_hit_constructor.cpp"<<endl;
-
-      bhep::hit* vhit = get_vhit((*sortedHitIter));
-
-      if ( vhit != NULL )
-	{
-	  rec_hit.push_back( vhit );
-	}
-
-    }
+    modDiff = fabs( curHit.x()[2] - (*_zIt) );
+    
+  }
+  
+  return (*_zIt);
 }
 
-
- bhep::hit* gdml_hit_constructor::get_vhit(bhep::hit* curr_hit)
+int gdml_hit_constructor::calculate_vox_no(bhep::hit& curHit)
 {
-cout<<"In get_vhit in gdml_hit_constructor.cpp"<<endl;
+  //calculate the correct voxel number.
+  int vox_num = -1;
+  if ( fabs(curHit.x()[0]) < _detectorX/2 && fabs(curHit.x()[1]) < _detectorY/2 ){
+    int xbox = (int)( fabs( curHit.x()[0] + _detectorX/2 ) / _voxXdim );
+    
+    int ybox = (int)( fabs( curHit.x()[1] - _detectorY/2 ) / _voxYdim );
+    
+    vox_num = xbox + ybox*_nVoxX;
+  }    
+	 
+  return vox_num;
+}
 
-  double x = curr_hit->x()[0];
-  double y = curr_hit->x()[1];
-  double z = curr_hit->x()[2];
+void gdml_hit_constructor::construct_hits(std::vector<bhep::hit*>& rec_hit)
+{
+  //takes the voxels which have been filled and make
+  //rec_hit objects out of them.
 
+  std::map<double,std::multimap<int,bhep::hit*> >::iterator vIt;
+  std::multimap<int,bhep::hit*>::iterator vIt2;
 
-  //Makes a rec_hit from the voxel position and adds the relevant points.
-  bhep::hit* returnPointer;
+  for (vIt = _voxels.begin();vIt != _voxels.end();vIt++){
+
+    while ( vIt->second.size() != 0 ){
+      //set second iterator to first filled voxel in layer.
+      vIt2 = vIt->second.begin();
+
+      bhep::hit* vhit = get_vhit( vIt2->first, vIt->first, vIt->second );
+      
+      if ( vhit != NULL ){
+	rec_hit.push_back( vhit );
+	
+	std::cout<<"x = "<<vhit->x()[0]<<",y = "<<vhit->x()[1]<<", z = "<<vhit->x()[2]<<std::endl;
+      }
+      vIt->second.erase( vIt2->first );
+    }
+  }
   
+}
+
+bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
+				     const std::multimap<int,bhep::hit*>& map1)
+{
+  //Makes a rec_hit from the voxel position and adds the relevant points.
+  bhep::hit* returnPointer;  
+
   double totEng = 0., muProp = 0.; //these will be done in rec_hit eventually.
   vdouble X, Y, Z, E, T; //annoying but again all in rec_hit class.
   double proptime=9999999.9, vlight = 299792458. / 1.6;
-  //double proptime = numeric_limits<double>::max()
-  //double meanvoxtime;
-  //int irow = vox / _nVoxX;
-  //int icol = vox % _nVoxX;
-
+  double meanvoxtime;
+  int irow = vox / _nVoxX;
+  int icol = vox % _nVoxX;
+  
+  double voxX = icol*_voxXdim + _voxXdim/2 - _detectorX/2;
+  double voxY = _detectorY/2 - (irow*_voxYdim + _voxYdim/2);
+  double smearingFactor = 0.06;
+  double dt, dtx, dty;
   double xedge = _detectorX/2.;
   double yedge = _detectorY/2.;
-  double smearingFactor = 0.06;
-  
-  Point3D hitPos( x, y, z );
+  double xE1, xE2, yE1, yE2;
+  double Xphot, Yphot;
+
+
+  Point3D hitPos( voxX, voxY, z );
   
   bhep::hit* vhit = new bhep::hit( "tracking" );
   vhit->set_point( hitPos );
 
-  X.push_back(x);
-  Y.push_back(y);
-  Z.push_back(z);
-  T.push_back(curr_hit->ddata( "time" ) );
-  E.push_back(curr_hit->ddata( "EnergyDep" ) );
-  totEng += curr_hit->ddata( "EnergyDep" );
-  proptime = curr_hit->ddata( "time" )  < proptime ?  
-    curr_hit->ddata( "time" )  : proptime;
-  if ( curr_hit->mother_particle().name() == "mu+" ||
-       curr_hit->mother_particle().name() == "mu-" ){
-    if ( curr_hit->mother_particle().fetch_sproperty("CreatorProcess")=="none" )
-      muProp++;
-  } else if ( curr_hit->mother_particle().name() == "lepton_shower" )
-    muProp += 0.5;
-  
-  // std::cout<<x<<"\t"<y<<"\t"<<z<<"\t"<<std::endl;
-  
-  cout<<curr_hit->x()[0]<<endl;
-  cout<<curr_hit->x()[1]<<endl;
-  cout<<curr_hit->x()[2]<<endl;
+  vhit->add_property( "voxel", vox );
 
-
+  std::multimap<int,bhep::hit*>::const_iterator hIt;
+  for (hIt = map1.equal_range(vox).first;hIt != map1.equal_range(vox).second;hIt++)
+    {
+      X.push_back( (*hIt).second->x()[0] );
+      Y.push_back( (*hIt).second->x()[1] );
+      Z.push_back( (*hIt).second->x()[2] );
+      T.push_back( (*hIt).second->ddata( "time" ) );
+      E.push_back( (*hIt).second->ddata( "EnergyDep" ) );
+      totEng += (*hIt).second->ddata( "EnergyDep" );
+      proptime = (*hIt).second->ddata( "time" )  < proptime ?  
+	(*hIt).second->ddata( "time" )  : proptime;
+      if ( (*hIt).second->mother_particle().name() == "mu+" ||
+	   (*hIt).second->mother_particle().name() == "mu-" ){
+	if ( (*hIt).second->mother_particle().fetch_sproperty("CreatorProcess")=="none" )
+	  muProp++;
+      } else if ( (*hIt).second->mother_particle().name() == "lepton_shower" )
+	muProp += 0.5;
+      
+      //std::cout<<(*hIt).second->x()[0]<<"\t"<<(*hIt).second->x()[1]<<"\t"<<(*hIt).second->x()[2]<<"\t"
+      //	       <<(*hIt).second->ddata( "EnergyDep" )<<std::endl;
+    }
   //Do attenuations.
-  double xE1, xE2, yE1, yE2;
-  //double Xphot, Yphot;
+
   //Assume equal amounts of energy from both views and
   // equal energy flow in both directions along strip.
   xE1 = xE2 = yE1 = yE2 = totEng/4;
-  //   proptime /= T.size();
-  //   std::cout<<proptime<<std::endl;
 
-  //double slope = OctGeom == 1 ? (_detectorY - _detectorX*tan(atan(1)/2.))/
-  //(_detectorY*tan(atan(1)/2.) - _detectorX) : -1.;
-  double dt, dtx, dty;
-  //need to take into account drift distance to closest and furthest edge.
-
-  xE1 = xE1 * exp(-(xedge - x)/_attLength);
-  xE2 = xE2 * exp(-(3*xedge-x)/_attLength);
-  yE1 = yE1 * exp(-(yedge - y)/_attLength);
-  yE2 = yE2 * exp(-(3*yedge-y)/_attLength);
-  
-  dtx = (xedge - x) < (3*xedge - x) ?
-    (xedge - x)/vlight : (3*xedge - x)/vlight;
-  dty = (yedge - y) < (3*yedge - y) ?
-    (yedge - y)/vlight : (3*yedge - y)/vlight;
-
+  xE1 = xE1 * exp( -(xedge - fabs(voxX))/_attLength );
+  xE2 = xE2 * exp( -(xedge + fabs(voxX))/_attLength );
+  yE1 = yE1 * exp( -(yedge - fabs(voxY))/_attLength );
+  yE2 = yE2 * exp( -(yedge + fabs(voxY))/_attLength );
+  dtx = (xedge - fabs(voxX)) < (xedge + fabs(voxX)) ?
+    (xedge - fabs(voxX))/vlight : (xedge + fabs(voxX))/vlight;
+  dty = (yedge - fabs(voxY)) < (yedge + fabs(voxY)) ?
+    (yedge - fabs(voxY))/vlight : (yedge + fabs(voxY))/vlight;
   dt = dtx < dty ? dtx : dty;
   
   //smear the reconstructed energies.
-  //smear and recombine.
+  
   double xE = xE1 + _ranGen.Gaus( 0, smearingFactor * xE1 )
     + xE2 + _ranGen.Gaus( 0, smearingFactor * xE2 );
   double yE = yE1 + _ranGen.Gaus( 0, smearingFactor * yE1 )
     + yE2 + _ranGen.Gaus( 0, smearingFactor * yE2 );
-  
+
   if ( fabs(z) > (_detectorLength + _vertexDetdepth)/2. && 
        xE < _minEng && yE < _minEng )
     {

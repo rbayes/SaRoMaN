@@ -14,6 +14,7 @@
 //#include <CLHEP/Random/RanluxEngine.h>
 
 #include <digi/gdml_hit_constructor.h>
+//#include <digi/hit_constructor.h>
 
 #include <TTree.h>
 #include <Riostream.h>
@@ -89,7 +90,8 @@ private:
   //Random engine for smearing.
   //RanluxEngine ranGen;
   //Voxel hit constructor for digitization.
-  gdml_hit_constructor* _construct;
+   gdml_hit_constructor* _construct;
+  // hit_constructor* _construct;
   //Are voxels to be made.
   bool _doVox;
 
