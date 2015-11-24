@@ -40,12 +40,20 @@ class gdml_hit_constructor
  private:
 
   //reset
-  //void reset();
+  void reset();
 
+  //calculate z position of layers.
+  void calculate_layerZ(const std::vector<bhep::hit*>& hits);
+  //function which puts hits into the map.
+  void parse_to_map(const std::vector<bhep::hit*> hits);
+  //find plane of hit.
+  double find_plane(bhep::hit& curHit);
+  //find vox number of hit.
+  int calculate_vox_no(bhep::hit& curHit);
   //Make the rec hits.
-  void construct_hits(const std::vector<bhep::hit*>& hits,std::vector<bhep::hit*>& rec_hit);
+  void construct_hits(std::vector<bhep::hit*>& rec_hit);
   //make an individual rec hit.
-  bhep::hit* get_vhit(bhep::hit* curr_hit);
+  bhep::hit* get_vhit(int vox, double z, const std::multimap<int,bhep::hit*>& map1);
   
   //Random Generator for the smear.
   TRandom3 _ranGen;
@@ -82,7 +90,7 @@ class gdml_hit_constructor
   int _nVox;
 
   //Container wchich will define voxels.
-  //std::map<double, std::multimap<int, bhep::hit*> > _voxels;
+  std::map<double, std::multimap<int, bhep::hit*> > _voxels;
   
 };
 
