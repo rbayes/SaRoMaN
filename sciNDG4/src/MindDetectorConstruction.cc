@@ -174,9 +174,16 @@ void MindDetectorConstruction::SetAuxInformation(G4String basename,
 	  G4VSensitiveDetector* mydet = SDMgr->FindSensitiveDetector(sensdetname);
 	  myvol->SetSensitiveDetector(mydet);
 	}
-      } 
+      }
+      else if ((*vit).type.contains("Invisible")) {
+	myvol->SetVisAttributes(new G4VisAttributes(false));
+      }
       else if ((*vit).type.contains("EMField")) {
-	SetMagneticField(*myvol);
+	if ((*vit).value.contains("MagMap")){
+	  SetMagneticField(*myvol);
+	} else if((*vit).value.contains("NULL")){
+	  SetNullField(*myvol);
+	}
       }
     } catch (...) { 
       continue;
@@ -204,6 +211,14 @@ void MindDetectorConstruction::SetMagneticField(G4LogicalVolume& vol) {
  
   const MindParamStore& config = 
     MindConfigService::Instance().Geometry();
+   
+  std::vector<G4double> fieldValue;  
+  if ( config.PeekVParam("field") )
+    fieldValue = config.GetVParam("field");
+
+  double fieldScaling = +1.0;
+  if(config.PeekDParam("FieldScaling"))
+    fieldScaling = config.GetDParam("FieldScaling");
   if (config.PeekSParam("FieldMap")){
       // A field map has been provided.  Should add capability to
       // scale field -- but would such a scaling be physical???  As it
@@ -211,12 +226,22 @@ void MindDetectorConstruction::SetMagneticField(G4LogicalVolume& vol) {
       // field on and off.
       G4String Bmap = config.GetSParam("FieldMap");
       // Declaration of the magnetic field map object
-      MindFieldMapR* magField = new MindFieldMapR(Bmap, 1.0, 30.0, 4, 30.0);
+      MindFieldMapR* magField = new MindFieldMapR(Bmap, fieldScaling, 30.0, 4, 30.0);
       // Now to embed the field in the detector geometry
       fieldMgr->SetDetectorField(magField);
       fieldMgr->CreateChordFinder(magField);
       fieldMgr->GetChordFinder()->SetDeltaChord(0.1*cm);
-  } 
+  } /*else {
+      std::cout<<"Using uniform magnetic field."<<std::endl;
+      G4UniformMagField* magField = 
+	new G4UniformMagField(G4ThreeVector(fieldScaling*fieldValue[0]*tesla, 
+					    fieldScaling*fieldValue[1]*tesla, 
+					    fieldScaling*fieldValue[2]*tesla));
+      fieldMgr->SetDetectorField(magField);
+      fieldMgr->CreateChordFinder(magField);
+      fieldMgr->GetChordFinder()->SetDeltaChord(0.1*cm);
+      }*/
+  vol.SetFieldManager( fieldMgr, true );
 }
 
 /*

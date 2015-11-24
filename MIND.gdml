@@ -172,6 +172,7 @@
     <volume name="BRACE">
         <materialref ref="G4_Al0x19323860"/>
         <solidref ref="AlPlane_solid"/>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <volume name="PASSIVE">
       <materialref ref="G4_Fe0x1931f240"/>
@@ -188,6 +189,7 @@
         <volumeref ref="BRACE"/>
         <position name="Brace1_pos" x="0.0" y="0.0" z="(FeDepth + AlWidth)/2"/>
       </physvol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     
     <!-- Define bars for scintillator planes -->
@@ -196,6 +198,8 @@
         <solidref ref="BarX1_solid"/>
 	<auxiliary auxtype="SD" auxvalue="Bar"/>
 	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
+	<auxiliary auxtype="Invisible" auxvalue="1"/>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <!--
     <volume name="BarX2">
@@ -210,6 +214,8 @@
         <solidref ref="BarY1_solid"/>
 	<auxiliary auxtype="SD" auxvalue="Bar"/>
 	<auxiliary auxtype="Attenuation" auxvalue="5000"/>
+	<auxiliary auxtype="Invisible" auxvalue="1"/>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <!--
     <volume name="BarY2">
@@ -280,6 +286,7 @@
             <offset unit="mm" value="BarWidthX1/2 - BarWidthX2"/>
         </replicate_along_axis>
       </replicavol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     
     <volume name="X2plane">
@@ -293,6 +300,7 @@
             <offset unit="mm" value="BarWidthX2 - BarWidthX2/2"/>
         </replicate_along_axis>
       </replicavol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     
     <volume name="Y1plane">
@@ -306,6 +314,7 @@
             <offset unit="mm" value="BarWidthY1/2 - BarWidthY2"/>
         </replicate_along_axis>
       </replicavol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     
     <volume name="Y2plane">
@@ -319,6 +328,7 @@
             <offset unit="mm" value="BarWidthY2 - BarWidthY1/2"/>
         </replicate_along_axis>
       </replicavol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     
     
@@ -342,6 +352,7 @@
         <volumeref ref="Y2plane"/>
         <position name="Y2plane_pos" x="0.0" y="0.0" z="3/2*BarDepth"/>
       </physvol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     
     <!-- Specific Module types -->
@@ -356,6 +367,7 @@
             <volumeref ref="PASSIVE"/>
             <position name="Fe0_pos" x="0.0" y="0.0" z="2*BarDepth + Gap0/2"/>
         </physvol>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <volume name="SFF">
         <materialref ref="G4_AIR0x19316e30"/>
@@ -368,6 +380,7 @@
             <volumeref ref="PASSIVE"/>
             <position name="Fe1_pos" x="0.0" y="0.0" z="(FeDepth + 2*AlWidth + 4*BarDepth + 2*Gap0)/2"/>
         </physvol>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <volume name="SFFF">
         <materialref ref="G4_AIR0x19316e30"/>
@@ -380,6 +393,7 @@
             <volumeref ref="PASSIVE"/>
             <position name="Fe2_pos" x="0.0" y="0.0" z="(2*(FeDepth + 2*AlWidth) + 4*BarDepth + 3*Gap0)/2"/>
         </physvol>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <volume name="SFFFS">
         <materialref ref="G4_AIR0x19316e30"/>
@@ -392,6 +406,7 @@
             <volumeref ref="ACTIVE"/>
             <position name="Sci2_pos" x="0.0" y="0.0" z="(3*(FeDepth + 2*AlWidth) + 4*BarDepth + 4*Gap0)/2"/>
         </physvol>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
 
     <volume name="SFModule">
@@ -405,30 +420,33 @@
                 <offset unit="mm" value="0"/>
             </replicate_along_axis>
         </replicavol>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <volume name="SFFModule">
-        <materialref ref="G4_AIR0x19316e30"/>
-        <solidref ref="SFFModule_solid"/>
-            <replicavol number="3">
-            <volumeref ref="SFF"/>
-            <replicate_along_axis>
-                <direction z="1"/>
-                <width unit="mm" value="2*(FeDepth + 2*AlWidth + Gap0) + 4*BarDepth"/>
-                <offset unit="mm" value="0"/>
-            </replicate_along_axis>
-        </replicavol>
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SFFModule_solid"/>
+      <replicavol number="3">
+        <volumeref ref="SFF"/>
+        <replicate_along_axis>
+          <direction z="1"/>
+          <width unit="mm" value="2*(FeDepth + 2*AlWidth + Gap0) + 4*BarDepth"/>
+          <offset unit="mm" value="0"/>
+        </replicate_along_axis>
+      </replicavol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <volume name="SFFFModule">
-        <materialref ref="G4_AIR0x19316e30"/>
-        <solidref ref="SFFFModule_solid"/>
-        <replicavol number="6">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SFFFModule_solid"/>
+      <replicavol number="6">
         <volumeref ref="SFFF"/>
         <replicate_along_axis>
           <direction z="1"/>
           <width unit="mm" value="3*(FeDepth + 2*AlWidth + Gap0) + 4*BarDepth"/>
           <offset unit="mm" value="0"/>
         </replicate_along_axis>
-        </replicavol>
+      </replicavol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     
     <volume name="Detector">
@@ -474,6 +492,8 @@
 		  z="-DetectorLength/2 + 72*BarDepth + 33 * (FeDepth
 		     + 2*AlWidth + Gap0) + 3*Gap1"/>
       </physvol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+      <auxiliary auxtype="Invisible" auxvalue="1"/>
     </volume>
     
     <volume name="WORLD0x19325900">

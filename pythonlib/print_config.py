@@ -51,7 +51,7 @@ GENERATION particle_name S %(part)s
 
 ### Particle energy will be sample between these two values (in GeV)
 GENERATION energy_min    D 0.300
-GENERATION energy_max    D 3.000
+GENERATION energy_max    D 1.000
 
 '''% dict(dictionary, **vars(self))
 		elif(self.GenerationMode == 'GENIE'):
@@ -123,7 +123,7 @@ GENERATION vertex_location S GAUSS
 GENERATION fvert DV 3
 0.
 0.
--1000
+-2000
  
 GENERATION bspot DV 2
 100.
