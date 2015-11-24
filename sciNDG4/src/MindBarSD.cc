@@ -90,7 +90,7 @@ G4bool MindBarSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 
   hit->SetBarTranslation(copyTrans);
   
-  hit->SetModule(_volumelist[2]);
+  // hit->SetModule(_volumelist[2]);
   if(volName.contains("BarY")){
     // std::cout << volName << std::endl;
     hit->SetBarOrientation(1);
