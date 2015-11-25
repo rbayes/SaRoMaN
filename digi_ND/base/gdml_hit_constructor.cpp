@@ -117,6 +117,8 @@ void gdml_hit_constructor::calculate_layerZ(const std::vector<bhep::hit*>& hits)
       }
     
   }
+  _zLayer.push_back( sumPos/counter );
+  cout<<"In digi calculate_layerZ, z is: "<<sumPos/counter<<endl;
   
 }
 
@@ -167,7 +169,7 @@ double gdml_hit_constructor::find_plane(bhep::hit& curHit)
     modDiff = fabs( curHit.x()[2] - (*_zIt) );
     
   }
-  
+  cout<<"In digi find_plane, z is: "<<(*_zIt)<<endl;
   return (*_zIt);
 }
 
@@ -205,7 +207,7 @@ void gdml_hit_constructor::construct_hits(std::vector<bhep::hit*>& rec_hit)
       if ( vhit != NULL ){
 	rec_hit.push_back( vhit );
 	
-	std::cout<<"x = "<<vhit->x()[0]<<",y = "<<vhit->x()[1]<<", z = "<<vhit->x()[2]<<std::endl;
+	std::cout<<"In construct_hits in hit_constructor "<<"x = "<<vhit->x()[0]<<",y = "<<vhit->x()[1]<<", z = "<<vhit->x()[2]<<std::endl;
       }
       vIt->second.erase( vIt2->first );
     }
@@ -268,8 +270,25 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 
   //Assume equal amounts of energy from both views and
   // equal energy flow in both directions along strip.
-  xE1 = xE2 = yE1 = yE2 = totEng/4;
+  cout<<"totEng: "<<totEng<<endl;
+  xE1 = xE2 = yE1 = yE2 = totEng/2;
 
+  cout<<"attLength: "<<_attLength<<endl;
+
+  xE1 = xE1 * exp(-(xedge - fabs(voxX))/_attLength);
+  xE2 = xE2 * exp(-(3*xedge-fabs(voxX))/_attLength);
+  yE1 = yE1 * exp(-(yedge - fabs(voxY))/_attLength);
+  yE2 = yE2 * exp(-(3*yedge-fabs(voxY))/_attLength);
+  
+  dtx = (xedge - fabs(voxX)) < (3*xedge - fabs(voxX)) ?
+    (xedge - fabs(voxX))/vlight : (3*xedge - fabs(voxX))/vlight;
+  dty = (yedge - fabs(voxY)) < (3*yedge - fabs(voxY)) ?
+    (yedge - fabs(voxY))/vlight : (3*yedge - fabs(voxY))/vlight;
+
+  dt = dtx < dty ? dtx : dty;
+
+
+  /*
   xE1 = xE1 * exp( -(xedge - fabs(voxX))/_attLength );
   xE2 = xE2 * exp( -(xedge + fabs(voxX))/_attLength );
   yE1 = yE1 * exp( -(yedge - fabs(voxY))/_attLength );
@@ -279,7 +298,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   dty = (yedge - fabs(voxY)) < (yedge + fabs(voxY)) ?
     (yedge - fabs(voxY))/vlight : (yedge + fabs(voxY))/vlight;
   dt = dtx < dty ? dtx : dty;
-  
+  */
   //smear the reconstructed energies.
   
   double xE = xE1 + _ranGen.Gaus( 0, smearingFactor * xE1 )
@@ -297,6 +316,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
     {
       totEng = xE + yE;
       proptime += dt;
+      cout<<"whit properties added"<<endl;
       
       vhit->add_property( "TotalEng", totEng );
       vhit->add_property( "XEng", xE );
@@ -314,3 +334,4 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   
   return returnPointer;
 }
+				     

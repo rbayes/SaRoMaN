@@ -90,8 +90,8 @@ private:
   //Random engine for smearing.
   //RanluxEngine ranGen;
   //Voxel hit constructor for digitization.
-   gdml_hit_constructor* _construct;
-  // hit_constructor* _construct;
+  gdml_hit_constructor* _construct;
+  //hit_constructor* _construct;
   //Are voxels to be made.
   bool _doVox;
 
