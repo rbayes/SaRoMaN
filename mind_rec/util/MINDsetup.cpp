@@ -131,7 +131,7 @@ void MINDsetup::createGeom(){
   dict::Key vol_name;
   //Volume* det;
   //Volume* vdet;
-  
+  /*
   if(OctGeom==1)
     det = new MINDplate(pos,xaxis,yaxis,MIND_x/2,MIND_y/2,MIND_z/2,
 				EAR_width, EAR_height);
@@ -147,7 +147,7 @@ void MINDsetup::createGeom(){
       vdet = new Box(vpos, zaxis, xaxis, VERT_z/2., VERT_x/2., VERT_y/2.);
   }
   _msetup.message("MIND volume generated",bhep::VERBOSE);
-
+  */
   for(map<string, std::vector<double> >::const_iterator it = _gdml_pos_map.begin();
       it != _gdml_pos_map.end(); ++it)
     {
