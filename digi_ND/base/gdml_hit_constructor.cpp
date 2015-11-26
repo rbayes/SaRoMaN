@@ -108,7 +108,7 @@ void gdml_hit_constructor::calculate_layerZ(const std::vector<bhep::hit*>& hits)
 	else
 	  {
 	    _zLayer.push_back( sumPos/counter );
-	    cout<<"In digi calculate_layerZ, z is: "<<sumPos/counter<<endl;
+	    //cout<<"In digi calculate_layerZ, z is: "<<sumPos/counter<<endl;
 	    
 	    previousBarPosZ = currLongBarPosZ;
 	    sumPos = currLongBarPosZ;
@@ -118,7 +118,7 @@ void gdml_hit_constructor::calculate_layerZ(const std::vector<bhep::hit*>& hits)
     
   }
   _zLayer.push_back( sumPos/counter );
-  cout<<"In digi calculate_layerZ, z is: "<<sumPos/counter<<endl;
+  //cout<<"In digi calculate_layerZ, z is: "<<sumPos/counter<<endl;
   
 }
 
@@ -139,12 +139,12 @@ void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
     //find plane.
     zpos = find_plane( *(*hitIt) );
 
-    cout<<"zpos in parse_to_map: "<<zpos<<endl;
+    //cout<<"zpos in parse_to_map: "<<zpos<<endl;
     
     //get Vox number;
     voxNo = calculate_vox_no( *(*hitIt) );
 
-    cout<<"voxNo in parse_to_map: "<<voxNo<<endl;
+    //cout<<"voxNo in parse_to_map: "<<voxNo<<endl;
 
     //Add voxel to map (or hit to existing voxel).
     if ( voxNo >= 0)
@@ -161,7 +161,7 @@ double gdml_hit_constructor::find_plane(bhep::hit& curHit)
   
   double modDiff = fabs( curHit.x()[2] - (*_zIt) );
 
-  std::cout<<"X = "<<curHit.x()[0]<<", Y = "<<curHit.x()[1]<<", Z of hit "<<curHit.x()[2]<<std::endl;
+  //std::cout<<"X = "<<curHit.x()[0]<<", Y = "<<curHit.x()[1]<<", Z of hit "<<curHit.x()[2]<<std::endl;
   while ( (int)modDiff > (int) 4*_activeLength/2. && _zIt != _zLayer.end()){
 
     _zIt++;
@@ -169,7 +169,7 @@ double gdml_hit_constructor::find_plane(bhep::hit& curHit)
     modDiff = fabs( curHit.x()[2] - (*_zIt) );
     
   }
-  cout<<"In digi find_plane, z is: "<<(*_zIt)<<endl;
+  //cout<<"In digi find_plane, z is: "<<(*_zIt)<<endl;
   return (*_zIt);
 }
 
@@ -207,7 +207,7 @@ void gdml_hit_constructor::construct_hits(std::vector<bhep::hit*>& rec_hit)
       if ( vhit != NULL ){
 	rec_hit.push_back( vhit );
 	
-	std::cout<<"In construct_hits in hit_constructor "<<"x = "<<vhit->x()[0]<<",y = "<<vhit->x()[1]<<", z = "<<vhit->x()[2]<<std::endl;
+	//std::cout<<"In construct_hits in hit_constructor "<<"x = "<<vhit->x()[0]<<",y = "<<vhit->x()[1]<<", z = "<<vhit->x()[2]<<std::endl;
       }
       vIt->second.erase( vIt2->first );
     }
@@ -273,7 +273,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   cout<<"totEng: "<<totEng<<endl;
   xE1 = xE2 = yE1 = yE2 = totEng/2;
 
-  cout<<"attLength: "<<_attLength<<endl;
+  //cout<<"attLength: "<<_attLength<<endl;
 
   xE1 = xE1 * exp(-(xedge - fabs(voxX))/_attLength);
   xE2 = xE2 * exp(-(3*xedge-fabs(voxX))/_attLength);
@@ -316,7 +316,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
     {
       totEng = xE + yE;
       proptime += dt;
-      cout<<"whit properties added"<<endl;
+      //cout<<"whit properties added"<<endl;
       
       vhit->add_property( "TotalEng", totEng );
       vhit->add_property( "XEng", xE );
