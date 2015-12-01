@@ -140,7 +140,7 @@
 <solids>
     <box lunit="mm" name="FePlate_solid" x="FeWidth" y="FeHeight" z="FeDepth"/>
     <box lunit="mm" name="PASSIVE_solid" x="FeWidth" y="FeHeight" z="FeDepth + 2*AlWidth"/>
-    <box lunit="mm" name="SciPlate_solid" x="SciWidth" y="SciHeight" z="SciDepth"/>
+    <box lunit="mm" name="S_solid" x="SciWidth" y="SciHeight" z="SciDepth"/>
     <box lunit="mm" name="SciX1Plane_solid" x="SciX1Width" y="SciX1Height" z="BarDepth"/>
     <box lunit="mm" name="SciX2Plane_solid" x="SciX2Width" y="SciX2Height" z="BarDepth"/>
     <box lunit="mm" name="SciY1Plane_solid" x="SciY1Width" y="SciY1Height" z="BarDepth"/>
@@ -283,7 +283,7 @@
         <replicate_along_axis>
             <direction x="1"/>
             <width unit="mm" value="BarWidthX2"/>
-            <offset unit="mm" value="BarWidthX1/2 - BarWidthX2"/>
+            <offset unit="mm" value="BarWidthX1/2 - BarWidthX2/2"/>
         </replicate_along_axis>
       </replicavol>
       <auxiliary auxtype="EMField" auxvalue="NULL"/>
@@ -297,7 +297,7 @@
         <replicate_along_axis>
             <direction x="1"/>
             <width unit="mm" value="BarWidthX2"/>
-            <offset unit="mm" value="BarWidthX2 - BarWidthX2/2"/>
+            <offset unit="mm" value="BarWidthX2/2 - BarWidthX1/2"/>
         </replicate_along_axis>
       </replicavol>
       <auxiliary auxtype="EMField" auxvalue="NULL"/>
@@ -311,7 +311,7 @@
         <replicate_along_axis>
             <direction y="1"/>
             <width unit="mm" value="BarWidthY2"/>
-            <offset unit="mm" value="BarWidthY1/2 - BarWidthY2"/>
+            <offset unit="mm" value="BarWidthY1/2 - BarWidthY2/2"/>
         </replicate_along_axis>
       </replicavol>
       <auxiliary auxtype="EMField" auxvalue="NULL"/>
@@ -325,7 +325,7 @@
         <replicate_along_axis>
             <direction y="1"/>
             <width unit="mm" value="BarWidthY2"/>
-            <offset unit="mm" value="BarWidthY2 - BarWidthY1/2"/>
+            <offset unit="mm" value="BarWidthY2/2 - BarWidthY1/2"/>
         </replicate_along_axis>
       </replicavol>
       <auxiliary auxtype="EMField" auxvalue="NULL"/>
@@ -335,14 +335,14 @@
     <!-- Scintillating planes -->
     <volume name="ACTIVE">
       <materialref ref="G4_AIR0x19316e30"/>
-      <solidref ref="SciPlate_solid"/>
+      <solidref ref="S_solid"/>
       <physvol name="X1plane_physi">
         <volumeref ref="X1plane"/>
-        <position name="X1plane_pos" x="0.0" y="0.0" z="-3/2*BarDepth"/>
+        <position name="X1plane_pos" x="BarWidthX1/2 - BarWidthX2/2" y="0.0" z="-3/2*BarDepth"/>
       </physvol>
       <physvol name="X2plane_physi">
         <volumeref ref="X2plane"/>
-        <position name="X2plane_pos" x="0.0" y="0.0" z="-1/2*BarDepth"/>
+        <position name="X2plane_pos" x="-BarWidthX1/2 + BarWidthX2/2" y="0.0" z="-1/2*BarDepth"/>
       </physvol>
       <physvol name="Y1plane_physi">
         <volumeref ref="Y1plane"/>
