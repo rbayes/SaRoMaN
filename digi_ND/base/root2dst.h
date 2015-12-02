@@ -20,6 +20,9 @@
 #include <Riostream.h>
 #include <sstream>
 
+#include "TFile.h"
+#include "TH1F.h"
+
 using namespace bhep;
 
 //! root2dst Class
@@ -47,6 +50,17 @@ public:
   bool hits_fromFile(vector<hit*>& muHit, vector<hit*>& hadHit);
   particle* define_hadron();
   particle* create_digital_representation(const vector<particle*>& tru_parts);
+
+  void print();
+
+  TFile* digiOutfile;
+  //TList* hList;
+  TH1F* rawHits;
+  TH1F* clusteredHits;
+  TH1F* digitizedHits;
+  vector<TH1F*> histo_vec;
+
+
 
   //Handy int/float to string converters.
   // TString ToString(Int_t num){

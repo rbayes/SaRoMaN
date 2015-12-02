@@ -3,6 +3,7 @@
 // #include <CLHEP/Random/RandGauss.h>
 #include <TRandom3.h>
 #include <algorithm>
+
 gdml_hit_constructor::gdml_hit_constructor(const bhep::gstore& store)
 {
   //Store detector geometry and calculate scint layer positions.
@@ -15,6 +16,7 @@ gdml_hit_constructor::gdml_hit_constructor(const bhep::gstore& store)
   _vertexDetY = store.fetch_dstore("vertex_y") * m;
   _passiveLength = store.fetch_dstore("passive_thickness") * cm;
   _activeLength = store.fetch_dstore("active_thickness") * cm;
+  cout<<"_activeLength"<<_activeLength<<endl;
   _braceLength = 0.0;
   if (store.find_dstore("bracing_thickness"))
     _braceLength = store.fetch_dstore("bracing_thickness") * cm;
@@ -33,13 +35,13 @@ gdml_hit_constructor::gdml_hit_constructor(const bhep::gstore& store)
 
   _minEng = store.fetch_dstore("min_eng") * MeV;
 
-  _attLength = store.fetch_dstore("WLSatten");
+  _attLength = store.fetch_dstore("WLSatten");  
 
-  
 }
 
 gdml_hit_constructor::~gdml_hit_constructor()
 {
+
 }
 
 void gdml_hit_constructor::reset()
@@ -50,8 +52,15 @@ void gdml_hit_constructor::reset()
 }
 
 void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
-			      std::vector<bhep::hit*>& rec_hit)
+				   std::vector<bhep::hit*>& rec_hit, std::vector<TH1F*>& histo_vec)
 {
+
+  rawHits = histo_vec[0];
+  clusteredHits = histo_vec[1];
+  digitizedHits = histo_vec[2];
+
+  std::vector<bhep::hit*> un_clustered_rec_hit;
+
   //First clear out map.
   reset();
   
@@ -68,8 +77,208 @@ void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
 
   //Make rec_hits from vox.
   construct_hits( rec_hit );
-  
+  //construct_hits( un_clustered_rec_hit );
+
+  // Implement the clustering algorithm to cluster hits in the plane, 
+  // using which we can determine a better x,y pos then before.
+  clustering(sortedHits);
+
+  //rec_hit = un_clustered_rec_hit;
 }
+
+void gdml_hit_constructor::clustering(const std::vector<bhep::hit*>& zSortedHits)
+{
+  /*
+    Cluster the real hits (bar positions from hits) to produce hit positions.
+    Also utilize the bar overlap to be able to give an even better position.
+
+  */
+
+  //Take in the filled _voxels (Sorted hits by z planes).
+  // Check if two hits next to eachother (in x) means that hit activated both. (passed between)
+  // Check if two hits next to eachother (in y) means that hit activated both. (passed between)
+  // Return a better voxelisation?
+
+  // std::vector<bhep::hit*> clustered_hits;  
+  std::vector<bhep::hit*>::const_iterator hitIt;
+  std::vector<bhep::hit*> moduleHits;
+  std::vector<std::vector<bhep::hit*> > moduleHitsVector;
+  std::vector<std::vector<double> > clustered_hits;
+ 
+
+  // Fill vectors with hits in the same module (xyxy),sorted by barPosZ.
+  for (hitIt = zSortedHits.begin();hitIt != zSortedHits.end();hitIt++)
+    {
+      double currZ = (*hitIt)->ddata( "barPosZ" );
+      double nextZ;
+      
+      if(hitIt + 1 != zSortedHits.end()){ nextZ = (*(hitIt + 1))->ddata( "barPosZ" );}
+      else {nextZ = currZ + 2 * _activeLength;}
+
+      if(fabs(currZ-nextZ) < 2 * _activeLength)
+	{
+	  moduleHits.push_back((*hitIt));
+	}
+      else//Next is to far away
+	{
+	  moduleHits.push_back((*hitIt));
+	  moduleHitsVector.push_back(moduleHits);
+	  moduleHits.clear();
+	}    
+    }
+
+  // Do the actually clustering
+  for(int counter = 0; counter < moduleHitsVector.size(); counter++)
+    {
+      if(moduleHitsVector[counter].size() != 0)
+	{
+	  clustered_hits.push_back(clusteringXY(moduleHitsVector[counter], counter));
+	}
+    }
+}
+
+//std::vector<bhep::hit*>
+std::vector<double> gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int key)
+{
+  // Have a vector with hits in the module,use hits in both plates to 
+  // recreate the actual hits better.
+  // float distBarsZ = 7.5 * mm; // Just for testing, should read from config.
+  // Save the hits and the mc truth hits. (A Map? Link them with a key
+  // At the moment does not use the overlap! Should and must be used!
+  // We have bar number and we know the overlap.
+  // Do not allow bar numbers to differ more than 1. 
+  // Also use this properly in the code.
+  //cout<<"In a vector"<<endl;
+  //double sumX =0;
+  //double sumY =0;
+  //double sumZ =0;
+  //std::map<int,double> X, Y;
+
+  std::vector<std::pair <int,double> > X, Y;
+  //vector<double> X;
+  //vector<double> Y;
+  vector<double> Z;
+  double sumZ = 0;
+  
+  std::map<int,vector<bhep::hit*> > map;
+
+  map[key]=hits;
+
+  for(int inCounter = 0; inCounter < hits.size(); inCounter++)
+    {
+      
+      cout<<hits[inCounter]->x()[0]<<"\t"
+	  <<hits[inCounter]->x()[1]<<"\t"
+	  <<hits[inCounter]->x()[2]<<"\t"
+	  <<hits[inCounter]->idata( "IsYBar" )<<"\t"
+	  <<hits[inCounter]->idata( "barNumber" )<<"\t"
+	  <<hits[inCounter]->ddata( "barPosZ" )<<"\t"
+	  <<hits[inCounter]->ddata( "barPosT" )<<"\t"
+	  <<endl;
+      
+
+      int barNum = hits[inCounter]->idata( "barNumber" );
+      double transPos = hits[inCounter]->ddata( "barPosT" );
+      std::pair<int,double> dataPair = std::make_pair(barNum,transPos);
+
+      if( hits[inCounter]->idata( "IsYBar" ) == 0){X.push_back(dataPair);}
+      else {Y.push_back(dataPair);}
+
+      Z.push_back(hits[inCounter]->ddata( "barPosZ" ));
+      sumZ += hits[inCounter]->ddata( "barPosZ" );
+    }
+  
+  double x;
+  double y;
+  double z;
+  std::vector<double> clustered_hit;
+  
+  //Do we need to cluster? (More than 1 plane hit)
+  // (What if more than 1 hit?)
+
+  if(X.size() > 0 && Y.size() >0)
+    {
+      //combine positions!
+      //combine(X,Y)
+      if(X.size() == 1 && Y.size() == 1)
+	{
+	  x = X[0].second;
+	  y = Y[0].second;
+	  z = Z[0];
+	}
+      else if(X.size() == 1 && Y.size() > 1)
+	{
+	  x = X[0].second;
+	  y=overlapCalc(Y,0);
+	  z = sumZ / Z.size();
+	}
+      else if(Y.size() == 1 && X.size() > 1)
+	{
+	  x=overlapCalc(X,1);
+	  y = Y[0].second;
+	  z = sumZ / Z.size();
+	}
+      else
+	{
+	  x=overlapCalc(X,1);
+	  y=overlapCalc(Y,0);
+	  z = sumZ / Z.size();
+	}
+
+      clusteredHits->Fill(z);
+    }
+
+  else
+    {
+      // No proper hit is size 0 for X or Y
+      // How handle shower?
+    }
+ 
+  cout<<x<<"\t"<<y<<"\t"<<z<<"\t"<<endl;
+  clustered_hit.push_back(x);
+  clustered_hit.push_back(y);
+  clustered_hit.push_back(z);
+
+  return clustered_hit;
+}
+
+double gdml_hit_constructor::overlapCalc(std::vector<std::pair <int,double> > vec,bool isX)
+{
+  double pos = 0;
+  double barWidthX1 = 210;
+  double barWidthY1 = 30;
+  double barWidthX2 = 340;
+  double barWidthY2 = 39.14;
+
+  double overlapXFac = (barWidthX2 - barWidthX1)/barWidthX1;
+  double overlapXFac = (barWidthY2 - barWidthY1)/barWidthY1;
+
+  // Check multiple hit?
+  //cout<<"More than one"<<endl;
+  if(vec[0].first-vec[1].first >0)
+    {
+      if(isX){pos = vec[0].second - barWidthX1*overlapXFac/2;}
+      else {pos = vec[0].second - barWidthY1*overlapYFac/2; }
+    }
+  else if(vec[0].first-vec[1].first <0)
+    {
+      cout<< "Should not be"<<endl;
+      pos = vec[0].second + vec[1].second;
+      pos = pos/2;
+      
+    }
+  else 
+    {
+      if(isX){pos = vec[0].second + barWidthX1*overlapXFac/2;}
+      else {pos = vec[0].second + barWidthY1*overlapYFac/2; }
+    }
+  
+
+  return pos;
+}
+
+
+
 
 void gdml_hit_constructor::calculate_layerZ(const std::vector<bhep::hit*>& hits)
 {
@@ -88,6 +297,7 @@ void gdml_hit_constructor::calculate_layerZ(const std::vector<bhep::hit*>& hits)
 
   for (hitIt = hits.begin();hitIt != hits.end();hitIt++){ 
     double currLongBarPosZ = (*hitIt)->ddata( "barPosZ" );
+    rawHits->Fill((*hitIt)->x()[2]);
 
     //cout<<"In digi calculate_layerZ, currZ is: "<<currLongBarPosZ<<endl;
     //cout<<"In digi calculate_layerZ, prevZ is: "<<previousBarPosZ<<endl;
@@ -119,7 +329,8 @@ void gdml_hit_constructor::calculate_layerZ(const std::vector<bhep::hit*>& hits)
   }
   _zLayer.push_back( sumPos/counter );
   //cout<<"In digi calculate_layerZ, z is: "<<sumPos/counter<<endl;
-  
+
+
 }
 
 void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
@@ -237,8 +448,9 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   double xE1, xE2, yE1, yE2;
   double Xphot, Yphot;
 
-
   Point3D hitPos( voxX, voxY, z );
+
+  digitizedHits->Fill(z);
   
   bhep::hit* vhit = new bhep::hit( "tracking" );
   vhit->set_point( hitPos );
@@ -270,7 +482,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 
   //Assume equal amounts of energy from both views and
   // equal energy flow in both directions along strip.
-  cout<<"totEng: "<<totEng<<endl;
+  //cout<<"totEng: "<<totEng<<endl;
   xE1 = xE2 = yE1 = yE2 = totEng/2;
 
   //cout<<"attLength: "<<_attLength<<endl;
@@ -287,20 +499,6 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 
   dt = dtx < dty ? dtx : dty;
 
-
-  /*
-  xE1 = xE1 * exp( -(xedge - fabs(voxX))/_attLength );
-  xE2 = xE2 * exp( -(xedge + fabs(voxX))/_attLength );
-  yE1 = yE1 * exp( -(yedge - fabs(voxY))/_attLength );
-  yE2 = yE2 * exp( -(yedge + fabs(voxY))/_attLength );
-  dtx = (xedge - fabs(voxX)) < (xedge + fabs(voxX)) ?
-    (xedge - fabs(voxX))/vlight : (xedge + fabs(voxX))/vlight;
-  dty = (yedge - fabs(voxY)) < (yedge + fabs(voxY)) ?
-    (yedge - fabs(voxY))/vlight : (yedge + fabs(voxY))/vlight;
-  dt = dtx < dty ? dtx : dty;
-  */
-  //smear the reconstructed energies.
-  
   double xE = xE1 + _ranGen.Gaus( 0, smearingFactor * xE1 )
     + xE2 + _ranGen.Gaus( 0, smearingFactor * xE2 );
   double yE = yE1 + _ranGen.Gaus( 0, smearingFactor * yE1 )

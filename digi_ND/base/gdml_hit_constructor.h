@@ -20,6 +20,9 @@
 // #include <CLHEP/Random/RanluxEngine.h>
 #include <TRandom3.h>
 
+//#include "TFile.h"
+#include "TH1F.h"
+
 using namespace bhep;
 
 //#include <mind/rec_hit.h>
@@ -35,13 +38,26 @@ class gdml_hit_constructor
   ~gdml_hit_constructor();
 
   //reconstruction.
-  void execute(const std::vector<bhep::hit*>& hits, std::vector<bhep::hit*>& rec_hit);
+  void execute(const std::vector<bhep::hit*>& hits, std::vector<bhep::hit*>& rec_hit, std::vector<TH1F*>& histo_vec);
+
+  TH1F* rawHits;
+  TH1F* clusteredHits;
+  TH1F* digitizedHits;
 
  private:
 
   //reset
   void reset();
 
+  //clusteres the hits in xy to get the better resolution expected by the overlaying bars
+  void clustering(const std::vector<bhep::hit*>& zSortedHits);
+
+  // std::vector<bhep::hit*> 
+  std::vector<double> clusteringXY(const std::vector<bhep::hit*> hits, int key);
+
+  double overlapCalc(std::vector<std::pair <int,double> > vec,bool isX);
+
+  //void clustering();
   //calculate z position of layers.
   void calculate_layerZ(const std::vector<bhep::hit*>& hits);
   //function which puts hits into the map.

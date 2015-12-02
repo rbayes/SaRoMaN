@@ -27,7 +27,35 @@ root2dst::root2dst(bhep::prlevel vlevel, bhep::gstore* store){
   
   m.message("+++ root2dst Constructor +++",bhep::VERBOSE); 
   
+
+
+  //hList = new TList();
+  rawHits = new TH1F("rawHits", "raw Hits", 2000, -2000, 2000);
+  //hList->Add(rawHits);
+  clusteredHits = new TH1F("clusteredHits", "clustered Hits", 1000, -2000, 2000);
+  //hList->Add(clusteredHits);
+  digitizedHits = new TH1F("digitizedHits", "digitized Hits", 1000, -2000, 2000);
+  //hList->Add(digitizedHits);
+  
+  histo_vec.push_back(rawHits);
+  histo_vec.push_back(clusteredHits);
+  histo_vec.push_back(digitizedHits);
+
+
 }
+
+void root2dst::print(void)
+{
+  //digiOutfile = new TFile("digitization.root", "UPDATE");
+  digiOutfile = new TFile("digitization.root", "RECREATE");
+ 
+  histo_vec[0]->Write();
+  histo_vec[1]->Write();
+  histo_vec[2]->Write();
+  digiOutfile->Close();
+
+}
+
 
 
 //*************************************************************
@@ -361,8 +389,7 @@ particle* root2dst::create_digital_representation(const vector<particle*>& tru_p
 
 /*Makes a digital particle with only the hits, to be used in
   the fitting algorithm */
-
-
+  
   ptype pT = DIGI;
   string detect = "tracking";
   string edep = "EnergyDep";//"E_dep";
@@ -394,7 +421,7 @@ particle* root2dst::create_digital_representation(const vector<particle*>& tru_p
       temp_hit.clear();
     }
     
-    _construct->execute( part_hits, vox );
+    _construct->execute( part_hits, vox ,histo_vec);
     
     for (voxIt = vox.begin();voxIt != vox.end();voxIt++)
       hitMap->add_hit( detect , (*voxIt) );
@@ -440,6 +467,6 @@ particle* root2dst::create_digital_representation(const vector<particle*>& tru_p
       
     }
   }
-  
+
   return hitMap;
 }

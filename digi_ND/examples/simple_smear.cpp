@@ -136,6 +136,8 @@ int main(int argc, char* argv[]) {
     inDst.close();
   }
 
+  cvt->print();
+
   WriteUtil::CloseOutputDst();
   //inDst.close();
 
