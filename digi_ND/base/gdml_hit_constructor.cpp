@@ -55,9 +55,9 @@ void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
 				   std::vector<bhep::hit*>& rec_hit, std::vector<TH1F*>& histo_vec)
 {
 
-  rawHits = histo_vec[0];
-  clusteredHits = histo_vec[1];
-  digitizedHits = histo_vec[2];
+  rawHitsTH1F = histo_vec[0];
+  clusteredHitsTH1F = histo_vec[1];
+  digitizedHitsTH1F = histo_vec[2];
 
   std::vector<bhep::hit*> un_clustered_rec_hit;
 
@@ -70,10 +70,11 @@ void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
   sort( sortedHits.begin(), sortedHits.end(), forwardSort() );
   
   // Calculate the z-position as the average of the z of the 4 layers of scintilating bars.
-  calculate_layerZ(sortedHits);
+  //calculate_layerZ(sortedHits);
 
   //sort into voxels map.
-  parse_to_map( sortedHits );
+  // parse_to_map( sortedHits );
+  clustering(sortedHits);
 
   //Make rec_hits from vox.
   construct_hits( rec_hit );
@@ -81,7 +82,7 @@ void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
 
   // Implement the clustering algorithm to cluster hits in the plane, 
   // using which we can determine a better x,y pos then before.
-  clustering(sortedHits);
+  // clustering(sortedHits);
 
   //rec_hit = un_clustered_rec_hit;
 }
@@ -111,6 +112,7 @@ void gdml_hit_constructor::clustering(const std::vector<bhep::hit*>& zSortedHits
     {
       double currZ = (*hitIt)->ddata( "barPosZ" );
       double nextZ;
+      rawHitsTH1F->Fill((*hitIt)->x()[2]);
       
       if(hitIt + 1 != zSortedHits.end()){ nextZ = (*(hitIt + 1))->ddata( "barPosZ" );}
       else {nextZ = currZ + 2 * _activeLength;}
@@ -126,47 +128,21 @@ void gdml_hit_constructor::clustering(const std::vector<bhep::hit*>& zSortedHits
 	  moduleHits.clear();
 	}    
     }
-
   // Do the actually clustering
   for(int counter = 0; counter < moduleHitsVector.size(); counter++)
     {
-      if(moduleHitsVector[counter].size() != 0)
-	{
-	  clustered_hits.push_back(clusteringXY(moduleHitsVector[counter], counter));
-	}
+      if(moduleHitsVector[counter].size() != 0){clusteringXY(moduleHitsVector[counter], counter);}
     }
 }
 
-//std::vector<bhep::hit*>
-std::vector<double> gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int key)
+void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int key)
 {
-  // Have a vector with hits in the module,use hits in both plates to 
-  // recreate the actual hits better.
-  // float distBarsZ = 7.5 * mm; // Just for testing, should read from config.
-  // Save the hits and the mc truth hits. (A Map? Link them with a key
-  // At the moment does not use the overlap! Should and must be used!
-  // We have bar number and we know the overlap.
-  // Do not allow bar numbers to differ more than 1. 
-  // Also use this properly in the code.
-  //cout<<"In a vector"<<endl;
-  //double sumX =0;
-  //double sumY =0;
-  //double sumZ =0;
-  //std::map<int,double> X, Y;
-
-  std::vector<std::pair <int,double> > X, Y;
-  //vector<double> X;
-  //vector<double> Y;
-  vector<double> Z;
-  double sumZ = 0;
+  std::vector<bhep::hit*> X, Y;
+  double z = 0;
   
-  std::map<int,vector<bhep::hit*> > map;
-
-  map[key]=hits;
-
+  
   for(int inCounter = 0; inCounter < hits.size(); inCounter++)
     {
-      
       cout<<hits[inCounter]->x()[0]<<"\t"
 	  <<hits[inCounter]->x()[1]<<"\t"
 	  <<hits[inCounter]->x()[2]<<"\t"
@@ -175,110 +151,86 @@ std::vector<double> gdml_hit_constructor::clusteringXY(const std::vector<bhep::h
 	  <<hits[inCounter]->ddata( "barPosZ" )<<"\t"
 	  <<hits[inCounter]->ddata( "barPosT" )<<"\t"
 	  <<endl;
+
+      z+=hits[inCounter]->ddata( "barPosZ" );
       
-
-      int barNum = hits[inCounter]->idata( "barNumber" );
-      double transPos = hits[inCounter]->ddata( "barPosT" );
-      std::pair<int,double> dataPair = std::make_pair(barNum,transPos);
-
-      if( hits[inCounter]->idata( "IsYBar" ) == 0){X.push_back(dataPair);}
-      else {Y.push_back(dataPair);}
-
-      Z.push_back(hits[inCounter]->ddata( "barPosZ" ));
-      sumZ += hits[inCounter]->ddata( "barPosZ" );
+      if( hits[inCounter]->idata( "IsYBar" ) == 0){X.push_back(hits[inCounter]);}
+      else {Y.push_back(hits[inCounter]);}
+      
     }
   
-  double x;
-  double y;
-  double z;
-  std::vector<double> clustered_hit;
+  z= z/hits.size();
+  int vox_x = -1;
+  int vox_y = -1;
   
-  //Do we need to cluster? (More than 1 plane hit)
-  // (What if more than 1 hit?)
-
-  if(X.size() > 0 && Y.size() >0)
+  if(X.size() != 0)
     {
-      //combine positions!
-      //combine(X,Y)
-      if(X.size() == 1 && Y.size() == 1)
-	{
-	  x = X[0].second;
-	  y = Y[0].second;
-	  z = Z[0];
-	}
-      else if(X.size() == 1 && Y.size() > 1)
-	{
-	  x = X[0].second;
-	  y=overlapCalc(Y,0);
-	  z = sumZ / Z.size();
-	}
-      else if(Y.size() == 1 && X.size() > 1)
-	{
-	  x=overlapCalc(X,1);
-	  y = Y[0].second;
-	  z = sumZ / Z.size();
-	}
-      else
-	{
-	  x=overlapCalc(X,1);
-	  y=overlapCalc(Y,0);
-	  z = sumZ / Z.size();
-	}
-
-      clusteredHits->Fill(z);
+      vox_x = calculate_new_vox_no(X);
+ 
+    }
+  if(Y.size() != 0)
+    {
+      vox_y = calculate_new_vox_no(Y);
+ 
     }
 
+  cout<<"vox_x "<<vox_x<<endl;
+  cout<<"vox_y "<<vox_y<<endl;
+  _nVoxX = 47;
+  
+  int vox_num = vox_x + vox_y*_nVoxX;
+  cout<<"vox_num "<<vox_num<<endl;
+  cout<<"z "<<z<<endl;
+
+
+  //for the whole vector.
+
+  for(int cnt = 0; cnt<hits.size();cnt++)
+    { 
+      if ( vox_num >= 0){_voxels[z].insert( pair<int,bhep::hit*>(vox_num,hits[cnt]) );}
+    }
+     clusteredHitsTH1F->Fill(z);
+}
+
+int gdml_hit_constructor::calculate_new_vox_no(std::vector<bhep::hit*> hits)
+{
+  /*
+    Take all the hits in a module (4z planes) and calculate the voxel number from it.
+    Takes in only X or only Y plane hits. Does not yet handle multiple hits per plane.
+
+  */
+
+  int vox_num = -1;
+  int currBarNum = hits[0]->idata( "barNumber" );
+
+  if(hits.size() == 1)
+    {
+      //int currBarNum = hits[0]->idata( "barNumber" );
+
+      if(currBarNum % 2 == 0) // If barNum even then back bar
+	{
+	  vox_num = 2*currBarNum;
+	}
+      else{vox_num = 2*(currBarNum -1)+2 ;}
+    }
   else
     {
-      // No proper hit is size 0 for X or Y
-      // How handle shower?
-    }
- 
-  cout<<x<<"\t"<<y<<"\t"<<z<<"\t"<<endl;
-  clustered_hit.push_back(x);
-  clustered_hit.push_back(y);
-  clustered_hit.push_back(z);
+      int frontBarNum = -1;
+      int backBarNum = -1;
 
-  return clustered_hit;
+      for(int cnt = 0; cnt<hits.size(); cnt++)
+	{
+	  currBarNum = hits[cnt]->idata( "barNumber" );
+	  if(currBarNum % 2 == 0){backBarNum = currBarNum/2;}
+	  else{frontBarNum = (int) (currBarNum -1)/2;}
+	}
+      vox_num = 2*backBarNum + 2*frontBarNum + 1;
+    }
+
+  // cout<<"vox_num: "<<vox_num<<endl;
+
+ return vox_num;
 }
-
-double gdml_hit_constructor::overlapCalc(std::vector<std::pair <int,double> > vec,bool isX)
-{
-  double pos = 0;
-  double barWidthX1 = 210;
-  double barWidthY1 = 30;
-  double barWidthX2 = 340;
-  double barWidthY2 = 39.14;
-
-  double overlapXFac = (barWidthX2 - barWidthX1)/barWidthX1;
-  double overlapXFac = (barWidthY2 - barWidthY1)/barWidthY1;
-
-  // Check multiple hit?
-  //cout<<"More than one"<<endl;
-  if(vec[0].first-vec[1].first >0)
-    {
-      if(isX){pos = vec[0].second - barWidthX1*overlapXFac/2;}
-      else {pos = vec[0].second - barWidthY1*overlapYFac/2; }
-    }
-  else if(vec[0].first-vec[1].first <0)
-    {
-      cout<< "Should not be"<<endl;
-      pos = vec[0].second + vec[1].second;
-      pos = pos/2;
-      
-    }
-  else 
-    {
-      if(isX){pos = vec[0].second + barWidthX1*overlapXFac/2;}
-      else {pos = vec[0].second + barWidthY1*overlapYFac/2; }
-    }
-  
-
-  return pos;
-}
-
-
-
 
 void gdml_hit_constructor::calculate_layerZ(const std::vector<bhep::hit*>& hits)
 {
@@ -297,7 +249,6 @@ void gdml_hit_constructor::calculate_layerZ(const std::vector<bhep::hit*>& hits)
 
   for (hitIt = hits.begin();hitIt != hits.end();hitIt++){ 
     double currLongBarPosZ = (*hitIt)->ddata( "barPosZ" );
-    rawHits->Fill((*hitIt)->x()[2]);
 
     //cout<<"In digi calculate_layerZ, currZ is: "<<currLongBarPosZ<<endl;
     //cout<<"In digi calculate_layerZ, prevZ is: "<<previousBarPosZ<<endl;
@@ -450,7 +401,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 
   Point3D hitPos( voxX, voxY, z );
 
-  digitizedHits->Fill(z);
+  digitizedHitsTH1F->Fill(z);
   
   bhep::hit* vhit = new bhep::hit( "tracking" );
   vhit->set_point( hitPos );

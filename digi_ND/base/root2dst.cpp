@@ -30,11 +30,11 @@ root2dst::root2dst(bhep::prlevel vlevel, bhep::gstore* store){
 
 
   //hList = new TList();
-  rawHits = new TH1F("rawHits", "raw Hits", 2000, -2000, 2000);
+  rawHits = new TH1F("rawHits", "raw Hits", 20000, -2000, 2000);
   //hList->Add(rawHits);
-  clusteredHits = new TH1F("clusteredHits", "clustered Hits", 1000, -2000, 2000);
+  clusteredHits = new TH1F("clusteredHits", "clustered Hits", 10000, -2000, 2000);
   //hList->Add(clusteredHits);
-  digitizedHits = new TH1F("digitizedHits", "digitized Hits", 1000, -2000, 2000);
+  digitizedHits = new TH1F("digitizedHits", "digitized Hits", 10000, -2000, 2000);
   //hList->Add(digitizedHits);
   
   histo_vec.push_back(rawHits);

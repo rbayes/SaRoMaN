@@ -40,9 +40,9 @@ class gdml_hit_constructor
   //reconstruction.
   void execute(const std::vector<bhep::hit*>& hits, std::vector<bhep::hit*>& rec_hit, std::vector<TH1F*>& histo_vec);
 
-  TH1F* rawHits;
-  TH1F* clusteredHits;
-  TH1F* digitizedHits;
+  TH1F* rawHitsTH1F;
+  TH1F* clusteredHitsTH1F;
+  TH1F* digitizedHitsTH1F;
 
  private:
 
@@ -53,9 +53,8 @@ class gdml_hit_constructor
   void clustering(const std::vector<bhep::hit*>& zSortedHits);
 
   // std::vector<bhep::hit*> 
-  std::vector<double> clusteringXY(const std::vector<bhep::hit*> hits, int key);
-
-  double overlapCalc(std::vector<std::pair <int,double> > vec,bool isX);
+  void clusteringXY(const std::vector<bhep::hit*> hits, int key);
+  int calculate_new_vox_no(std::vector<bhep::hit*> hits);
 
   //void clustering();
   //calculate z position of layers.
