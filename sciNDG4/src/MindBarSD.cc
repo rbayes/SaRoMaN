@@ -78,13 +78,13 @@ G4bool MindBarSD::ProcessHits(G4Step* step, G4TouchableHistory*)
   G4String volName = theTouchable->GetVolume()->GetName();
   G4int copyNo = theTouchable->GetCopyNumber();
   
-  /*
+  
   std::cout << volName;
   std::cout<<" hit position = ("<<pos[0]
   	   <<","<<pos[1]<<","<<pos[2]<<"), copyNo = "<<copyNo;
   std::cout<<" Copy Translation = ("<<copyTrans[0]
   	   <<","<<copyTrans[1]<<","<<copyTrans[2]<<")\n";
-  */
+  
   
   G4double barOffset = 0;
 
