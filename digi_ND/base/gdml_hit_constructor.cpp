@@ -187,9 +187,12 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
 
   for(int cnt = 0; cnt<hits.size();cnt++)
     { 
-      if ( vox_num >= 0){_voxels[z].insert( pair<int,bhep::hit*>(vox_num,hits[cnt]) );}
+      if ( vox_num >= 0){
+	_voxels[z].insert( pair<int,bhep::hit*>(vox_num,hits[cnt]) );
+	clusteredHitsTH1F->Fill(hits[cnt]->x()[2]);
+      }
     }
-     clusteredHitsTH1F->Fill(z);
+    
 }
 
 int gdml_hit_constructor::calculate_new_vox_no(std::vector<bhep::hit*> hits)
@@ -387,11 +390,11 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   vdouble X, Y, Z, E, T; //annoying but again all in rec_hit class.
   double proptime=9999999.9, vlight = 299792458. / 1.6;
   double meanvoxtime;
-  int irow = vox / _nVoxX;
-  int icol = vox % _nVoxX;
+  //int irow = vox / _nVoxX;
+  //int icol = vox % _nVoxX;
   
-  double voxX = icol*_voxXdim + _voxXdim/2 - _detectorX/2;
-  double voxY = _detectorY/2 - (irow*_voxYdim + _voxYdim/2);
+  //double voxX = icol*_voxXdim + _voxXdim/2 - _detectorX/2;
+  //double voxY = _detectorY/2 - (irow*_voxYdim + _voxYdim/2);
   double smearingFactor = 0.06;
   double dt, dtx, dty;
   double xedge = _detectorX/2.;
@@ -399,21 +402,46 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   double xE1, xE2, yE1, yE2;
   double Xphot, Yphot;
 
-  Point3D hitPos( voxX, voxY, z );
+  vector<double> barPosX;
+  vector<double> barPosY;
+  double sumBarPosX = 0;
+  double sumBarPosY = 0;
+  double barX;
+  double barY;
 
-  digitizedHitsTH1F->Fill(z);
+  //Point3D hitPos( voxX, voxY, z ); // Get the appropriate x and y from the voxels!
+
+  //in the for if (*hIt).second->>idata( "IsYBar" ) == 0
+  //X.push_back((*hIt).second->ddata( "barPosT" )
+  // else Y.push_back((*hIt).second->ddata( "barPosT" )
+  // voxX = Xsum/X.size
+  // voxY = Ysun/Y.size
+
+  
   
   bhep::hit* vhit = new bhep::hit( "tracking" );
-  vhit->set_point( hitPos );
+  //vhit->set_point( hitPos );
 
   vhit->add_property( "voxel", vox );
 
   std::multimap<int,bhep::hit*>::const_iterator hIt;
   for (hIt = map1.equal_range(vox).first;hIt != map1.equal_range(vox).second;hIt++)
     {
+      if((*hIt).second->idata( "IsYBar" ) == 0)
+	{
+	  barPosX.push_back((*hIt).second->ddata( "barPosT" ));
+	  sumBarPosX+=(*hIt).second->ddata( "barPosT" );
+	}
+      else
+	{
+	  barPosY.push_back((*hIt).second->ddata( "barPosT" ));
+	  sumBarPosY+=(*hIt).second->ddata( "barPosT" );
+	}
+
       X.push_back( (*hIt).second->x()[0] );
       Y.push_back( (*hIt).second->x()[1] );
       Z.push_back( (*hIt).second->x()[2] );
+      digitizedHitsTH1F->Fill((*hIt).second->x()[2]);
       T.push_back( (*hIt).second->ddata( "time" ) );
       E.push_back( (*hIt).second->ddata( "EnergyDep" ) );
       totEng += (*hIt).second->ddata( "EnergyDep" );
@@ -429,6 +457,12 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
       //std::cout<<(*hIt).second->x()[0]<<"\t"<<(*hIt).second->x()[1]<<"\t"<<(*hIt).second->x()[2]<<"\t"
       //	       <<(*hIt).second->ddata( "EnergyDep" )<<std::endl;
     }
+  barX=sumBarPosX/barPosX.size();
+  barY=sumBarPosY/barPosY.size();
+
+  Point3D hitPos(barX , barY, z );
+  vhit->set_point( hitPos );
+
   //Do attenuations.
 
   //Assume equal amounts of energy from both views and
@@ -438,15 +472,15 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 
   //cout<<"attLength: "<<_attLength<<endl;
 
-  xE1 = xE1 * exp(-(xedge - fabs(voxX))/_attLength);
-  xE2 = xE2 * exp(-(3*xedge-fabs(voxX))/_attLength);
-  yE1 = yE1 * exp(-(yedge - fabs(voxY))/_attLength);
-  yE2 = yE2 * exp(-(3*yedge-fabs(voxY))/_attLength);
+  xE1 = xE1 * exp(-(xedge - fabs(barX))/_attLength);
+  xE2 = xE2 * exp(-(3*xedge-fabs(barX))/_attLength);
+  yE1 = yE1 * exp(-(yedge - fabs(barY))/_attLength);
+  yE2 = yE2 * exp(-(3*yedge-fabs(barY))/_attLength);
   
-  dtx = (xedge - fabs(voxX)) < (3*xedge - fabs(voxX)) ?
-    (xedge - fabs(voxX))/vlight : (3*xedge - fabs(voxX))/vlight;
-  dty = (yedge - fabs(voxY)) < (3*yedge - fabs(voxY)) ?
-    (yedge - fabs(voxY))/vlight : (3*yedge - fabs(voxY))/vlight;
+  dtx = (xedge - fabs(barX)) < (3*xedge - fabs(barX)) ?
+    (xedge - fabs(barX))/vlight : (3*xedge - fabs(barX))/vlight;
+  dty = (yedge - fabs(barY)) < (3*yedge - fabs(barY)) ?
+    (yedge - fabs(barY))/vlight : (3*yedge - fabs(barY))/vlight;
 
   dt = dtx < dty ? dtx : dty;
 
