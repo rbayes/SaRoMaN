@@ -200,7 +200,7 @@
         <solidref ref="BarX1_solid"/>
         <auxiliary auxtype="SD" auxvalue="Bar"/>
         <auxiliary auxtype="Attenuation" auxvalue="5000"/>
-        <!-- <auxiliary auxtype="Invisible" auxvalue="1"/> -->
+        <auxiliary auxtype="Invisible" auxvalue="1"/> 
         <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <volume name="BarY1">
@@ -208,7 +208,7 @@
         <solidref ref="BarY1_solid"/>
         <auxiliary auxtype="SD" auxvalue="Bar"/>
         <auxiliary auxtype="Attenuation" auxvalue="5000"/>
-        <!-- <auxiliary auxtype="Invisible" auxvalue="1"/> -->
+        <auxiliary auxtype="Invisible" auxvalue="1"/> 
         <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <!-- Parametrized Volume -->

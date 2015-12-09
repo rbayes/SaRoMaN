@@ -12,6 +12,7 @@ import subprocess
 import shutil
 import sys
 import getopt
+
 import time
 import random
 #sys.path.append('pythonlib')
@@ -49,8 +50,8 @@ class saroman:
 
     def __init__(self):
         #Set up paths #
-        self.home = '/afs/phas.gla.ac.uk/user/p/phallsjo' #os.getcwd() # '/data/neutrino05/rbayes/MIND' # 
-        self.exec_base = os.path.join(self.home, 'SaRoMaN') #self.home
+        self.home = os.getcwd() # '/data/neutrino05/rbayes/MIND' # 
+        self.exec_base = self.home
         self.out_base  = os.path.join(self.home, 'out')
         #self.out_base  = os.path.join(self.home, 'batch')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
@@ -71,7 +72,7 @@ class saroman:
         
         #self.seed = 5000 * random.random()
         self.seed = 100
-        self.Nevts = 100
+        self.Nevts = 1000
         self.inttype = 'CC'
         self.Bfield = 1.5
 
