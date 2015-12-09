@@ -40,9 +40,16 @@ class gdml_hit_constructor
   //reconstruction.
   void execute(const std::vector<bhep::hit*>& hits, std::vector<bhep::hit*>& rec_hit, std::vector<TH1F*>& histo_vec);
 
+  //Temporary histograms used for debugging.
   TH1F* rawHitsTH1F;
   TH1F* clusteredHitsTH1F;
   TH1F* digitizedHitsTH1F;
+  TH1F* xeTH1F;
+  TH1F* xeAttTH1F;
+  TH1F* xeSmearTH1F;
+  TH1F* yeTH1F;
+  TH1F* yeAttTH1F;
+  TH1F* yeSmearTH1F;
 
  private:
 
@@ -51,20 +58,10 @@ class gdml_hit_constructor
 
   //clusteres the hits in xy to get the better resolution expected by the overlaying bars
   void clustering(const std::vector<bhep::hit*>& zSortedHits);
-
-  // std::vector<bhep::hit*> 
   void clusteringXY(const std::vector<bhep::hit*> hits, int key);
-  int calculate_new_vox_no(std::vector<bhep::hit*> hits);
 
-  //void clustering();
-  //calculate z position of layers.
-  void calculate_layerZ(const std::vector<bhep::hit*>& hits);
-  //function which puts hits into the map.
-  void parse_to_map(const std::vector<bhep::hit*> hits);
-  //find plane of hit.
-  double find_plane(bhep::hit& curHit);
-  //find vox number of hit.
-  int calculate_vox_no(bhep::hit& curHit);
+  int calculate_vox_no(std::vector<bhep::hit*> hits);
+
   //Make the rec hits.
   void construct_hits(std::vector<bhep::hit*>& rec_hit);
   //make an individual rec hit.
@@ -73,24 +70,19 @@ class gdml_hit_constructor
   //Random Generator for the smear.
   TRandom3 _ranGen;
 
-  //vector of plane z positions.
-  std::vector<double> _zLayer;
-  //iterator for z planes.
-  std::vector<double>::iterator _zIt;
-
   //Parameters related to current MIND setup.
   double _detectorLength;
   double _detectorX;
   double _detectorY;
   double _vertexDetdepth;
-  double _vertexDetX;
-  double _vertexDetY;
-  double _passiveLength;
+  //double _vertexDetX;
+  //double _vertexDetY;
+  //double _passiveLength;
   double _activeLength;
-  double _braceLength;
-  double _gapLength;
-  int _nActive;
-  int OctGeom;
+  //double _braceLength;
+  //double _gapLength;
+  //int _nActive;
+  //int OctGeom;
   double _minEng;
   double _attLength;
   
@@ -99,10 +91,10 @@ class gdml_hit_constructor
   string _measType;
 
   //Voxel properties.
-  double _voxXdim;
-  double _voxYdim;
+  //double _voxXdim;
+  //double _voxYdim;
   int _nVoxX;
-  int _nVox;
+  //int _nVox;
 
   //Container wchich will define voxels.
   std::map<double, std::multimap<int, bhep::hit*> > _voxels;

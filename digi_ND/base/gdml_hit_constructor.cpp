@@ -12,23 +12,24 @@ gdml_hit_constructor::gdml_hit_constructor(const bhep::gstore& store)
   _detectorX = store.fetch_dstore("MIND_x") * m;
   _detectorY = store.fetch_dstore("MIND_y") * m;
   _vertexDetdepth = store.fetch_dstore("vertex_z") * m;
-  _vertexDetX = store.fetch_dstore("vertex_x") * m;
-  _vertexDetY = store.fetch_dstore("vertex_y") * m;
-  _passiveLength = store.fetch_dstore("passive_thickness") * cm;
+  //_vertexDetX = store.fetch_dstore("vertex_x") * m;
+  //_vertexDetY = store.fetch_dstore("vertex_y") * m;
+  //_passiveLength = store.fetch_dstore("passive_thickness") * cm;
   _activeLength = store.fetch_dstore("active_thickness") * cm;
   cout<<"_activeLength"<<_activeLength<<endl;
-  _braceLength = 0.0;
-  if (store.find_dstore("bracing_thickness"))
-    _braceLength = store.fetch_dstore("bracing_thickness") * cm;
-  _gapLength = store.fetch_dstore("air_gap") * cm;
-  _nActive = store.fetch_istore("active_layers");
-  OctGeom = 0;
-  if (store.find_istore("isOctagonal"))
-    OctGeom = store.fetch_istore("isOctagonal");
-  _voxXdim = store.fetch_dstore("rec_boxX") * cm;
-  _voxYdim = store.fetch_dstore("rec_boxY") * cm;
-  _nVoxX = (int)( _detectorX / _voxXdim );
-  _nVox = _nVoxX * (int)( _detectorY / _voxYdim );
+  //_braceLength = 0.0;
+  //if (store.find_dstore("bracing_thickness"))
+  //  _braceLength = store.fetch_dstore("bracing_thickness") * cm;
+  //_gapLength = store.fetch_dstore("air_gap") * cm;
+  //_nActive = store.fetch_istore("active_layers");
+  //OctGeom = 0;
+  //if (store.find_istore("isOctagonal"))
+  //  OctGeom = store.fetch_istore("isOctagonal");
+  //_voxXdim = store.fetch_dstore("rec_boxX") * cm;
+  //_voxYdim = store.fetch_dstore("rec_boxY") * cm;
+  //_nVoxX = (int)( _detectorX / _voxXdim );
+  //_nVox = _nVoxX * (int)( _detectorY / _voxYdim );
+  _nVoxX =store.fetch_istore("nVoxX");
 
   long seed = (long)store.fetch_dstore("Gen_seed");
   _ranGen = TRandom3( seed );
@@ -54,37 +55,32 @@ void gdml_hit_constructor::reset()
 void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
 				   std::vector<bhep::hit*>& rec_hit, std::vector<TH1F*>& histo_vec)
 {
+  /*
+    Main executible function for the hit_constructor.
+  */
 
+  //Set the histogram plotters
   rawHitsTH1F = histo_vec[0];
   clusteredHitsTH1F = histo_vec[1];
   digitizedHitsTH1F = histo_vec[2];
-
-  std::vector<bhep::hit*> un_clustered_rec_hit;
+  xeTH1F = histo_vec[3];
+  xeAttTH1F = histo_vec[4];
+  xeSmearTH1F = histo_vec[5];
+  yeTH1F = histo_vec[6];
+  yeAttTH1F = histo_vec[7];
+  yeSmearTH1F = histo_vec[8];
 
   //First clear out map.
   reset();
   
   //copy hits so they can be sorted in z.
   std::vector<bhep::hit*> sortedHits = hits;
-
   sort( sortedHits.begin(), sortedHits.end(), forwardSort() );
-  
-  // Calculate the z-position as the average of the z of the 4 layers of scintilating bars.
-  //calculate_layerZ(sortedHits);
 
-  //sort into voxels map.
-  // parse_to_map( sortedHits );
   clustering(sortedHits);
 
   //Make rec_hits from vox.
   construct_hits( rec_hit );
-  //construct_hits( un_clustered_rec_hit );
-
-  // Implement the clustering algorithm to cluster hits in the plane, 
-  // using which we can determine a better x,y pos then before.
-  // clustering(sortedHits);
-
-  //rec_hit = un_clustered_rec_hit;
 }
 
 void gdml_hit_constructor::clustering(const std::vector<bhep::hit*>& zSortedHits)
@@ -92,20 +88,12 @@ void gdml_hit_constructor::clustering(const std::vector<bhep::hit*>& zSortedHits
   /*
     Cluster the real hits (bar positions from hits) to produce hit positions.
     Also utilize the bar overlap to be able to give an even better position.
-
-  */
-
-  //Take in the filled _voxels (Sorted hits by z planes).
-  // Check if two hits next to eachother (in x) means that hit activated both. (passed between)
-  // Check if two hits next to eachother (in y) means that hit activated both. (passed between)
-  // Return a better voxelisation?
-
-  // std::vector<bhep::hit*> clustered_hits;  
+    Main jobs is done by calling clusteringXY.
+  */  
   std::vector<bhep::hit*>::const_iterator hitIt;
   std::vector<bhep::hit*> moduleHits;
   std::vector<std::vector<bhep::hit*> > moduleHitsVector;
   std::vector<std::vector<double> > clustered_hits;
- 
 
   // Fill vectors with hits in the same module (xyxy),sorted by barPosZ.
   for (hitIt = zSortedHits.begin();hitIt != zSortedHits.end();hitIt++)
@@ -137,6 +125,11 @@ void gdml_hit_constructor::clustering(const std::vector<bhep::hit*>& zSortedHits
 
 void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int key)
 {
+  /*
+    Cluster the real hits (bar positions from hits) to produce hit positions.
+    Also utilize the bar overlap to be able to give an even better position.
+    Results in _voxel being filled.
+  */  
   std::vector<bhep::hit*> X, Y;
   double z = 0;
   
@@ -156,7 +149,6 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
       
       if( hits[inCounter]->idata( "IsYBar" ) == 0){X.push_back(hits[inCounter]);}
       else {Y.push_back(hits[inCounter]);}
-      
     }
   
   z= z/hits.size();
@@ -165,19 +157,18 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
   
   if(X.size() != 0)
     {
-      vox_x = calculate_new_vox_no(X);
+      vox_x = calculate_vox_no(X);
  
     }
   if(Y.size() != 0)
     {
-      vox_y = calculate_new_vox_no(Y);
+      vox_y = calculate_vox_no(Y);
  
     }
 
   cout<<"vox_x "<<vox_x<<endl;
   cout<<"vox_y "<<vox_y<<endl;
-  _nVoxX = 47;
-  
+
   int vox_num = vox_x + vox_y*_nVoxX;
   cout<<"vox_num "<<vox_num<<endl;
   cout<<"z "<<z<<endl;
@@ -195,7 +186,7 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
     
 }
 
-int gdml_hit_constructor::calculate_new_vox_no(std::vector<bhep::hit*> hits)
+int gdml_hit_constructor::calculate_vox_no(std::vector<bhep::hit*> hits)
 {
   /*
     Take all the hits in a module (4z planes) and calculate the voxel number from it.
@@ -235,123 +226,7 @@ int gdml_hit_constructor::calculate_new_vox_no(std::vector<bhep::hit*> hits)
  return vox_num;
 }
 
-void gdml_hit_constructor::calculate_layerZ(const std::vector<bhep::hit*>& hits)
-{
-  // Get in z-pos sorted hits.
 
-  //  cout<<"Find plane, transbarpos: "<<curHit.ddata( "barPosT" )<<endl;
-
-  //cout<<"Find plane, longbarpos: "<<curHit.ddata( "barPosZ" )<<endl;
-
-  // Find the closest bars and take an average.
-
-  std::vector<bhep::hit*>::const_iterator hitIt;
-  double previousBarPosZ = _detectorLength;
-  int counter;
-  double sumPos;
-
-  for (hitIt = hits.begin();hitIt != hits.end();hitIt++){ 
-    double currLongBarPosZ = (*hitIt)->ddata( "barPosZ" );
-
-    //cout<<"In digi calculate_layerZ, currZ is: "<<currLongBarPosZ<<endl;
-    //cout<<"In digi calculate_layerZ, prevZ is: "<<previousBarPosZ<<endl;
-
-    if(previousBarPosZ == _detectorLength)
-      {
-	previousBarPosZ = currLongBarPosZ;
-	sumPos =  currLongBarPosZ;
-	counter = 1;
-      }
-    else
-      {
-	if( fabs(currLongBarPosZ - previousBarPosZ) < 4 * _activeLength)
-	  {
-	    sumPos +=  currLongBarPosZ;
-	    counter++;
-	  }
-	else
-	  {
-	    _zLayer.push_back( sumPos/counter );
-	    //cout<<"In digi calculate_layerZ, z is: "<<sumPos/counter<<endl;
-	    
-	    previousBarPosZ = currLongBarPosZ;
-	    sumPos = currLongBarPosZ;
-	    counter = 1;
-	  }
-      }
-    
-  }
-  _zLayer.push_back( sumPos/counter );
-  //cout<<"In digi calculate_layerZ, z is: "<<sumPos/counter<<endl;
-
-
-}
-
-void gdml_hit_constructor::parse_to_map(const std::vector<bhep::hit*> hits)
-{
-  //Sort hits into voxel map.
-  int voxNo;
-  double zpos;
-
-  //Set iterator to plane 1.
-  //_zIt = _zLayer.begin();
-
-  std::vector<bhep::hit*>::const_iterator hitIt;
-
-  for (hitIt = hits.begin();hitIt != hits.end();hitIt++){
-    
-    _zIt = _zLayer.begin();
-    //find plane.
-    zpos = find_plane( *(*hitIt) );
-
-    //cout<<"zpos in parse_to_map: "<<zpos<<endl;
-    
-    //get Vox number;
-    voxNo = calculate_vox_no( *(*hitIt) );
-
-    //cout<<"voxNo in parse_to_map: "<<voxNo<<endl;
-
-    //Add voxel to map (or hit to existing voxel).
-    if ( voxNo >= 0)
-      _voxels[zpos].insert( pair<int,bhep::hit*>(voxNo,(*hitIt)) );
-    
-  }
-  
-}
-
-double gdml_hit_constructor::find_plane(bhep::hit& curHit)
-{
-  //find the appropriate z position by comparison to
-  //Layer z.
-  
-  double modDiff = fabs( curHit.x()[2] - (*_zIt) );
-
-  //std::cout<<"X = "<<curHit.x()[0]<<", Y = "<<curHit.x()[1]<<", Z of hit "<<curHit.x()[2]<<std::endl;
-  while ( (int)modDiff > (int) 4*_activeLength/2. && _zIt != _zLayer.end()){
-
-    _zIt++;
-
-    modDiff = fabs( curHit.x()[2] - (*_zIt) );
-    
-  }
-  //cout<<"In digi find_plane, z is: "<<(*_zIt)<<endl;
-  return (*_zIt);
-}
-
-int gdml_hit_constructor::calculate_vox_no(bhep::hit& curHit)
-{
-  //calculate the correct voxel number.
-  int vox_num = -1;
-  if ( fabs(curHit.x()[0]) < _detectorX/2 && fabs(curHit.x()[1]) < _detectorY/2 ){
-    int xbox = (int)( fabs( curHit.x()[0] + _detectorX/2 ) / _voxXdim );
-    
-    int ybox = (int)( fabs( curHit.x()[1] - _detectorY/2 ) / _voxYdim );
-    
-    vox_num = xbox + ybox*_nVoxX;
-  }    
-	 
-  return vox_num;
-}
 
 void gdml_hit_constructor::construct_hits(std::vector<bhep::hit*>& rec_hit)
 {
@@ -390,11 +265,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   vdouble X, Y, Z, E, T; //annoying but again all in rec_hit class.
   double proptime=9999999.9, vlight = 299792458. / 1.6;
   double meanvoxtime;
-  //int irow = vox / _nVoxX;
-  //int icol = vox % _nVoxX;
-  
-  //double voxX = icol*_voxXdim + _voxXdim/2 - _detectorX/2;
-  //double voxY = _detectorY/2 - (irow*_voxYdim + _voxYdim/2);
+
   double smearingFactor = 0.06;
   double dt, dtx, dty;
   double xedge = _detectorX/2.;
@@ -409,18 +280,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   double barX;
   double barY;
 
-  //Point3D hitPos( voxX, voxY, z ); // Get the appropriate x and y from the voxels!
-
-  //in the for if (*hIt).second->>idata( "IsYBar" ) == 0
-  //X.push_back((*hIt).second->ddata( "barPosT" )
-  // else Y.push_back((*hIt).second->ddata( "barPosT" )
-  // voxX = Xsum/X.size
-  // voxY = Ysun/Y.size
-
-  
-  
   bhep::hit* vhit = new bhep::hit( "tracking" );
-  //vhit->set_point( hitPos );
 
   vhit->add_property( "voxel", vox );
 
@@ -470,12 +330,18 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   //cout<<"totEng: "<<totEng<<endl;
   xE1 = xE2 = yE1 = yE2 = totEng/2;
 
+  xeTH1F->Fill(xE1+xE2);
+  yeTH1F->Fill(yE1+yE2);
+
   //cout<<"attLength: "<<_attLength<<endl;
 
   xE1 = xE1 * exp(-(xedge - fabs(barX))/_attLength);
   xE2 = xE2 * exp(-(3*xedge-fabs(barX))/_attLength);
   yE1 = yE1 * exp(-(yedge - fabs(barY))/_attLength);
   yE2 = yE2 * exp(-(3*yedge-fabs(barY))/_attLength);
+
+  xeAttTH1F->Fill(xE1+xE2);
+  yeAttTH1F->Fill(yE1+yE2);
   
   dtx = (xedge - fabs(barX)) < (3*xedge - fabs(barX)) ?
     (xedge - fabs(barX))/vlight : (3*xedge - fabs(barX))/vlight;
@@ -489,8 +355,12 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   double yE = yE1 + _ranGen.Gaus( 0, smearingFactor * yE1 )
     + yE2 + _ranGen.Gaus( 0, smearingFactor * yE2 );
 
-  if ( fabs(z) > (_detectorLength + _vertexDetdepth)/2. && 
-       xE < _minEng && yE < _minEng )
+  xeSmearTH1F->Fill(xE);
+  yeSmearTH1F->Fill(yE);
+
+  //if ( fabs(z) > (_detectorLength + _vertexDetdepth)/2. && 
+  //     xE < _minEng && yE < _minEng )
+  if ( fabs(z) > (_detectorLength)/2. && xE < _minEng && yE < _minEng )
     {
       delete vhit;
       returnPointer = NULL;

@@ -35,23 +35,41 @@ root2dst::root2dst(bhep::prlevel vlevel, bhep::gstore* store){
   clusteredHits = new TH1F("clusteredHits", "clustered Hits", 10000, -2000, 2000);
   //hList->Add(clusteredHits);
   digitizedHits = new TH1F("digitizedHits", "digitized Hits", 10000, -2000, 2000);
+  xeTH1F = new TH1F("xE", "xE", 1000, -50, 100);
+  xeAttTH1F = new TH1F("xEAtt", "xEAtt", 1000, -50, 100);
+  xeSmearTH1F = new TH1F("xESmear", "xESmear", 1000, -50, 100);
+  yeTH1F = new TH1F("yE", "yE", 1000, -50, 100);
+  yeAttTH1F = new TH1F("yEAtt", "yEAtt", 1000, -50, 100);
+  yeSmearTH1F = new TH1F("yESmear", "yESmear", 1000, -50, 100);
+  
+
   //hList->Add(digitizedHits);
   
   histo_vec.push_back(rawHits);
   histo_vec.push_back(clusteredHits);
   histo_vec.push_back(digitizedHits);
+  histo_vec.push_back(xeTH1F);
+  histo_vec.push_back(xeAttTH1F);
+  histo_vec.push_back(xeSmearTH1F);
+  histo_vec.push_back(yeTH1F);
+  histo_vec.push_back(yeAttTH1F);
+  histo_vec.push_back(yeSmearTH1F);
 
 
 }
 
 void root2dst::print(void)
 {
-  //digiOutfile = new TFile("digitization.root", "UPDATE");
+  // digiOutfile = new TFile("digitization.root", "UPDATE");
   digiOutfile = new TFile("digitization.root", "RECREATE");
  
-  histo_vec[0]->Write();
-  histo_vec[1]->Write();
-  histo_vec[2]->Write();
+  for(int cnt = 0; cnt<histo_vec.size();cnt++)
+    {
+      histo_vec[cnt]->Write();
+    }
+  //histo_vec[0]->Write();
+  //histo_vec[1]->Write();
+  //histo_vec[2]->Write();
   digiOutfile->Close();
 
 }
