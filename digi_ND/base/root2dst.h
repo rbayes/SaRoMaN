@@ -53,6 +53,7 @@ public:
 
   void print();
 
+ //Temporary histograms used for debugging.
   TFile* digiOutfile;
   //TList* hList;
   TH1F* rawHits;

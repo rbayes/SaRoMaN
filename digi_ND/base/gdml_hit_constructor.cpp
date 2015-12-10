@@ -284,6 +284,9 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 
   vhit->add_property( "voxel", vox );
 
+
+  // Pushback all the relevant informatiomn to the voxels. 
+  // Also calculate the average position of the hits in each voxel.
   std::multimap<int,bhep::hit*>::const_iterator hIt;
   for (hIt = map1.equal_range(vox).first;hIt != map1.equal_range(vox).second;hIt++)
     {

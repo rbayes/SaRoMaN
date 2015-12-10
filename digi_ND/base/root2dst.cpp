@@ -26,9 +26,8 @@ root2dst::root2dst(bhep::prlevel vlevel, bhep::gstore* store){
   } else _doVox = false;
   
   m.message("+++ root2dst Constructor +++",bhep::VERBOSE); 
-  
-
-
+ 
+  //Temporary histograms used for debugging
   //hList = new TList();
   rawHits = new TH1F("rawHits", "raw Hits", 20000, -2000, 2000);
   //hList->Add(rawHits);
@@ -41,9 +40,6 @@ root2dst::root2dst(bhep::prlevel vlevel, bhep::gstore* store){
   yeTH1F = new TH1F("yE", "yE", 1000, -50, 100);
   yeAttTH1F = new TH1F("yEAtt", "yEAtt", 1000, -50, 100);
   yeSmearTH1F = new TH1F("yESmear", "yESmear", 1000, -50, 100);
-  
-
-  //hList->Add(digitizedHits);
   
   histo_vec.push_back(rawHits);
   histo_vec.push_back(clusteredHits);
@@ -60,6 +56,7 @@ root2dst::root2dst(bhep::prlevel vlevel, bhep::gstore* store){
 
 void root2dst::print(void)
 {
+  // Print the histograms in hist_vec to a root file.
   // digiOutfile = new TFile("digitization.root", "UPDATE");
   digiOutfile = new TFile("digitization.root", "RECREATE");
  
