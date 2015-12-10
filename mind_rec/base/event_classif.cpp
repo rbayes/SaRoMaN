@@ -427,7 +427,7 @@ bool event_classif::get_plane_occupancy(vector<cluster*>& hits){
   _meanOcc /= (double)_nplanes;
   
   ///if no of single-hits in the longest part is > 5 and free part is 50% of the hitsperplane then 
-  ///assess the eventœô û free section to look for viable muon
+  ///assess the event‚¶ free section to look for viable muon
   
    
   /*//----------------------------------------------

@@ -77,13 +77,13 @@ vars.AddVariables(
                  'Path to BHEP library directory.',
                  DEFAULT_PATH),
 
-    # PathVariable('CLHEP_INCDIR',
-    #             'Path to CLHEP headers directory.',
-    #             DEFAULT_PATH),
+     PathVariable('CLHEP_INCDIR',
+                 'Path to CLHEP headers directory.',
+                 DEFAULT_PATH),
 
-    # PathVariable('CLHEP_LIBDIR',
-    #             'Path to CLHEP library directory.',
-    #             DEFAULT_PATH),
+     PathVariable('CLHEP_LIBDIR',
+                 'Path to CLHEP library directory.',
+                 DEFAULT_PATH),
 
     PathVariable('ROOT_INCDIR',
                  'Path to ROOT headers directory.',
@@ -196,22 +196,22 @@ if not env['LIBPATH']:
 	
     # CLHEP ................................................
     
-    # if env['CLHEP_INCDIR'] != DEFAULT_PATH:
-    #     env.Append(CPPPATH = env['CLHEP_INCDIR'])
-    # else:
-    #    try:
-    #         env.ParseConfig("clhep-config --include")
-    #    except OSError:
-    #        Abort("CLHEP couldn't be configured.")
+    if env['CLHEP_INCDIR'] != DEFAULT_PATH:
+        env.Append(CPPPATH = env['CLHEP_INCDIR'])
+    else:
+        try:
+            env.ParseConfig("clhep-config --include")
+        except OSError:
+	    Abort("CLHEP couldn't be configured.")
 
-    #if env['CLHEP_LIBDIR'] != DEFAULT_PATH:
-    #    env.Append(LIBPATH = env['CLHEP_LIBDIR'])
-    #    env.Append(LIBS = "CLHEP")
-    #else:
-    #    try:
-    #        env.ParseConfig("clhep-config --libs")
-    #    except OSError:
-    #        Abort("CLHEP couldn't be configured.")
+    if env['CLHEP_LIBDIR'] != DEFAULT_PATH:
+        env.Append(LIBPATH = env['CLHEP_LIBDIR'])
+        env.Append(LIBS = "CLHEP")
+    else:
+        try:
+            env.ParseConfig("clhep-config --libs")
+        except OSError:
+            Abort("CLHEP couldn't be configured.")
 
 
     # BHEP .................................................

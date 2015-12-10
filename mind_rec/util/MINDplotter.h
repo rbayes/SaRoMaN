@@ -152,6 +152,19 @@ private:
   std::vector< vector<double> > _Edep;
   std::vector< vector<double> > _HTime;
 
+  std::vector<double> _XMeas;
+  std::vector<double> _YMeas;
+  std::vector<double> _ZMeas;
+  std::vector<double> _EMeas;
+
+  double _Theta1;
+  double _Theta2;
+  double _Theta3;
+
+  double _Delta1;
+  double _Delta2;
+
+
   std::vector<double> _XHadPos;
   std::vector<double> _YHadPos;
   std::vector<double> _ZHadPos;

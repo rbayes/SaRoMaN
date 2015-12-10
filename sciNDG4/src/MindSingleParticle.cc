@@ -85,7 +85,7 @@ void MindSingleParticle::GeneratePrimaryVertex(G4Event* event)
     // get bhep transient event from singleton
   bhep::event& bevt = bhep::bhep_svc::instance()->get_event();
 
-    
+
   MindDetectorConstruction* detConstr = (MindDetectorConstruction*) 
     G4RunManager::GetRunManager()->GetUserDetectorConstruction();
   
@@ -97,11 +97,12 @@ void MindSingleParticle::GeneratePrimaryVertex(G4Event* event)
   G4ThreeVector position;
    
   if( _vtx_location == "GAUSS"){
-    double x = G4RandGauss::shoot(_fvec[0], _RMS[0]);
-    double y = G4RandGauss::shoot(_fvec[1], _RMS[1]);
-    position = _fvec;
-    position[0] = x;
-    position[1] = y;
+    double x = G4RandGauss::shoot(_fvec.x(), _RMS[0]);
+    double y = G4RandGauss::shoot(_fvec.y(), _RMS[1]);
+    position = G4ThreeVector(x,y,_fvec.z());
+    //position = _fvec;
+    //position.x() = x;
+    //position.y() = y;
   }
   // G4cout<<position.x()<<"\t"<<position.y()<<"\t"<<position.z()<<"\n";
   if ( _vtx_location == "FIXED" )
@@ -187,12 +188,14 @@ G4double MindSingleParticle::GenerateRandomEnergy(G4double min, G4double max)
     if(abs(_particle_definition->GetPDGEncoding())==211){
       double pmin = 1 - exp(-min/2. / GeV);
       double pmax = 1 - exp(-max/2. / GeV);
-      return -2. * GeV * log (1 - pmin + G4UniformRand() * (pmax - pmin));
+      //return -2. * GeV * log (1 - pmin + G4UniformRand() * (pmax - pmin));
+      return min + G4UniformRand() * (max - min);
     }
     if(abs(_particle_definition->GetPDGEncoding())==13){
       double pmin = exp(-min/4./ GeV);
       double pmax = exp(-max/4./ GeV);
-      return -4. * GeV * log (pmin + G4UniformRand() * (pmax - pmin));
+      //return -4. * GeV * log (pmin + G4UniformRand() * (pmax - pmin));
+      return min + G4UniformRand() * (max - min);
     }
     else return (G4UniformRand() * (max - min) + min);
   }

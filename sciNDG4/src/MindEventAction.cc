@@ -133,10 +133,10 @@ void MindEventAction::ProcessHits(G4HCofThisEvent* HCE)
     bhit->add_property("time", time);
 
     G4double transbarpos = (*THC)[i]->GetBarOrientation()==1 ?
-      (*THC)[i]->GetBarTranslation()[1] : (*THC)[i]->GetBarTranslation()[0];
+      (*THC)[i]->GetBarTranslation().y() : (*THC)[i]->GetBarTranslation().x();
     bhit->add_property("barPosT", transbarpos);
 
-    G4double longbarpos = (*THC)[i]->GetBarTranslation()[2];
+    G4double longbarpos = (*THC)[i]->GetBarTranslation().z();
     bhit->add_property("barPosZ", longbarpos);
     
     G4int barorientation = (*THC)[i]->GetBarOrientation();

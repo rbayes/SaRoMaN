@@ -55,15 +55,15 @@ class saroman:
         self.out_base  = os.path.join(self.home, 'out')
         #self.out_base  = os.path.join(self.home, 'batch')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        self.third_party_support = os.path.join('/data/neutrino05/phallsjo', 'third_party') #os.path.join(self.home, 'third_party') 
-        self.xml_file_path = os.path.join(self.exec_base,'MIND.gdml')
+        self.third_party_support = os.path.join(self.home, 'third_party') 
+        self.xml_file_path = os.path.join(self.exec_base,'MIND_l2.gdml')
         self.parsed_file_path  = os.path.join(self.exec_base,'parsedGdml.log')
 
         #General flags
         self.need_third_party_install = False
         self.need_own_install = False
-        self.generate_field_map = False # If false remember to change self.field_map_name to point to your field map!
-        self.parse_gdml = False
+        self.generate_field_map = True # If false remember to change self.field_map_name to point to your field map!
+        self.parse_gdml = True
 
         #Should be implemented as input values#
         self.train_sample = 0
@@ -72,7 +72,7 @@ class saroman:
         
         #self.seed = 5000 * random.random()
         self.seed = 100
-        self.Nevts = 1000
+        self.Nevts = 5000
         self.inttype = 'CC'
         self.Bfield = 1.5
 
@@ -228,8 +228,8 @@ class saroman:
         Clean up our own software, use before building and before committing to git.
         '''
         #sciNDG4
-        #command = [self.third_party_support+'/bin/scons','-c']
-        #subprocess.call(command, cwd = self.exec_base+'/sciNDG4')
+        command = [self.third_party_support+'/bin/scons','-c']
+        subprocess.call(command, cwd = self.exec_base+'/sciNDG4')
 
         #digi_ND
         subprocess.call('make clean', shell=True, cwd = self.exec_base+'/digi_ND') 
@@ -237,10 +237,10 @@ class saroman:
         subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
 
         #mind_rec
-        #subprocess.call('make clean', shell=True, cwd = self.exec_base+'/mind_rec') 
+        subprocess.call('make clean', shell=True, cwd = self.exec_base+'/mind_rec') 
 
-        #command = self.exec_base+'/mind_rec/cleanup.sh'
-        #subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
+        command = self.exec_base+'/mind_rec/cleanup.sh'
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
 
     def Config_and_build_own(self):
         '''
@@ -259,20 +259,20 @@ class saroman:
 
         #mind_rec
         #run configure and autogen in that context.
-        #command = self.exec_base+'/mind_rec/autogen.sh'
-        #print command
-        #subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
-        #subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
+        command = self.exec_base+'/mind_rec/autogen.sh'
+        print command
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
 
-        #command = self.exec_base+'/mind_rec/configure'
-        #print command
-        #subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
-        #subprocess.call('make', shell=True, cwd = self.exec_base+'/mind_rec')    
+        command = self.exec_base+'/mind_rec/configure'
+        print command
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/mind_rec')
+        subprocess.call('make', shell=True, cwd = self.exec_base+'/mind_rec')    
         
         #sciNDG4
-        #command = [self.third_party_support+'/bin/scons']
-        #print subprocess.list2cmdline(command)
-        #subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
+        command = [self.third_party_support+'/bin/scons']
+        print subprocess.list2cmdline(command)
+        subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
     '''        
     def Create_folder_structure(self,name,ending):
         OutBase = os.path.join(self.out_base, name+'_out')

@@ -49,9 +49,9 @@ GENERATION generator S SINGLE_PARTICLE
 
 GENERATION particle_name S %(part)s
 
-### Particle energy will be sample between these two values (in GeV)
-GENERATION energy_min    D 0.05
-GENERATION energy_max    D 4.000
+### Particle kinetic energy will be sample between these two values (in GeV)
+GENERATION energy_min    D 0.400
+GENERATION energy_max    D 0.500
 
 '''% dict(dictionary, **vars(self))
 		elif(self.GenerationMode == 'GENIE'):

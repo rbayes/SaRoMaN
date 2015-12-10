@@ -783,13 +783,13 @@ G4ThreeVector SciNearDetectorGeometry::GaussianBeamSpot(G4ThreeVector origin,
   
   G4double x=0, y=0, z=0;
   G4double width = _piece_width, height = _piece_height;
-  z = origin[2];
+  z = origin.z();
   double m = (height/width - tan(atan(1.)/2.))/(1 - height/width*tan(atan(1.)/2.));
   if(IsOctagonal==1){
     G4cout<<"Simulating beam spot in octagonal detector"<<G4endl; 
     do{
-      x = G4RandGauss::shoot(origin[0], RMSx);
-      y = G4RandGauss::shoot(origin[1], RMSy);
+      x = G4RandGauss::shoot(origin.x(), RMSx);
+      y = G4RandGauss::shoot(origin.y(), RMSy);
     } while ( y >  width/2. * (m + tan(atan(1.)/2.)) + m*x  ||
 	      y >  width/2. * (m + tan(atan(1.)/2.)) - m*x  ||
 	      -y >  width/2. * (m + tan(atan(1.)/2.)) + m*x  ||
@@ -798,15 +798,15 @@ G4ThreeVector SciNearDetectorGeometry::GaussianBeamSpot(G4ThreeVector origin,
   else if(IsOctagonal==2){
     G4cout<<"Simulating beam spot in wide octagonal detector"<<G4endl; 
     do{
-      x = G4RandGauss::shoot(origin[0], RMSx);
-      y = G4RandGauss::shoot(origin[1], RMSy);
+      x = G4RandGauss::shoot(origin.x(), RMSx);
+      y = G4RandGauss::shoot(origin.y(), RMSy);
     } while ( (fabs(y) > height/2. * tan(atan(1.)/2)/2. + width/4. + x)  ||
 	      (fabs(y) > height/2. * tan(atan(1.)/2)/2. + width/4. - x));
   }
   else
     do{
-      x = G4RandGauss::shoot(origin[0], RMSx);
-      y = G4RandGauss::shoot(origin[1], RMSy);
+      x = G4RandGauss::shoot(origin.x(), RMSx);
+      y = G4RandGauss::shoot(origin.y(), RMSy);
     } while ( fabs(y) > height/2. * sqrt(1 - 4*x*x/pow(width,2)));
   G4cout<<x<<"\t"<<y<<"\t"<<z<<G4endl;
   return G4ThreeVector(x,y,z);
