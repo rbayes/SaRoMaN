@@ -199,10 +199,17 @@ if not env['LIBPATH']:
     if env['CLHEP_INCDIR'] != DEFAULT_PATH:
         env.Append(CPPPATH = env['CLHEP_INCDIR'])
     else:
+<<<<<<< HEAD
         try:
             env.ParseConfig("clhep-config --include")
         except OSError:
 	    Abort("CLHEP couldn't be configured.")
+=======
+       try:
+            env.ParseConfig("clhep-config --include")
+       except OSError:
+            Abort("CLHEP couldn't be configured.")
+>>>>>>> efda95f13d53950996a5ced6963c63b08fb155cc
 
     if env['CLHEP_LIBDIR'] != DEFAULT_PATH:
         env.Append(LIBPATH = env['CLHEP_LIBDIR'])

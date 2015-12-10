@@ -53,11 +53,18 @@ public:
 
   void print();
 
+ //Temporary histograms used for debugging.
   TFile* digiOutfile;
   //TList* hList;
   TH1F* rawHits;
   TH1F* clusteredHits;
   TH1F* digitizedHits;
+  TH1F* xeTH1F;
+  TH1F* xeAttTH1F;
+  TH1F* xeSmearTH1F;
+  TH1F* yeTH1F;
+  TH1F* yeAttTH1F;
+  TH1F* yeSmearTH1F;
   vector<TH1F*> histo_vec;
 
 

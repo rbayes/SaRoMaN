@@ -332,6 +332,8 @@ CON Gen_seed D %(config_digi_seed)s
 CON rec_boxX D 0.966 #%(MIND_width_active)s
 CON rec_boxY D 0.666  #%(MIND_width_active)s
 
+CON nVoxX I 47;
+
 # Attenuation in Wavelength shifting fibre
 CON WLSatten D %(config_rec_WLSatten)s
 
