@@ -1,0 +1,1050 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define>
+      <constant name="FeWidth" value="3500"/>
+      <constant name="FeHeight" value="2100"/>
+      <constant name="FeDepth" value="30"/>
+      <constant name="SciWidth" value="2900"/>
+      <constant name="SciHeight" value="2000"/>
+      <constant name="SciX1Width" value="2720"/>
+      <constant name="SciX2Width" value="2760"/>
+      <constant name="SciY1Width" value="2880"/>
+      <constant name="SciY2Width" value="2880"/>
+      <constant name="SciX1Height" value="1950"/>
+      <constant name="SciX2Height" value="1950"/>
+      <constant name="SciY1Height" value="1878.72"/>
+      <constant name="SciY2Height" value="1850.01"/>
+      <constant name="BarDepth" value="7.5"/>
+      <constant name="SciDepth" value="4*BarDepth"/>
+      <constant name="BarWidthX1" value="210"/>
+      <constant name="BarWidthX2" value="340"/>
+      <constant name="BarWidthY1" value="30"/>
+      <constant name="BarWidthY2" value="39.14"/>
+      <constant name="AlWidth" value="3"/>
+      <constant name="Gap0" value="1"/>
+      <constant name="Gap1" value="500"/>
+      <constant name="DetectorLength" value="33 * (FeDepth + 2*AlWidth + Gap0) + 18*SciDepth + 3*Gap1"/>
+  </define>
+
+  <materials>
+    <isotope N="54" Z="26" name="Fe540x1931f340">
+      <atom unit="g/mole" value="53.9396"/>
+    </isotope>
+    <isotope N="56" Z="26" name="Fe560x1931f3b0">
+      <atom unit="g/mole" value="55.9349"/>
+    </isotope>
+    <isotope N="57" Z="26" name="Fe570x1931f420">
+      <atom unit="g/mole" value="56.9354"/>
+    </isotope>
+    <isotope N="58" Z="26" name="Fe580x193228d0">
+      <atom unit="g/mole" value="57.9333"/>
+    </isotope>
+    <element name="Fe0x19322640">
+      <fraction n="0.05845" ref="Fe540x1931f340"/>
+      <fraction n="0.91754" ref="Fe560x1931f3b0"/>
+      <fraction n="0.02119" ref="Fe570x1931f420"/>
+      <fraction n="0.00282" ref="Fe580x193228d0"/>
+    </element>
+    <material name="G4_Fe0x1931f240" state="solid">
+      <MEE unit="eV" value="286"/>
+      <D unit="g/cm3" value="7.874"/>
+      <fraction n="1" ref="Fe0x19322640"/>
+    </material>
+    <isotope N="12" Z="6" name="C120x19317200">
+      <atom unit="g/mole" value="12"/>
+    </isotope>
+    <isotope N="13" Z="6" name="C130x193172b0">
+      <atom unit="g/mole" value="13.0034"/>
+    </isotope>
+    <element name="C0x19316fa0">
+      <fraction n="0.9893" ref="C120x19317200"/>
+      <fraction n="0.0107" ref="C130x193172b0"/>
+    </element>
+    <isotope N="1" Z="1" name="H10x19323de0">
+      <atom unit="g/mole" value="1.00782503081372"/>
+    </isotope>
+    <isotope N="2" Z="1" name="H20x193245e0">
+      <atom unit="g/mole" value="2.01410199966617"/>
+    </isotope>
+    <element name="H0x19324360">
+      <fraction n="0.999885" ref="H10x19323de0"/>
+      <fraction n="0.000115" ref="H20x193245e0"/>
+    </element>
+    <material name="G4_POLYSTYRENE0x19324240" state="solid">
+      <MEE unit="eV" value="68.7"/>
+      <D unit="g/cm3" value="1.06"/>
+      <fraction n="0.922577329294378" ref="C0x19316fa0"/>
+      <fraction n="0.0774226707056217" ref="H0x19324360"/>
+    </material>
+    <material Z="13" name="G4_Al0x19323860" state="solid">
+      <MEE unit="eV" value="166"/>
+      <D unit="g/cm3" value="2.699"/>
+      <atom unit="g/mole" value="26.9815"/>
+    </material>
+    <isotope N="14" Z="7" name="N140x19317540">
+      <atom unit="g/mole" value="14.0031"/>
+    </isotope>
+    <isotope N="15" Z="7" name="N150x193175e0">
+      <atom unit="g/mole" value="15.0001"/>
+    </isotope>
+    <element name="N0x19317310">
+      <fraction n="0.99632" ref="N140x19317540"/>
+      <fraction n="0.00368" ref="N150x193175e0"/>
+    </element>
+    <isotope N="16" Z="8" name="O160x19317500">
+      <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O170x193178c0">
+      <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O180x19317950">
+      <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="O0x19317620">
+      <fraction n="0.99757" ref="O160x19317500"/>
+      <fraction n="0.00038" ref="O170x193178c0"/>
+      <fraction n="0.00205" ref="O180x19317950"/>
+    </element>
+    <isotope N="36" Z="18" name="Ar360x19317800">
+      <atom unit="g/mole" value="35.9675"/>
+    </isotope>
+    <isotope N="38" Z="18" name="Ar380x19317c10">
+      <atom unit="g/mole" value="37.9627"/>
+    </isotope>
+    <isotope N="40" Z="18" name="Ar400x19317d00">
+      <atom unit="g/mole" value="39.9624"/>
+    </isotope>
+    <element name="Ar0x19317990">
+      <fraction n="0.003365" ref="Ar360x19317800"/>
+      <fraction n="0.000632" ref="Ar380x19317c10"/>
+      <fraction n="0.996003" ref="Ar400x19317d00"/>
+    </element>
+    <material name="G4_AIR0x19316e30" state="gas">
+      <MEE unit="eV" value="85.7"/>
+      <D unit="g/cm3" value="0.00120479"/>
+      <fraction n="0.000124000124000124" ref="C0x19316fa0"/>
+      <fraction n="0.755267755267755" ref="N0x19317310"/>
+      <fraction n="0.231781231781232" ref="O0x19317620"/>
+      <fraction n="0.0128270128270128" ref="Ar0x19317990"/>
+    </material>
+    <material name="G4_Galactic0x19324780" state="gas">
+      <T unit="K" value="2.73"/>
+      <P unit="pascal" value="3e-18"/>
+      <MEE unit="eV" value="21.8"/>
+      <D unit="g/cm3" value="1e-25"/>
+      <fraction n="1" ref="H0x19324360"/>
+    </material>
+  </materials>
+
+<solids>
+    <box lunit="mm" name="FePlate_solid" x="FeWidth" y="FeHeight" z="FeDepth"/>
+    <box lunit="mm" name="PASSIVE_solid" x="FeWidth" y="FeHeight" z="FeDepth + 2*AlWidth"/>
+    <box lunit="mm" name="S_solid" x="SciWidth" y="SciHeight" z="SciDepth"/>
+    <box lunit="mm" name="SciXPlane_solid" x="SciX2Width" y="SciX1Height" z="2*BarDepth"/>
+    <box lunit="mm" name="SciX1Plane_solid" x="SciX1Width" y="SciX1Height" z="BarDepth"/>
+    <box lunit="mm" name="SciX2Plane_solid" x="SciX2Width" y="SciX2Height" z="BarDepth"/>
+    <box lunit="mm" name="SciYPlane_solid" x="SciY1Width" y="SciY1Height" z="2*BarDepth"/>
+    <box lunit="mm" name="SciY1Plane_solid" x="SciY1Width" y="SciY1Height" z="BarDepth"/>
+    <box lunit="mm" name="SciY2Plane_solid" x="SciY2Width" y="SciY2Height" z="BarDepth"/>
+    <box lunit="mm" name="BarX1_solid" x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+    <box lunit="mm" name="BarX2_solid" x="BarWidthX2" y="SciX1Height" z="BarDepth"/>
+    <box lunit="mm" name="BarXPair_solid" x="BarWidthX1+BarWidthX2" y="SciHeight" z="BarDepth"/>
+    <box lunit="mm" name="BarY1_solid" x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+    <box lunit="mm" name="BarY2_solid" x="SciY2Width" y="BarWidthY2" z="BarDepth"/>
+    <box lunit="mm" name="BarYPair_solid" x="SciWidth" y="BarWidthY1+BarWidthY2" z="BarDepth"/>
+    <box lunit="mm" name="AlPlane_solid" x="FeWidth" y="FeHeight" z="AlWidth"/>
+    <box lunit="mm" name="SFFFS_solid" x="FeWidth" y="FeHeight" z="2*SciDepth + 3*FeDepth + 6*AlWidth + 4*Gap0"/>
+    <box lunit="mm" name="SF_solid" x="FeWidth" y="FeHeight" z="SciDepth + FeDepth + 2*AlWidth + Gap0"/>
+    <box lunit="mm" name="SFF_solid" x="FeWidth" y="FeHeight" z="SciDepth + 2*FeDepth + 4*AlWidth + 2*Gap0"/>
+    <box lunit="mm" name="SFFF_solid" x="FeWidth" y="FeHeight" z="SciDepth + 3*FeDepth + 6*AlWidth + 3*Gap0"/>
+    <box lunit="mm" name="SFModule_solid" x="FeWidth" y="FeHeight" z="3*(SciDepth + FeDepth + 2*AlWidth + Gap0)"/>
+    <box lunit="mm" name="SFFModule_solid" x="FeWidth" y="FeHeight" z="3*(SciDepth + 2*FeDepth + 4*AlWidth + 2*Gap0)"/>
+    <box lunit="mm" name="SFFFModule_solid" x="FeWidth" y="FeHeight" z="6*(SciDepth + 3*FeDepth + 6*AlWidth + 3*Gap0)"/>
+    <box lunit="mm" name="DETECTOR_solid" x="FeWidth" y="FeHeight" z="33 * (FeDepth + 2*AlWidth + Gap0) + 18*SciDepth + 3*Gap1"/>
+    <box lunit="mm" name="WORLD_solid" x="200000" y="200000" z="200000"/>
+  </solids>
+
+  <structure>
+    <volume name="FePlate">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="FePlate_solid"/>
+	<auxiliary auxtype="EMField" auxvalue="MagMap"/>
+    </volume>
+    <volume name="BRACE">
+        <materialref ref="G4_Al0x19323860"/>
+        <solidref ref="AlPlane_solid"/>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    <volume name="PASSIVE">
+      <materialref ref="G4_Fe0x1931f240"/>
+      <solidref ref="PASSIVE_solid"/>
+      <physvol name="Brace0_physi">
+        <volumeref ref="BRACE"/>
+        <position name="Brace0_pos" x="0.0" y="0.0" z="-(FeDepth + AlWidth)/2"/>
+      </physvol>
+      <physvol name="FePlate_physi">
+        <volumeref ref="FePlate"/>
+        <position name="FePlate_pos" x="0.0" y="0.0" z="0.0"/>
+      </physvol>
+      <physvol name="Brace1_physi">
+        <volumeref ref="BRACE"/>
+        <position name="Brace1_pos" x="0.0" y="0.0" z="(FeDepth + AlWidth)/2"/>
+      </physvol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    
+    <!-- Define bars for scintillator planes -->
+    <volume name="BarX1">
+        <materialref ref="G4_POLYSTYRENE0x19324240"/>
+        <solidref ref="BarX1_solid"/>
+        <auxiliary auxtype="SD" auxvalue="Bar"/>
+        <auxiliary auxtype="Attenuation" auxvalue="5000"/>
+        <auxiliary auxtype="Invisible" auxvalue="1"/> 
+        <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    <volume name="BarY1">
+        <materialref ref="G4_POLYSTYRENE0x19324240"/>
+        <solidref ref="BarY1_solid"/>
+        <auxiliary auxtype="SD" auxvalue="Bar"/>
+        <auxiliary auxtype="Attenuation" auxvalue="5000"/>
+        <auxiliary auxtype="Invisible" auxvalue="1"/> 
+        <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    <!-- Parametrized Volume -->
+    <volume name="XPlane">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciXPlane_solid"/>
+      <paramvol ncopies="16">
+	<volumeref ref="BarX1"/>
+	<parameterised_position_size>
+	  <parameters number="1">
+	    <position name="xbar1" x="(-SciX2Width + BarWidthX1)/2"
+	    y="0" z="-BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="2">
+	    <position name="xbar2" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + BarWidthX2"
+	    y="0" z="BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="3">
+	    <position name="xbar3" x="(-SciX2Width + BarWidthX1)/2 + BarWidthX2"
+	    y="0" z="-BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="4">
+	    <position name="xbar4" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 2*BarWidthX2"
+	    y="0" z="BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="5">
+	    <position name="xbar5" x="(-SciX2Width + BarWidthX1)/2 + 2*BarWidthX2"
+	    y="0" z="-BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="6">
+	    <position name="xbar6" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 3*BarWidthX2"
+	    y="0" z="BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="7">
+	    <position name="xbar7" x="(-SciX2Width + BarWidthX1)/2 + 3*BarWidthX2"
+	    y="0" z="-BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="8">
+	    <position name="xbar8" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 4*BarWidthX2"
+	    y="0" z="BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="9">
+	    <position name="xbar9" x="(-SciX2Width + BarWidthX1)/2 + 4*BarWidthX2"
+	    y="0" z="-BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="10">
+	    <position name="xbar10" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 5*BarWidthX2"
+	    y="0" z="BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="11">
+	    <position name="xbar11" x="(-SciX2Width + BarWidthX1)/2 + 5*BarWidthX2"
+	    y="0" z="-BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="12">
+	    <position name="xbar12" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 6*BarWidthX2"
+	    y="0" z="BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="13">
+	    <position name="xbar13" x="(-SciX2Width + BarWidthX1)/2 + 6*BarWidthX2"
+	    y="0" z="-BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="14">
+	    <position name="xbar14" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 7*BarWidthX2"
+	    y="0" z="BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="15">
+	    <position name="xbar15" x="(-SciX2Width + BarWidthX1)/2 + 7*BarWidthX2"
+	    y="0" z="-BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="16">
+	    <position name="xbar16" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 8*BarWidthX2"
+	    y="0" z="BarDepth/2"/>
+	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
+	  </parameters>
+	</parameterised_position_size>
+      </paramvol>
+      <auxiliary auxtype="Invisible" auxvalue="1"/>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+
+    
+    <volume name="YPlane">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciYPlane_solid"/>
+      <paramvol ncopies="95">
+	<volumeref ref="BarY1"/>
+	<parameterised_position_size>
+	  <parameters number="1">
+	    <position name="ybar1" y="(-SciY2Height + BarWidthY1)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="2">
+	    <position name="ybar2" y="(-SciY2Height + BarWidthY1 + BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="3">
+	    <position name="ybar3" y="(-SciY2Height + BarWidthY1 + 2*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="4">
+	    <position name="ybar4" y="(-SciY2Height + BarWidthY1 + 3*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="5">
+	    <position name="ybar5" y="(-SciY2Height + BarWidthY1 + 4*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="6">
+	    <position name="ybar6" y="(-SciY2Height + BarWidthY1 + 5*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="7">
+	    <position name="ybar7" y="(-SciY2Height + BarWidthY1 + 6*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="8">
+	    <position name="ybar8" y="(-SciY2Height + BarWidthY1 + 7*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="9">
+	    <position name="ybar9" y="(-SciY2Height + BarWidthY1 + 8*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="10">
+	    <position name="ybar10" y="(-SciY2Height + BarWidthY1 + 9*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="11">
+	    <position name="ybar11" y="(-SciY2Height + BarWidthY1)/2 + 5*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="12">
+	    <position name="ybar12" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 6*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="13">
+	    <position name="ybar13" y="(-SciY2Height + BarWidthY1)/2 + 6*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="14">
+	    <position name="ybar14" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 7*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="15">
+	    <position name="ybar15" y="(-SciY2Height + BarWidthY1)/2 + 7*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="16">
+	    <position name="ybar16" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 8*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="17">
+	    <position name="ybar17" y="(-SciY2Height + BarWidthY1)/2 + 8*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="18">
+	    <position name="ybar18" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 9*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="19">
+	    <position name="ybar19" y="(-SciY2Height + BarWidthY1)/2 + 9*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="20">
+	    <position name="ybar20" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 10*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="21">
+	    <position name="ybar21" y="(-SciY2Height + BarWidthY1)/2 + 10*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="22">
+	    <position name="ybar22" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 11*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="23">
+	    <position name="ybar23" y="(-SciY2Height + BarWidthY1)/2 + 11*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="24">
+	    <position name="ybar24" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 12*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="25">
+	    <position name="ybar25" y="(-SciY2Height + BarWidthY1)/2 + 12*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="26">
+	    <position name="ybar26" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 13*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="27">
+	    <position name="ybar27" y="(-SciY2Height + BarWidthY1)/2 + 13*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="28">
+	    <position name="ybar28" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 14*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="29">
+	    <position name="ybar29" y="(-SciY2Height + BarWidthY1)/2 + 14*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="30">
+	    <position name="ybar30" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 15*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="31">
+	    <position name="ybar31" y="(-SciY2Height + BarWidthY1)/2 + 15*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="32">
+	    <position name="ybar32" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 16*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="33">
+	    <position name="ybar33" y="(-SciY2Height + BarWidthY1)/2 + 16*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="34">
+	    <position name="ybar34" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 17*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="35">
+	    <position name="ybar35" y="(-SciY2Height + BarWidthY1)/2 + 17*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="36">
+	    <position name="ybar36" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 18*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="37">
+	    <position name="ybar37" y="(-SciY2Height + BarWidthY1)/2 + 18*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="38">
+	    <position name="ybar38" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 19*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="39">
+	    <position name="ybar39" y="(-SciY2Height + BarWidthY1)/2 + 19*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="40">
+	    <position name="ybar40" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 20*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="41">
+	    <position name="ybar41" y="(-SciY2Height + BarWidthY1)/2 + 20*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="42">
+	    <position name="ybar42" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 21*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="43">
+	    <position name="ybar43" y="(-SciY2Height + BarWidthY1)/2 + 21*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="44">
+	    <position name="ybar44" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 22*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="45">
+	    <position name="ybar45" y="(-SciY2Height + BarWidthY1)/2 + 22*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="46">
+	    <position name="ybar46" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 23*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="47">
+	    <position name="ybar47" y="(-SciY2Height + BarWidthY1)/2 + 23*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="48">
+	    <position name="ybar48" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 24*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="49">
+	    <position name="ybar49" y="(-SciY2Height + BarWidthY1)/2 + 24*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="50">
+	    <position name="ybar50" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 25*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="51">
+	    <position name="ybar51" y="(-SciY2Height + BarWidthY1)/2 + 25*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="52">
+	    <position name="ybar52" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 26*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="53">
+	    <position name="ybar53" y="(-SciY2Height + BarWidthY1)/2 + 26*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="54">
+	    <position name="ybar54" y="(-SciY2Height + BarWidthY1 - BarWidthY2)/2 + 27*BarWidthY2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="55">
+	    <position name="ybar55" y="(-SciY2Height + BarWidthY1)/2 + 27*BarWidthY2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="56">
+	    <position name="ybar56" y="(-SciY2Height + BarWidthY1 + 55*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="57">
+	    <position name="ybar57" y="(-SciY2Height + BarWidthY1 + 56*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="58">
+	    <position name="ybar58" y="(-SciY2Height + BarWidthY1 + 57*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="59">
+	    <position name="ybar59" y="(-SciY2Height + BarWidthY1 + 58*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="60">
+	    <position name="ybar60" y="(-SciY2Height + BarWidthY1 + 59*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="61">
+	    <position name="ybar61" y="(-SciY2Height + BarWidthY1 + 60*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="62">
+	    <position name="ybar62" y="(-SciY2Height + BarWidthY1 + 61*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="63">
+	    <position name="ybar63" y="(-SciY2Height + BarWidthY1 + 62*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="64">
+	    <position name="ybar64" y="(-SciY2Height + BarWidthY1 + 63*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="65">
+	    <position name="ybar65" y="(-SciY2Height + BarWidthY1 + 64*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="66">
+	    <position name="ybar66" y="(-SciY2Height + BarWidthY1 + 65*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="67">
+	    <position name="ybar67" y="(-SciY2Height + BarWidthY1 + 66*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="68">
+	    <position name="ybar68" y="(-SciY2Height + BarWidthY1 + 67*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="69">
+	    <position name="ybar69" y="(-SciY2Height + BarWidthY1 + 68*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="70">
+	    <position name="ybar70" y="(-SciY2Height + BarWidthY1 + 69*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="71">
+	    <position name="ybar71" y="(-SciY2Height + BarWidthY1 + 70*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="72">
+	    <position name="ybar72" y="(-SciY2Height + BarWidthY1 + 71*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="73">
+	    <position name="ybar73" y="(-SciY2Height + BarWidthY1 + 72*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="74">
+	    <position name="ybar74" y="(-SciY2Height + BarWidthY1 + 73*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="75">
+	    <position name="ybar75" y="(-SciY2Height + BarWidthY1 + 74*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="76">
+	    <position name="ybar76" y="(-SciY2Height + BarWidthY1 + 75*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="77">
+	    <position name="ybar77" y="(-SciY2Height + BarWidthY1 + 76*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="78">
+	    <position name="ybar78" y="(-SciY2Height + BarWidthY1 + 77*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="79">
+	    <position name="ybar79" y="(-SciY2Height + BarWidthY1 + 78*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="80">
+	    <position name="ybar80" y="(-SciY2Height + BarWidthY1 + 79*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="81">
+	    <position name="ybar81" y="(-SciY2Height + BarWidthY1 + 80*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="82">
+	    <position name="ybar82" y="(-SciY2Height + BarWidthY1 + 81*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="83">
+	    <position name="ybar83" y="(-SciY2Height + BarWidthY1 + 82*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="84">
+	    <position name="ybar84" y="(-SciY2Height + BarWidthY1 + 83*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="85">
+	    <position name="ybar85" y="(-SciY2Height + BarWidthY1 + 84*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="86">
+	    <position name="ybar86" y="(-SciY2Height + BarWidthY1 + 85*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="87">
+	    <position name="ybar87" y="(-SciY2Height + BarWidthY1 + 86*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="88">
+	    <position name="ybar88" y="(-SciY2Height + BarWidthY1 + 87*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="89">
+	    <position name="ybar89" y="(-SciY2Height + BarWidthY1 + 88*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="90">
+	    <position name="ybar90" y="(-SciY2Height + BarWidthY1 + 89*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="91">
+	    <position name="ybar91" y="(-SciY2Height + BarWidthY1 + 90*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="92">
+	    <position name="ybar92" y="(-SciY2Height + BarWidthY1 + 91*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="93">
+	    <position name="ybar93" y="(-SciY2Height + BarWidthY1 + 92*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="94">
+	    <position name="ybar94" y="(-SciY2Height + BarWidthY1 + 93*BarWidthY2)/2"
+	    x="0" z="BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	  <parameters number="95">
+	    <position name="ybar95" y="(-SciY2Height + BarWidthY1 + 94*BarWidthY2)/2"
+	    x="0" z="-BarDepth/2"/>
+	    <box_dimensions x="SciY1Width" y="BarWidthY1" z="BarDepth"/>
+	  </parameters>
+	</parameterised_position_size>
+      </paramvol>
+      <!--<auxiliary auxtype="Invisible" auxvalue="1"/> -->
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+
+    <!-- Start replicating volumes -->
+    <volume name="X1plane">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciX1Plane_solid"/>
+      <replicavol number="8">
+        <volumeref ref="BarX1"/>
+        <replicate_along_axis>
+            <direction x="1"/>
+            <width unit="mm" value="BarWidthX2"/>
+            <offset unit="mm" value="BarWidthX1/2 - BarWidthX2/2"/>
+        </replicate_along_axis>
+      </replicavol>
+      <auxiliary auxtype="Invisible" auxvalue="1"/> 
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    
+    <volume name="X2plane">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciX2Plane_solid"/>
+      <replicavol number="8">
+        <volumeref ref="BarX1"/>
+        <replicate_along_axis>
+            <direction x="1"/>
+            <width unit="mm" value="BarWidthX2"/>
+            <offset unit="mm" value="BarWidthX2/2 - BarWidthX1/2"/>
+        </replicate_along_axis>
+      </replicavol>
+      <auxiliary auxtype="Invisible" auxvalue="1"/> 
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    
+    <volume name="Y1plane">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciY1Plane_solid"/>
+      <replicavol number="48">
+        <volumeref ref="BarY1"/>
+        <replicate_along_axis>
+            <direction y="1"/>
+            <width unit="mm" value="BarWidthY2"/>
+            <offset unit="mm" value="BarWidthY1/2 - BarWidthY2/2"/>
+        </replicate_along_axis>
+      </replicavol>
+      <auxiliary auxtype="Invisible" auxvalue="1"/> 
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    
+    <volume name="Y2plane">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SciY1Plane_solid"/>
+      <replicavol number="47">
+        <volumeref ref="BarY1"/>
+        <replicate_along_axis>
+            <direction y="1"/>
+            <width unit="mm" value="BarWidthY2"/>
+            <offset unit="mm" value="BarWidthY2/2 - BarWidthY1/2"/>
+        </replicate_along_axis>
+      </replicavol>
+      <auxiliary auxtype="Invisible" auxvalue="1"/> 
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    
+    
+    <!-- Scintillating planes -->
+    <!--
+    <volume name="ACTIVE">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="S_solid"/>
+      <physvol name="X1plane_physi">
+        <volumeref ref="X1plane"/>
+        <position name="X1plane_pos" x="BarWidthX1/2 - BarWidthX2/2" y="0.0" z="-3/2*BarDepth"/>
+      </physvol>
+      <physvol name="X2plane_physi">
+        <volumeref ref="X2plane"/>
+        <position name="X2plane_pos" x="-BarWidthX1/2 + BarWidthX2/2" y="0.0" z="-1/2*BarDepth"/>
+      </physvol>
+      <physvol name="Y1plane_physi">
+        <volumeref ref="Y1plane"/>
+        <position name="Y1plane_pos" x="0.0" y="0.0" z="1/2*BarDepth"/>
+      </physvol>
+      <physvol name="Y2plane_physi">
+        <volumeref ref="Y2plane"/>
+        <position name="Y2plane_pos" x="0.0" y="0.0" z="3/2*BarDepth"/>
+      </physvol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>-->
+    
+    <volume name="ACTIVE">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="S_solid"/>
+      <physvol name="XPlane_physi">
+        <volumeref ref="XPlane"/>
+        <position name="Xplane_pos" x="0.0" y="0.0" z="BarDepth"/>
+      </physvol>
+      <physvol name="YPlane_physi">
+        <volumeref ref="YPlane"/>
+        <position name="YPlane_pos" x="0.0" y="0.0" z="-BarDepth"/>
+      </physvol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    
+    <!-- Specific Module types -->
+    <volume name="SF">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SF_solid"/>
+        <physvol name="Scint0_physi">
+            <volumeref ref="ACTIVE"/>
+            <position name="Scint0_pos" x="0.0" y="0.0" z="-(FeDepth + 2*AlWidth + Gap0)/2"/>
+	</physvol>
+        <physvol name="Fe0_physi">
+            <volumeref ref="PASSIVE"/>
+            <position name="Fe0_pos" x="0.0" y="0.0" z="2*BarDepth + Gap0/2"/>
+        </physvol>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    <volume name="SFF">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SFF_solid"/>
+        <physvol name="SFF_physi">
+            <volumeref ref="SF"/>
+            <position name="SF0_pos" x="0.0" y="0.0" z="-(FeDepth + 2*AlWidth + Gap0)/2"/>
+        </physvol>
+        <physvol name="Fe1_physi">
+            <volumeref ref="PASSIVE"/>
+            <position name="Fe1_pos" x="0.0" y="0.0" z="(FeDepth + 2*AlWidth + 4*BarDepth + 2*Gap0)/2"/>
+        </physvol>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    <volume name="SFFF">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SFFF_solid"/>
+        <physvol name="SFFF_physi">
+            <volumeref ref="SFF"/>
+            <position name="SFF0_pos" x="0.0" y="0.0" z="-(FeDepth + 2*AlWidth + Gap0)/2"/>
+        </physvol>
+        <physvol name="Fe2_physi">
+            <volumeref ref="PASSIVE"/>
+            <position name="Fe2_pos" x="0.0" y="0.0" z="(2*(FeDepth + 2*AlWidth) + 4*BarDepth + 3*Gap0)/2"/>
+        </physvol>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    <volume name="SFFFS">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SFFFS_solid"/>
+        <physvol name="SFFFS_physi">
+            <volumeref ref="SFFF"/>
+            <position name="SFFF0_pos" x="0.0" y="0.0" z="-(4*BarDepth + Gap0)/2"/>
+        </physvol>
+        <physvol name="Sci1_physi">
+            <volumeref ref="ACTIVE"/>
+            <position name="Sci2_pos" x="0.0" y="0.0" z="(3*(FeDepth + 2*AlWidth) + 4*BarDepth + 4*Gap0)/2"/>
+        </physvol>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+
+    <volume name="SFModule">
+        <materialref ref="G4_AIR0x19316e30"/>
+        <solidref ref="SFModule_solid"/>
+        <replicavol number="3">
+            <volumeref ref="SF"/>
+            <replicate_along_axis>
+                <direction z="1"/>
+                <width unit="mm" value="FeDepth + 2*AlWidth + Gap0 + 4*BarDepth"/>
+                <offset unit="mm" value="0"/>
+            </replicate_along_axis>
+        </replicavol>
+	<auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    <volume name="SFFModule">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SFFModule_solid"/>
+      <replicavol number="3">
+        <volumeref ref="SFF"/>
+        <replicate_along_axis>
+          <direction z="1"/>
+          <width unit="mm" value="2*(FeDepth + 2*AlWidth + Gap0) + 4*BarDepth"/>
+          <offset unit="mm" value="0"/>
+        </replicate_along_axis>
+      </replicavol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    <volume name="SFFFModule">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="SFFFModule_solid"/>
+      <replicavol number="6">
+        <volumeref ref="SFFF"/>
+        <replicate_along_axis>
+          <direction z="1"/>
+          <width unit="mm" value="3*(FeDepth + 2*AlWidth + Gap0) + 4*BarDepth"/>
+          <offset unit="mm" value="0"/>
+        </replicate_along_axis>
+      </replicavol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+    </volume>
+    
+    <volume name="Detector">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="DETECTOR_solid"/>
+      <physvol name="S0_physi">
+        <volumeref ref="ACTIVE"/>
+        <position name="S0_pos" x="0.0" y="0.0" z="-DetectorLength/2 + 4*BarDepth/2"/>
+      </physvol>
+      <physvol name="SFFFS0_physi">
+        <volumeref ref="SFFFS"/>
+        <position name="SFFFS0_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 8*BarDepth + 3 * (FeDepth
+		     + 2*AlWidth + Gap0)/2 + Gap1"/>
+      </physvol>
+      <physvol name="SFFFS1_physi">
+        <volumeref ref="SFFFS"/>
+        <position name="SFFFS1_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 16*BarDepth + 4.5 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
+      </physvol>
+      <physvol name="SFModule_physi">
+        <volumeref ref="SFModule"/>
+        <position name="SFModule_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 26*BarDepth + 7.5 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
+      </physvol>
+      <physvol name="SFFModule_physi">
+        <volumeref ref="SFFModule"/>
+        <position name="SFFModule_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 38*BarDepth + 12 * (FeDepth +
+		     2*AlWidth + Gap0) + 3*Gap1"/>
+      </physvol>
+      <physvol name="SFFFModule_physi">
+        <volumeref ref="SFFFModule"/>
+        <position name="SFFFModule_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 56*BarDepth + 24 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
+      </physvol>
+      <physvol name="S1_physi">
+        <volumeref ref="ACTIVE"/>
+        <position name="S1_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 70*BarDepth + 33 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
+      </physvol>
+      <auxiliary auxtype="EMField" auxvalue="NULL"/>
+      <auxiliary auxtype="Invisible" auxvalue="1"/>
+    </volume>
+    
+    <volume name="WORLD0x19325900">
+      <materialref ref="G4_AIR0x19316e30"/>
+      <solidref ref="WORLD_solid"/>
+      <physvol name="DETECTOR_physi">
+        <volumeref ref="Detector"/>
+      </physvol>
+    </volume>
+  </structure>
+  
+  <setup name="Default" version="1.0">
+    <world ref="WORLD0x19325900"/>
+    <!-- <world ref="ACTIVE"/> -->
+  </setup>
+  
+</gdml>
