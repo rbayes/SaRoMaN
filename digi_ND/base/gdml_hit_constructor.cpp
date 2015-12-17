@@ -266,7 +266,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   double proptime=9999999.9, vlight = 299792458. / 1.6;
   double meanvoxtime;
 
-  double smearingFactor = 0.06;
+  double smearingFactor = 1;
   double dt, dtx, dty;
   double xedge = _detectorX/2.;
   double yedge = _detectorY/2.;
@@ -338,25 +338,29 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 
   //cout<<"attLength: "<<_attLength<<endl;
 
-  xE1 = xE1 * exp(-(xedge - fabs(barX))/_attLength);
+  xE1 = xE1 * exp(-(xedge + fabs(barX))/_attLength);
   xE2 = xE2 * exp(-(3*xedge-fabs(barX))/_attLength);
-  yE1 = yE1 * exp(-(yedge - fabs(barY))/_attLength);
+  yE1 = yE1 * exp(-(yedge + fabs(barY))/_attLength);
   yE2 = yE2 * exp(-(3*yedge-fabs(barY))/_attLength);
 
   xeAttTH1F->Fill(xE1+xE2);
   yeAttTH1F->Fill(yE1+yE2);
   
-  dtx = (xedge - fabs(barX)) < (3*xedge - fabs(barX)) ?
-    (xedge - fabs(barX))/vlight : (3*xedge - fabs(barX))/vlight;
-  dty = (yedge - fabs(barY)) < (3*yedge - fabs(barY)) ?
-    (yedge - fabs(barY))/vlight : (3*yedge - fabs(barY))/vlight;
+  dtx = (xedge + fabs(barX)) < (3*xedge - fabs(barX)) ?
+    (xedge + fabs(barX))/vlight : (3*xedge - fabs(barX))/vlight;
+  dty = (yedge + fabs(barY)) < (3*yedge - fabs(barY)) ?
+    (yedge + fabs(barY))/vlight : (3*yedge - fabs(barY))/vlight;
 
   dt = dtx < dty ? dtx : dty;
 
-  double xE = xE1 + _ranGen.Gaus( 0, smearingFactor * xE1 )
-    + xE2 + _ranGen.Gaus( 0, smearingFactor * xE2 );
-  double yE = yE1 + _ranGen.Gaus( 0, smearingFactor * yE1 )
-    + yE2 + _ranGen.Gaus( 0, smearingFactor * yE2 );
+  //double xE = xE1 + _ranGen.Gaus( 0, smearingFactor * xE1 )
+  //  + xE2 + _ranGen.Gaus( 0, smearingFactor * xE2 );
+  double xE = xE1 + _ranGen.PoissonD(smearingFactor * xE1)
+    + xE2 + _ranGen.PoissonD(smearingFactor * xE2);
+  //double yE = yE1 + _ranGen.Gaus( 0, smearingFactor * yE1 )
+  //  + yE2 + _ranGen.Gaus( 0, smearingFactor * yE2 );
+  double yE = yE1 + _ranGen.PoissonD(smearingFactor * yE1)
+    + yE2 + _ranGen.PoissonD(smearingFactor * yE2);
 
   xeSmearTH1F->Fill(xE);
   yeSmearTH1F->Fill(yE);

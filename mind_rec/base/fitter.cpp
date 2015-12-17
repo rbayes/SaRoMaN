@@ -44,14 +44,10 @@ void fitter::Initialize() {
   // initialize the vector<vector>
   _hadUnit.push_back(EVector(3,0)); _hadUnit.push_back(EVector(3,0));
   _hadUnit[0][2] = 1.; _hadUnit[1][2] = 1.;
- 
-  
   _detect = _store.fetch_sstore("detect");
-
 
   // read parameters
   ReadParam();
-
   
   // initialize geometry
   _geom.init(_store, _level);
@@ -63,20 +59,14 @@ void fitter::Initialize() {
     man().model_svc().enable_noiser(_model, RP::ms, false);
   }
 
-
-
   //If required make the clustering object.
   if ( _doClust )
     _clusters = new hit_clusterer( _store );
-
-
 
   ///initialize classifier
   get_classifier().Initialize( _store, _level, _geom.get_Fe_prop() );
 
   _m.message("+++ End of init function ++++",bhep::VERBOSE);
-  
-  //return true;
 }
 
 //*************************************************************
@@ -134,13 +124,10 @@ bool fitter::Execute(bhep::particle& part,int evNo){
     
   }
   /// for non PR track need to set tracks infos separately
-  /*else if(ok) _trajs.push_back(_traj);
-    
-  */
-  
+  /*else if(ok) _trajs.push_back(_traj);*/
   double maxlength = -99999;
   double maxPlanes = -99999;
-  
+
   /// loop over trajectories 
   for (unsigned int i=0; i< _trajs.size(); i++){ 
     
@@ -153,12 +140,8 @@ bool fitter::Execute(bhep::particle& part,int evNo){
     _intType = 0; //set to 'success' before run to avoid faults in value.
     ok = true;///track finded by PR or CA ??
     
-    
-    
     /// Get the trajectory
     _traj = *(_trajs[i]);
-    
-    
     _m.message("fitter::vector_PR size = ", _vPR_seed.size()," & trajno=",i,"  nmeas =",_traj.size(),bhep::DETAILED);
     
     //get traj informations
@@ -176,44 +159,36 @@ bool fitter::Execute(bhep::particle& part,int evNo){
     // _m.message("in fitter:: from classifier the traj =",_traj,bhep::DETAILED);
     _m.message("in fitter: for traj no =",i,"  intType =",_intType,"  failType=",_failType,bhep::VERBOSE);
     
-
     ///sort the nodes in increasing Z (event when PR is not running) 
     _traj.sort_nodes(RP::z, 1);
-       
-    
     
     ///if the traj finding fails during event_classification CA/PR anyone 
     if(_failType==4 || _failType==5 || _failType==6) ok = false;
-    
-    
-    //SetFit mode to manager.   
-    if(ok) 
-      MINDfitman::instance().fit_mode();
-    
-    
+ 
     ///track found by finder (CA or PR not failed)
     State seedState;
     if (ok) {
+      //SetFit mode to manager.
+      MINDfitman::instance().fit_mode();
+
       ok = CheckValidTraj(_traj);
-      
-      /// seed for Fit 
-      if ( ok ) ComputeSeed(_traj,seedState);
     }
-    
     
     ///fit the trajectory 
     if (ok) {
+      /// seed for Fit 
+      ComputeSeed(_traj,seedState);
+
       /// if (ok)cout<<"if classifier3="<<endl; 
       _fitted = FitTrajectory(seedState,i);
       
-      
-
       _m.message("- traj node0=",*(_traj.nodes()[0]),bhep::DETAILED);
       
       _m.message("- copied trajectory =", _traj,bhep::DETAILED);
             
       //
-      if(ok && _fitted && abs(_length) > maxlength){
+      //if(ok && _fitted && abs(_length) > maxlength){
+      if(_fitted && abs(_length) > maxlength){
 	maxlength = abs(_length);
 	_muonindex[0] = i;
       }
@@ -221,15 +196,9 @@ bool fitter::Execute(bhep::particle& part,int evNo){
 	maxPlanes = double(nplanes);
 	_muonindex[1] = i;
       }
-      
-      
-      //if (_fitted) 
-      //if (_failType!=3) _failType = 0;      
     }
     
-    
     ///assign quality for each trajectory
-    
     _traj.set_quality("failType",_failType);
     _traj.set_quality("intType",_intType);
     _traj.set_quality("nplanes",nplanes);
@@ -243,15 +212,12 @@ bool fitter::Execute(bhep::particle& part,int evNo){
     
     *(_trajs[i]) = _traj;
     // cout<<"traj ="<<i<<" failType ="<<_failType<<" fitted ="<<(int)traj.quality("fitted")<<endl;;  
-    
-    
+       
     // std::cout<<"*********************************************"<<std::endl;
     //std::cout<<" ++++++ Trajectory "<<i<<"  fitted+++++++++++"<<std::endl;
     //std::cout<<"*********************************************\n"<<std::endl;
-  }
-  
-  
- 
+  } // End loop over trajectories.
+
   /// for hadron shower
   if((int)_trajs.size() != 0)
     for(int j=0; j<=(int)_trajs.size(); j++)
@@ -264,7 +230,6 @@ bool fitter::Execute(bhep::particle& part,int evNo){
   
   //return _fitted;
   return true;///signifies fitter executed
-  
 }
 
 //*************************************************************
@@ -273,8 +238,7 @@ void fitter::Reset() {
   
   _m.message("+++ Reset function +++",bhep::VERBOSE);
 
-  //Reset trajectory 
-  
+  //Reset trajectory   
   _hadmeas.clear();
   _failEvent = 0;///
   _pr_count = 0;///
@@ -290,9 +254,6 @@ void fitter::Reset() {
   stc_tools::destroy(_meas);
   stc_tools::destroy(_trajs);
   // _hadUnit.clear();
-  
- 
-     
 }
 
 //*************************************************************
@@ -304,7 +265,7 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   // Trajectory traj1 = _traj;
   _traj2 = _traj;
 
-  bool ok; 
+  bool ok = true;
   bool ok0, ok_quality;
   bool ok1 = false;
 
@@ -329,7 +290,6 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
       _fitCheck++;
   //  cout<<"fitCheck="<<fitCheck<<" for trajectory size "<<_traj.size()<<endl;
   
-  
   ///check for reseeding 
   double low_fit_cut;
   if (_intType == 2)
@@ -337,10 +297,6 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   else
     low_fit_cut = _lowFit1;
 
-  // cout<<"reseed if not ok0 = "<<ok0<<" or not ok1 = "<<ok1<<" or "<<(double)_fitCheck/(double)_traj.size() <<"<"<< low_fit_cut<<", intType "<<_intType<<endl;
-
-  //**********disallow backfit on cell auto tracks for now.
-  
   ///reseed the trajectory
   if (_intType!= 5){   // not CA
     if (_intType != 2){ // not all planes are single occ  
@@ -355,28 +311,12 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
     }
     else _pr_count++;    
   }
-  // if (_reseed_ok) cout<<"Track reseed fit complete"<<endl;
 
-  // if(!_traj2.status().has_key("fitted")) _reseed_ok = false;
-
-  // cout<<"***before :inside FitTrajectory, ok="<<ok<<" /reseed_called="<<_reseed_called<<" /reseed_ok="<< _reseed_ok<<endl;
-  
   //if reseed successful
-  ok=true; 
-  
-  // cout<<"traj =" << _traj<<endl;
-  // cout<<"traj2 = "<<_traj2<<endl;
   if (_reseed_ok){    
     _traj = _traj2;
   }
-  /*
-  else if (ok1){
-    _traj = traj1;
-    // cout<<"traj1 =" << traj1<<endl;
-  }
-  */
-  else if (!ok0) 
-    ok=false;
+  else if (!ok0) ok=false;
 
   // std::cout<<"copied trajectory =" << _traj<<std::endl;
   // std::cout<<"Trajectory status is "<<_traj.status("fitted")<<std::endl;
@@ -464,7 +404,6 @@ bool fitter::ReseedTrajectory(const int trajno){
 void fitter::ComputeSeedRefit(const Trajectory& traj, State& seedState) {
   //*************************************************************
   
-  
   _m.message("Going to calculate seed for refit...",bhep::VERBOSE);
   
   //--------- refit using a new seed --------//
@@ -481,7 +420,6 @@ void fitter::ComputeSeedRefit(const Trajectory& traj, State& seedState) {
   
   /// seedstate.set_hv( HV );
   seedState.set_hv( HV );
-  
 }
 
 //*************************************************************
@@ -565,8 +503,7 @@ void fitter::rec_had_energy(){
       _hadEng[j] = hadEdep;
       
     }
-  }
-  
+  } 
 }
 
 //*************************************************************
@@ -714,8 +651,6 @@ void fitter::rec_had_edep(int j){
   _hadTrajs.set_quality("fitcheck", 0);
     
   // trajs.push_back(hadTraj);
-  
-  
   _m.message("Rec hadron Unit direction components:", _showerDir[j][0], _showerDir[j][1], _showerDir[j][2],bhep::VERBOSE);
   
 }
@@ -740,37 +675,27 @@ bool fitter::CreateMeasurements(const bhep::particle& p) {
   _m.message("+++ CreateMeasurements function ++++",bhep::VERBOSE);
   
   Reset();
-  
   bool ok = true;
 
   //string detect = _store.fetch_sstore("detect");
-  
   const vector<bhep::hit*> hits = p.hits( _detect ); 
   // std::cout<<"Hits size = "<<hits.size()<<std::endl;
   //Cluster or directly make measurements.
   if ( _doClust && hits.size() != 0 ){
-
     // Make clusters
-    _clusters->execute( hits, _meas );
-    
+    _clusters->execute( hits, _meas ); 
   }
-  
   else {
-    
     // Create a cluster of each hit (without clustering)
     for(size_t j=0; j< hits.size(); j++){
-      
       //---------- create measurement ---------------//
-      
       cluster* mnt = GetMeasurement(*hits[j]);
       
       _meas.push_back(mnt); 
       
       _m.message("Measurement added:",*mnt,bhep::VVERBOSE);
     }//end of loop over hits
-    
   }
-  
   return ok;
 }
 
@@ -779,10 +704,7 @@ bool fitter::CreateSingleTrajectory(Trajectory& traj) {
   //*************************************************************
  
   _m.message("+++ CreateSingleTrajectory function ++++",bhep::VERBOSE);
-  
-  
   //--------- add measurements to trajectory --------//
-     
   ///create the trajectory  
   std::vector<cluster*>::iterator it1;
   for (it1 = _meas.begin();it1 != _meas.end();it1++){
@@ -793,7 +715,6 @@ bool fitter::CreateSingleTrajectory(Trajectory& traj) {
     traj.add_node(temp);
     // measurement( *(*it1) );
   }
-  
   _m.message("Trajectory created:",traj,bhep::VVERBOSE);
 
   return true;
@@ -804,15 +725,15 @@ bool fitter::CreateSingleTrajectory(Trajectory& traj) {
 bool fitter::CheckValidTraj(const Trajectory& traj) {
   //*************************************************************
   //cout<<" +++++inside fitter:: CheckValidTraj func "<<endl;  
- 
+  bool returnBool = true;
 
   //--------- Reject too many hits --------//
   
   if ((int)traj.size() < _lowPass) { 
     _failType = 1;
-    return false;
+    returnBool = false;
   }
-  return true;
+  return returnBool;
 }
 
 //*****************************************************************************
@@ -823,23 +744,20 @@ double fitf(Double_t *x,Double_t *par) {
   double fitval = par[0]+par[1]*z+par[2]*z*z;
 
   return fitval ;
-
 }
 
 //*************************************************************
 int fitter::GetQ(const Trajectory& traj){
   //*************************************************************
+  double q = 0;
   
-  if (_model.compare("particle/helix")!=0) return 0;
-  double q;
-  
-  /// 
-  q = traj.state(traj.last_fitted_node()).vector()[dim-1];
-  
-  if (q<0) q=-1; else q=1;
-  
+  if (_model.compare("particle/helix")==0)
+    { 
+      q = traj.state(traj.last_fitted_node()).vector()[dim-1];
+      
+      if (q<0) q=-1; else q=1;     
+    }
   return (int) q;
-  
 }
 
 //*************************************************************
@@ -867,7 +785,6 @@ cluster*  fitter::GetMeasurement(bhep::hit& hit){
   meas_pos[1] = hit_pos[1];
   meas_pos[2] = bhit_pos[2];
     
-
   cluster* me = new cluster();
   me->set_name(meastype);
   me->set_hv(HyperVector(hit_pos,cov,RP::xyz));
@@ -884,8 +801,7 @@ cluster*  fitter::GetMeasurement(bhep::hit& hit){
     me->set_name(motherP, mothName);
   }
   
-  return me;
-  
+  return me; 
 }
 
 //*************************************************************
@@ -952,7 +868,6 @@ void fitter::ApplyCovarianceFactor(double factor, EMatrix& C0){
   //*************************************************************
     
   //--- a large diagonal covariance matrix ---//
-    
   C0 *= factor;
 }
 
@@ -961,7 +876,6 @@ double fitf2(Double_t *x,Double_t *par) {
   //*****************************************************************************
 
   double z = x[0];
-
   double fitval = par[0] + par[1]*z+par[2]*z*z+par[3]*z*z*z+par[4]*z*z*z*z;
 
   return fitval;
@@ -1106,8 +1020,6 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   std::vector<EVector> B;
   bool isContained = true, cuspfound = false;
 
-
-
   double Xmax = _geom.getPlaneX() - 1*cm;
   double Ymax = _geom.getPlaneY() - 1*cm;
   /// double Zmax = _geom.getPlaneZ() - 1*cm;
@@ -1115,8 +1027,6 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   // double ax[fitpoints-2], ay[fitpoints-2], az[fitpoints-2];
   // double bx[fitpoints-2], by[fitpoints-2], bz[fitpoints-2];
   
-  
-
   ///double ds0=0, ds1=0;
   double Bmean=0;
   double pathlength=0;
@@ -1126,8 +1036,6 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   int minindex = nplanes - firsthit;
   ///double minR = 999999.9999;
   double pdR = 0.0;
-  
-  
   
   EVector Z = EVector(3,0); Z[2] = 1;
   for (int ipoint=firsthit;ipoint < nplanes;ipoint++){
@@ -1222,9 +1130,6 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   }
   
   ///double planesep  = fabs(zpos[1] - zpos[0]);
-
-
-
   // Assume that the magnetic field does not change very much over 1 metre
   // (terrible assumption by the way)
   const int sample = minindex < 20 ? (const int)minindex: 20;
@@ -1237,8 +1142,6 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   if(isContained && p != 0)
     V[5] = meansign/fabs(p);
   else{
-
-
     // meansign = 0;
     // Consider a fit to a subset of points at the begining of the track
     //for(int j=0; j<fitpoints-2; j++){
@@ -1273,9 +1176,6 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   else
     sign = 1;
 
-
-
-
   // std::cout<<"Pathlength is "<<pathlength // <<" or "<<pathlength0
   //	   <<" with charge "<<meansign<<std::endl;
   
@@ -1293,7 +1193,6 @@ void fitter::ReadParam(){
   _model = _store.fetch_sstore("model");//"particle/helix"; 
   dim=6; // ??????
     
-
   if ( _store.find_istore("refit") )
     _refit=_store.fetch_istore("refit");
   else _refit=false;

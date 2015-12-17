@@ -44,22 +44,12 @@ public:
   
   std::vector<Trajectory*>&  get_trajs(){return _trajs; }///
   Trajectory& get_hadTrajs() {return _hadTrajs;}
- 
-  // dict::dictionary <double> getQualityMap(){ if (_reseed_ok) return _traj2->qualitymap(); 
-  //else return _traj->qualitymap(); }
 
-  //CA traj
-  //  const Trajectory& get_CA_traj(){ 
-  //    if (get_classifier().get_int_type()==5) return *_traj; }
-
-  //  std::vector<cluster*> get_CA_meas_vec(){ if (get_classifier().get_int_type()==5) return _meas; }
- 
   std::vector<EVector>& get_had_unit(){ return _hadUnit; }
   
   double* get_had_eng(){ return _hadEng; }
   double* get_had_profile() { return _transEdx; }
   std::vector<double>& get_nonMuon_edep() { return _nonMuonEdep; }
-  //int get_had_hits() { return _hadmeas.size(); }
   std::vector<int>& get_had_hits() { return _nonMuonHits; }
   int get_fail_event(){ return _failEvent; }///
   bool CheckReseed(){ return _reseed_ok; }
@@ -84,21 +74,14 @@ public:
   //Tempory for likelihoods.
   void set_int_type(const string name){
     get_classifier().set_int_type( name ); }
-  //
-  //calculate momentum from range.
-  //void calculate_len_mom(double len, double *mom);
-  
+
   //recpack manager
   
   RecPackManager& man(){
     return MINDfitman::instance().manager();}
 
   event_classif& get_classifier(){ return _classify; }
-  
-  //fit twice
 
-  //void setRefit(bool ok){refit=ok;}
-   
 protected:
   
   //void resetVirtualPlanes(); 
