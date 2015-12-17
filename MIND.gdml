@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="/Users/rbayes/Simulations/geant4.10.01.p01/source/persistency/gdml/schema/gdml.xsd">
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
 
   <define>
       <constant name="FeWidth" value="3500"/>
@@ -1026,7 +1026,7 @@
       <physvol name="S1_physi">
         <volumeref ref="ACTIVE"/>
         <position name="S1_pos" x="0.0" y="0.0"
-		  z="-DetectorLength/2 + 72*BarDepth + 33 * (FeDepth
+		  z="-DetectorLength/2 + 70*BarDepth + 33 * (FeDepth
 		     + 2*AlWidth + Gap0) + 3*Gap1"/>
       </physvol>
       <auxiliary auxtype="EMField" auxvalue="NULL"/>
