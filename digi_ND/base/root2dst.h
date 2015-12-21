@@ -13,11 +13,15 @@
 //#include <bhep/clhep.h>
 //#include <CLHEP/Random/RanluxEngine.h>
 
-#include <digi/hit_constructor.h>
+#include <digi/gdml_hit_constructor.h>
+//#include <digi/hit_constructor.h>
 
 #include <TTree.h>
 #include <Riostream.h>
 #include <sstream>
+
+#include "TFile.h"
+#include "TH1F.h"
 
 using namespace bhep;
 
@@ -46,6 +50,24 @@ public:
   bool hits_fromFile(vector<hit*>& muHit, vector<hit*>& hadHit);
   particle* define_hadron();
   particle* create_digital_representation(const vector<particle*>& tru_parts);
+
+  void print();
+
+ //Temporary histograms used for debugging.
+  TFile* digiOutfile;
+  //TList* hList;
+  TH1F* rawHits;
+  TH1F* clusteredHits;
+  TH1F* digitizedHits;
+  TH1F* xeTH1F;
+  TH1F* xeAttTH1F;
+  TH1F* xeSmearTH1F;
+  TH1F* yeTH1F;
+  TH1F* yeAttTH1F;
+  TH1F* yeSmearTH1F;
+  vector<TH1F*> histo_vec;
+
+
 
   //Handy int/float to string converters.
   // TString ToString(Int_t num){
@@ -89,7 +111,8 @@ private:
   //Random engine for smearing.
   //RanluxEngine ranGen;
   //Voxel hit constructor for digitization.
-  hit_constructor* _construct;
+  gdml_hit_constructor* _construct;
+  //hit_constructor* _construct;
   //Are voxels to be made.
   bool _doVox;
 

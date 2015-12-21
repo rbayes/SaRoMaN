@@ -20,13 +20,57 @@ root2dst::root2dst(bhep::prlevel vlevel, bhep::gstore* store){
   dataIn = NULL;
 
   if ( store != NULL ){
-    _construct = new hit_constructor( *store );
+    _construct = new gdml_hit_constructor( *store );
+    //_construct = new hit_constructor( *store );
     _doVox = true;
   } else _doVox = false;
   
   m.message("+++ root2dst Constructor +++",bhep::VERBOSE); 
+ 
+  //Temporary histograms used for debugging
+  //hList = new TList();
+  rawHits = new TH1F("rawHits", "raw Hits", 20000, -2000, 2000);
+  //hList->Add(rawHits);
+  clusteredHits = new TH1F("clusteredHits", "clustered Hits", 10000, -2000, 2000);
+  //hList->Add(clusteredHits);
+  digitizedHits = new TH1F("digitizedHits", "digitized Hits", 10000, -2000, 2000);
+  xeTH1F = new TH1F("xE", "xE", 1000, -50, 100);
+  xeAttTH1F = new TH1F("xEAtt", "xEAtt", 1000, -50, 100);
+  xeSmearTH1F = new TH1F("xESmear", "xESmear", 1000, -50, 100);
+  yeTH1F = new TH1F("yE", "yE", 1000, -50, 100);
+  yeAttTH1F = new TH1F("yEAtt", "yEAtt", 1000, -50, 100);
+  yeSmearTH1F = new TH1F("yESmear", "yESmear", 1000, -50, 100);
   
+  histo_vec.push_back(rawHits);
+  histo_vec.push_back(clusteredHits);
+  histo_vec.push_back(digitizedHits);
+  histo_vec.push_back(xeTH1F);
+  histo_vec.push_back(xeAttTH1F);
+  histo_vec.push_back(xeSmearTH1F);
+  histo_vec.push_back(yeTH1F);
+  histo_vec.push_back(yeAttTH1F);
+  histo_vec.push_back(yeSmearTH1F);
+
+
 }
+
+void root2dst::print(void)
+{
+  // Print the histograms in hist_vec to a root file.
+  // digiOutfile = new TFile("digitization.root", "UPDATE");
+  digiOutfile = new TFile("digitization.root", "RECREATE");
+ 
+  for(int cnt = 0; cnt<histo_vec.size();cnt++)
+    {
+      histo_vec[cnt]->Write();
+    }
+  //histo_vec[0]->Write();
+  //histo_vec[1]->Write();
+  //histo_vec[2]->Write();
+  digiOutfile->Close();
+
+}
+
 
 
 //*************************************************************
@@ -360,8 +404,7 @@ particle* root2dst::create_digital_representation(const vector<particle*>& tru_p
 
 /*Makes a digital particle with only the hits, to be used in
   the fitting algorithm */
-
-
+  
   ptype pT = DIGI;
   string detect = "tracking";
   string edep = "EnergyDep";//"E_dep";
@@ -378,8 +421,12 @@ particle* root2dst::create_digital_representation(const vector<particle*>& tru_p
     vector<bhep::hit*> vox;
     vector<bhep::hit*>::iterator voxIt;
     
+    cout<<tru_parts.size()<<endl;
+
     for (int iPart = 0;iPart < (int)tru_parts.size();iPart++){
       temp_hit = tru_parts[iPart]->hits(detect);
+
+       cout<<temp_hit.size()<<endl;
       
       if ( part_hits.size() == 0 && temp_hit.size() != 0 )
 	part_hits = temp_hit;
@@ -389,7 +436,7 @@ particle* root2dst::create_digital_representation(const vector<particle*>& tru_p
       temp_hit.clear();
     }
     
-    _construct->execute( part_hits, vox );
+    _construct->execute( part_hits, vox ,histo_vec);
     
     for (voxIt = vox.begin();voxIt != vox.end();voxIt++)
       hitMap->add_hit( detect , (*voxIt) );
@@ -435,6 +482,6 @@ particle* root2dst::create_digital_representation(const vector<particle*>& tru_p
       
     }
   }
-  
+
   return hitMap;
 }

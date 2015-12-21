@@ -49,9 +49,9 @@ GENERATION generator S SINGLE_PARTICLE
 
 GENERATION particle_name S %(part)s
 
-### Particle energy will be sample between these two values (in GeV)
-GENERATION energy_min    D 0.300
-GENERATION energy_max    D 3.000
+### Particle kinetic energy will be sample between these two values (in GeV)
+GENERATION energy_min    D 0.400
+GENERATION energy_max    D 0.500
 
 '''% dict(dictionary, **vars(self))
 		elif(self.GenerationMode == 'GENIE'):
@@ -63,10 +63,10 @@ GENERATION generator S GENIE
 
 		filedata += '''
 ### JOB options ###########################################
-JOB output_dst    S %(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d.dst.root
+JOB output_dst    S %(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)s.dst.root
 JOB number_events I %(Nevts)s
 
-JOB random_seed I 13243%(seed)d
+JOB random_seed I 13243%(seed)s
 
 ### GEOMETRY configuration parameters #####################
 
@@ -82,9 +82,9 @@ GEOMETRY gap2 D 0
 #GEOMETRY gap4 D 2.5
 
 ### GDML
-#GEOMETRY useGDML I  %(useGDML)s
-#GEOMETRY writeGDML I 0
-#GEOMETRY GDMLFileName S %(xml_file_path)s
+GEOMETRY useGDML I  %(useGDML)s
+GEOMETRY writeGDML I 0
+GEOMETRY GDMLFileName S %(xml_file_path)s
 
 
 ### MAgnetic field. Still uniform vector.(T)
@@ -109,7 +109,7 @@ GEOMETRY FieldScaling D %(Bfield)s
 ### NUANCE/GENIE data files for passive and active materials!! Set the filenames here!!
 
 GENERATION active_material_data S %(out_base)s/genie_samples/nd_%(part)s%(inttype)s/ev0_%(ASeed)s_%(pid)d_1000060120[0.922582],1000010010[0.077418]_%(Nevts)s.root
-GENERATION passive_material_data S %(out_base)s/genie_samples/nd_%(part)s%(inttype)s/ev0_%(seed)d_%(pid)d_1000260560_%(Nevts)s.root
+GENERATION passive_material_data S %(out_base)s/genie_samples/nd_%(part)s%(inttype)s/ev0_%(seed)s_%(pid)d_1000260560_%(Nevts)s.root
 #
 ### Vertex location (RANDOM, ACTIVE, PASSIVE, FIXED, GAUSS).
 GENERATION vertex_location S GAUSS
@@ -123,11 +123,14 @@ GENERATION vertex_location S GAUSS
 GENERATION fvert DV 3
 0.
 0.
--1000
+-2000
  
 GENERATION bspot DV 2
 100.
 100.
+
+GENERATION costh_min D 1 
+GENERATION costh_max D 0.9
 
 ### PHYSICS configuration parameters ######################
 
@@ -135,7 +138,7 @@ GENERATION bspot DV 2
 PHYSICS production_cut D 30.
 #
 ### Minimum Kinetic energy for a particle to be tracked (MeV).
-PHYSICS minimum_kinEng D 300. #100.
+PHYSICS minimum_kinEng D 10. #100.
 '''% dict(dictionary, **vars(self))
 
 		self.print_file(filename,filedata)
@@ -190,7 +193,7 @@ RUN detect S %(config_rec_detect)s
 ########
 # For hit clustering.(edge in cm)
 RUN do_clust I %(config_rec_do_clust)s
-RUN rec_boxX D %(config_rec_boxX)s
+RUN rec_boxX D 0.966 #%(config_rec_boxX)s
 
 # min energy at plane for detection (MeV) ***must be same as in digi!!***
 RUN min_eng D %(MIND_min_eng_at_plane)s
@@ -207,10 +210,10 @@ RUN zpos_sig D %(MIND_thickness_sigma)s
 #############################################
 
 # monitor ntuple file
-RUN out_file S %(out_base)s/rec_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d.root
+RUN out_file S %(out_base)s/rec_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)s.root
 
 #liklihood file.
-RUN like_file S %(out_base)s/likelihoods/like_%(part)s_%(inttype)s_%(seed)d.root
+RUN like_file S %(out_base)s/likelihoods/like_%(part)s_%(inttype)s_%(seed)s.root
 
 # type of fit
 RUN kfitter S %(config_rec_kfitter)s
@@ -295,7 +298,7 @@ RUN likeli I %(config_rec_likelihood)s
 
 ###  data to read ###
 DATA idst_files SV 1
-%(out_base)s/digi_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d_digi.dst.root
+%(out_base)s/digi_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)s_digi.dst.root
 
 ###  data to write ###
 #
@@ -326,16 +329,21 @@ RUN Eng_Res D %(config_digi_eng_res)s
 # seed value for random generator
 CON Gen_seed D %(config_digi_seed)s
 
-CON rec_boxX D %(MIND_width_active)s
-CON rec_boxY D %(MIND_width_active)s
+CON rec_boxX D 0.966 #%(MIND_width_active)s
+CON rec_boxY D 0.666  #%(MIND_width_active)s
+
+CON nVoxX I 47;
+
+# Attenuation in Wavelength shifting fibre
+CON WLSatten D %(config_rec_WLSatten)s
 
 # minimum energy at plane to be detected.(MeV)
 CON min_eng D %(MIND_min_eng_at_plane)s
 
 DATA idst_files SV 1
-%(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d.dst.root
+%(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)s.dst.root
 
-DATA odst_file S %(out_base)s/digi_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)d_digi.dst.root
+DATA odst_file S %(out_base)s/digi_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)s_digi.dst.root
 '''% dict(dictionary, **vars(self))
 
 		filedata += '''

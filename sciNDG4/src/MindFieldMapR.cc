@@ -82,7 +82,7 @@ MindFieldMapR::MindFieldMapR(G4String Bmap, double fieldScaling,
 	   <<" data points, for "<<_Xmin<<" < x < "<<_Xmax
 	   <<" and "<<dtmap[_Xmin].size()<<" data points, for "
 	   <<_Ymin<<" < y < "<<_Ymax<< std::endl;
-  std::cout<<tesla<<std::endl;
+  // std::cout<<tesla<<std::endl;
   bfile.close();
 }
 
@@ -168,7 +168,7 @@ void MindFieldMapR::GetFieldValue(const double Point[3], double *Bfield) const
     Bfield[1] = _fieldScale*(By0 + dBydx*(Point[0] - x1) + dBydy*(Point[1] - y1));
     Bfield[2] = _fieldScale*(Bvec[j1][k1][2]);
     
-    //std::cout<<Point[0]<<"\t"<<Point[1]<<"\t"<<Point[2]
+    // std::cout<<Point[0]<<"\t"<<Point[1]<<"\t"<<Point[2]
     // <<Bfield[0]<<"\t"<<Bfield[1]<<"\t"<<Bfield[2]<<std::endl;
   }
 }

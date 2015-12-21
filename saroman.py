@@ -12,7 +12,9 @@ import subprocess
 import shutil
 import sys
 import getopt
+
 import time
+import random
 #sys.path.append('pythonlib')
 #######################################################################################################################
 #Importing own python files
@@ -48,9 +50,10 @@ class saroman:
 
     def __init__(self):
         #Set up paths #
-        self.home = os.cwd() # '/data/neutrino05/rbayes/MIND' # 
-        self.exec_base = os.path.join(self.home, 'SaRoMaN')
+        self.home = os.getcwd() # '/data/neutrino05/rbayes/MIND' # 
+        self.exec_base = self.home
         self.out_base  = os.path.join(self.home, 'out')
+        #self.out_base  = os.path.join(self.home, 'batch')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
         self.third_party_support = os.path.join(self.home, 'third_party') 
         self.xml_file_path = os.path.join(self.exec_base,'MIND.gdml')
@@ -58,7 +61,7 @@ class saroman:
 
         #General flags
         self.need_third_party_install = False
-        self.need_own_install = True
+        self.need_own_install = False
         self.generate_field_map = True # If false remember to change self.field_map_name to point to your field map!
         self.parse_gdml = True
 
@@ -66,24 +69,26 @@ class saroman:
         self.train_sample = 0
         self.part = 'mu-'#'14'
         self.pid = -14
-        self.seed = 10
-        self.Nevts = 10
+        
+        #self.seed = 5000 * random.random()
+        self.seed = 100
+        self.Nevts = 5000
         self.inttype = 'CC'
         self.Bfield = 1.5
 
         #Mind geometry
         #Different types of geometry, 3 represents a rectangular detector.
         self.MIND_type = 3#0   # Cylinder
-        self.MIND_xdim = 0.96#7.0 # m
-        self.MIND_ydim = 0.96#6.0 # m
-        self.MIND_zdim = 2.0#13.0 # m
+        self.MIND_xdim = 2.9#0.96#7.0 # m
+        self.MIND_ydim = 2#0.96#6.0 # m
+        self.MIND_zdim = 8#3.261# 2.0#13.0 # m
         #Not used for rectangular detector
         self.MIND_vertex_xdim = 0#2.0 # m
         self.MIND_vertex_ydim = 0#2.0 # m
         self.MIND_vertex_zdim = 0#2.0 # m
         #Used as the size of the steal plates on each side of the detector.
-        self.MIND_ear_xdim = 2.54#3.5-0.96#0.4393 # m
-        self.MIND_ear_ydim = 1.04#2.0-0.96#2.8994 # m
+        self.MIND_ear_xdim = 0.6#2.54#3.5-0.96#0.4393 # m
+        self.MIND_ear_ydim = 0.1#1.04#2.0-0.96#2.8994 # m
         self.MIND_bore_diameter = 0.2 # m
         #Mind internal dimensions
         #de_dx found at pdg.lbl.gov/2015/AtomicNuclearProperties
@@ -94,7 +99,7 @@ class saroman:
         self.MIND_width_active = 1.5 #cm
         self.MIND_width_sigma = self.MIND_width_active / math.sqrt(12)
         self.MIND_rad_length_active = 413.1 #mm
-        self.MIND_npanels = 2 #Describe howmany 'parts' the magnetic field has.
+        self.MIND_npanels = 3 #Describe howmany 'parts' the magnetic field has.
         self.MIND_active_layers = 1 #1
         self.MIND_passive_mat = 'G4_Fe'
         self.MIND_passive_de_dx = 1.143 #MeV/mm
@@ -121,7 +126,7 @@ class saroman:
         self.print_config=print_config(self.GenerationMode)
 
         #Setup for field_map_generator.py
-        self.CreateFieldMap = True
+        #self.CreateFieldMap = True
         self.field_map_generator = field_map_generator(self.Bfield,self.MIND_ydim+self.MIND_ear_ydim,
             self.MIND_xdim+self.MIND_ear_xdim, self.MIND_npanels)
         self.field_map_name = 'field_map_test.res'
@@ -133,7 +138,7 @@ class saroman:
 
         #Setup for xml_parser.py
         self.xml_parser = xml_parser(self.xml_file_path,self.parsed_file_path)
-        self.useGDML = 0
+        self.useGDML = 1
         if self.parse_gdml:
             self.useGDML = 1
 
@@ -215,7 +220,7 @@ class saroman:
             os.makedirs(dirname)
 
     def Generate_field_map(self):
-        if(self.CreateFieldMap):
+        if(self.generate_field_map):
             self.field_map_generator.Print_field_to_file(self.field_map_full_name)
 
     def Clean_up_own(self):
@@ -230,6 +235,7 @@ class saroman:
         subprocess.call('make clean', shell=True, cwd = self.exec_base+'/digi_ND') 
         command = self.exec_base+'/digi_ND/cleanup.sh'
         subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+
         #mind_rec
         subprocess.call('make clean', shell=True, cwd = self.exec_base+'/mind_rec') 
 
@@ -242,14 +248,14 @@ class saroman:
         '''
         #digi_ND
         #run configure and autogen in that context.
-        #command = self.exec_base+'/digi_ND/autogen.sh'
-        #print command
-        #subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
-        #subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
-        #command = self.exec_base+'/digi_ND/configure'
-        #print command
-        #subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
-        #subprocess.call('make', shell=True, cwd = self.exec_base+'/digi_ND')
+        command = self.exec_base+'/digi_ND/autogen.sh'
+        print command
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        command = self.exec_base+'/digi_ND/configure'
+        print command
+        subprocess.call('bash %s' %command, shell=True, cwd = self.exec_base+'/digi_ND')
+        subprocess.call('make', shell=True, cwd = self.exec_base+'/digi_ND')
 
         #mind_rec
         #run configure and autogen in that context.
@@ -264,9 +270,9 @@ class saroman:
         subprocess.call('make', shell=True, cwd = self.exec_base+'/mind_rec')    
         
         #sciNDG4
-        #command = [self.third_party_support+'/bin/scons']
-        #print subprocess.list2cmdline(command)
-        #subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
+        command = [self.third_party_support+'/bin/scons']
+        print subprocess.list2cmdline(command)
+        subprocess.call(command, cwd = self.exec_base+'/sciNDG4', env=os.environ)
     '''        
     def Create_folder_structure(self,name,ending):
         OutBase = os.path.join(self.out_base, name+'_out')
@@ -316,7 +322,8 @@ class saroman:
 
         else:
             try:
-                opts, args = getopt.getopt(argv,"CIO")
+                opts, args = getopt.getopt(argv,"CIOB")
+                #print args[0]
             except getopt.GetoptError:
                 print 'saronman.py -C to clean, -I to install, and -O to build own, to run when setups is ok have no flags'
                 sys.exit(2)
@@ -334,6 +341,31 @@ class saroman:
                     self.Set_environment()
                     #self.Clean_up_own()
                     self.Config_and_build_own()
+                if opt== '-B':
+                    if self.need_third_party_install:
+                        self.handle_third_party.Download_and_install_genie_depencencies()
+                    self.Set_environment()
+                    if self.need_third_party_install:
+                        self.Download_config_and_build_third_party()
+                    if self.need_own_install:
+                        self.Clean_up_own()
+                        self.Config_and_build_own()
+                    if self.generate_field_map:
+                        self.Generate_field_map()
+                    if self.parse_gdml:
+                        self.xml_parser.Parse_file()
+
+                    #time.sleep(0.5)
+
+                    iter =  args[0]
+                    self.out_base  += '/batch'+iter
+                    #self.out_base  = os.path.join(self.home, 'batch2/batch'+iter)
+                    print self.out_base
+
+                    self.Run_genie()
+                    self.Run_simulation()
+                    self.Run_digitization()
+                    self.Run_reconstruction()
 
     def Print_file(self,filename,data):
         '''
@@ -591,6 +623,11 @@ class saroman:
         command = [self.exec_base+"/mind_rec/examples/fit_tracks",recConfig, str(self.Nevts)]
         self.Print_outdata_file(recOutLog,command)
         print 'Completed reconstruction'
+
+        #GDB
+        #command = ['gdb','--args',self.exec_base+"/mind_rec/examples/fit_tracks",recConfig, str(self.Nevts)]
+        #subprocess.call(command)
+        
 
 #######################################################################################################################
 #File specific functions

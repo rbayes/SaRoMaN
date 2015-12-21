@@ -136,6 +136,8 @@ int main(int argc, char* argv[]) {
     inDst.close();
   }
 
+  cvt->print(); // Used to print the debug histograms to a root file.
+
   WriteUtil::CloseOutputDst();
   //inDst.close();
 

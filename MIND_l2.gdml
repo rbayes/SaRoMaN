@@ -999,29 +999,29 @@
 		  z="-DetectorLength/2 + 8*BarDepth + 3 * (FeDepth
 		     + 2*AlWidth + Gap0)/2 + Gap1"/>
       </physvol>
+      <physvol name="SFFFS1_physi">
+        <volumeref ref="SFFFS"/>
+        <position name="SFFFS1_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 16*BarDepth + 4.5 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
+      </physvol>
       <physvol name="SFModule_physi">
         <volumeref ref="SFModule"/>
         <position name="SFModule_pos" x="0.0" y="0.0"
-		  z="-DetectorLength/2 + 18*BarDepth + 4.5 * (FeDepth
-		     + 2*AlWidth + Gap0) + 2*Gap1"/>
+		  z="-DetectorLength/2 + 26*BarDepth + 7.5 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
       </physvol>
       <physvol name="SFFModule_physi">
         <volumeref ref="SFFModule"/>
         <position name="SFFModule_pos" x="0.0" y="0.0"
-		  z="-DetectorLength/2 + 30*BarDepth + 9 * (FeDepth +
-		     2*AlWidth + Gap0) + 2*Gap1"/>
+		  z="-DetectorLength/2 + 38*BarDepth + 12 * (FeDepth +
+		     2*AlWidth + Gap0) + 3*Gap1"/>
       </physvol>
       <physvol name="SFFFModule_physi">
         <volumeref ref="SFFFModule"/>
         <position name="SFFFModule_pos" x="0.0" y="0.0"
-		  z="-DetectorLength/2 + 48*BarDepth + 21 * (FeDepth
-		     + 2*AlWidth + Gap0) + 2*Gap1"/>
-      </physvol>
-      <physvol name="SFFFS1_physi">
-        <volumeref ref="SFFFS"/>
-        <position name="SFFFS1_pos" x="0.0" y="0.0"
-		  z="-DetectorLength/2 + 64*BarDepth + 31.5 * (FeDepth
-		     + 2*AlWidth + Gap0) + 2*Gap1"/>
+		  z="-DetectorLength/2 + 56*BarDepth + 24 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
       </physvol>
       <physvol name="S1_physi">
         <volumeref ref="ACTIVE"/>

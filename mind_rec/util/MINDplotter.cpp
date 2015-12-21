@@ -171,11 +171,16 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
   _HTime.clear();
   // _positionStart.clear();
 
+  _XMeas.clear();
+  _YMeas.clear();
+  _ZMeas.clear();
+  _EMeas.clear();
+
   _XHadPos.clear();
   _YHadPos.clear();
   _ZHadPos.clear();
   
- 
+
   for (int i = 0;i<2;i++){
     for (int j=0; j<2; j++){
       for (int k=0; k<10; k++){
@@ -555,7 +560,14 @@ void MINDplotter::define_tree_branches() {
   statTree->Branch("EngDeposit", &_Edep,32000,0);
   statTree->Branch("Time", &_HTime,32000,0);
   statTree->Branch("positionStart",_positionStart,"positionStart[trajNo][3]/D" );
- 
+  
+  statTree->Branch("Xmeas", &_XMeas,32000,0);  
+  statTree->Branch("Ymeas", &_YMeas, 32000,0);
+  statTree->Branch("Zmeas", &_ZMeas,32000,0);
+  statTree->Branch("EngMeas", &_EMeas,32000,0);
+
+  statTree->Branch("delta1", &_Delta1,32000,0);
+  statTree->Branch("delta2", &_Delta2, 32000,0);
 
   ///for hadrons
   statTree->Branch("NChadnNhad", &_nhad[0], "nChad/I");
@@ -1152,16 +1164,13 @@ void MINDplotter::hadron_direction(fitter& fit) {
 
   for (int iHits = 0;iHits < traj.size();iHits++){
 	
-	const Measurement& meas = traj.node(iHits).measurement();
-
-	  _XHadPos.push_back(meas.position()[0]);
-	  _YHadPos.push_back(meas.position()[1]);
-	  _ZHadPos.push_back(meas.position()[2]);
-
-      }
-
-             
-
+    const Measurement& meas = traj.node(iHits).measurement();
+    
+    _XHadPos.push_back(meas.position()[0]);
+    _YHadPos.push_back(meas.position()[1]);
+    _ZHadPos.push_back(meas.position()[2]);
+    
+  }
 
 }
 
@@ -1301,10 +1310,42 @@ void MINDplotter::hitBreakUp(fitter& Fit) {
     if ( meas[ih]->hv("MuonProp").vector()[0] > 0.8 ) { _hitTrMu++;
       _m.message( " TruMu X,Y,Z =",meas[ih]->position()[0],meas[ih]->position()[1],meas[ih]->position()[2],"  No= ",_hitTrMu, bhep::DETAILED);
     }
-
+    
     //total no of hadrons
     if ( meas[ih]->names().has_key(hadHit) ) _hitHad++;
+
+    _XMeas.push_back(Fit.GetMeas(ih)->position()[0]);
+    _YMeas.push_back(Fit.GetMeas(ih)->position()[1]);
+    _ZMeas.push_back(Fit.GetMeas(ih)->position()[2]);
+    _EMeas.push_back(
+		     Fit.get_classifier().correctEdep( 
+						      Fit.GetMeas(ih)->hv("energy").vector()[0], 
+		     Fit.GetMeas(ih)->position()[0], 
+		     Fit.GetMeas(ih)->position()[1], 
+						      Fit.GetMeas(ih)->position()[2]));
+  
+
+
   }
+  //// First Angles  
+  if ( Fit.GetNMeas() > 6 ){
+    _Theta1 = atan (((_YMeas[1]-_YMeas[0]) / (_ZMeas[1]-_ZMeas[0])))*180/3.14;  
+    _Theta2 = atan (((_YMeas[3]-_YMeas[2]) / (_ZMeas[3]-_ZMeas[2])))*180/3.14;
+    _Theta3 = atan (((_YMeas[5]-_YMeas[4]) / (_ZMeas[5]-_ZMeas[4])))*180/3.14;
+
+    _Delta1 = _Theta2 - _Theta1 ;
+    _Delta2 = _Theta3 - _Theta2 ;
+  }
+  else {
+    _Theta1 = 0;
+    _Theta2 = 0;
+    _Theta3 = 0;
+    _Delta1 = 0;
+    _Delta2 = 0;
+  }
+
+  ////
+
   _m.message("inside hitBreakUp:: TruMu = ",_hitTrMu,bhep::VERBOSE);
   
   
@@ -1358,6 +1399,10 @@ void MINDplotter::hitBreakUp(fitter& Fit) {
 /**********************************************************************************/
 void MINDplotter::patternStats2(fitter& Fit) {
   /**********************************************************************************/ 
+
+  // position of event hits
+
+  
 
   ///positions of hits
   std::vector<Trajectory*> &traj = Fit.get_trajs();

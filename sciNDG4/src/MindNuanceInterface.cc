@@ -241,7 +241,7 @@ G4int MindNuanceInterface::SelectVertexRegion()
       MindDetectorConstruction* detConstr = (MindDetectorConstruction*) 
 	G4RunManager::GetRunManager()->GetUserDetectorConstruction();
       _fvecReg = detConstr->
-	GetDetectorGeometry()->GetRegion( _fvec[2] );
+	GetDetectorGeometry()->GetRegion( _fvec.z() );
       _runStart = true; 
     }
 

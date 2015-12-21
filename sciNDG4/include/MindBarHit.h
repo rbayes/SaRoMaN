@@ -57,6 +57,8 @@ public:
   G4int GetBarOrientation() { return _isYbar; }
   void SetBarOrientation(G4int i) { _isYbar = i; }
 
+  G4int GetBarNumber() { return _barNumber; } 
+  void SetBarNumber(G4int i) { _barNumber = i; }
 private:
   G4int _track_id;
   G4double _energy_dep;
@@ -65,6 +67,7 @@ private:
   G4double _time;
   G4String _module;
   G4int _isYbar;
+  G4int _barNumber;
 };
 
 
