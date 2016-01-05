@@ -12,7 +12,6 @@ import subprocess
 import shutil
 import sys
 import getopt
-
 import time
 import random
 #sys.path.append('pythonlib')
@@ -50,7 +49,7 @@ class saroman:
 
     def __init__(self):
         #Set up paths #
-        self.home = os.getcwd() # '/data/neutrino05/rbayes/MIND' # 
+        self.home = os.getcwd()
         self.exec_base = self.home
         self.out_base  = os.path.join(self.home, 'out')
         #self.out_base  = os.path.join(self.home, 'batch')
@@ -64,6 +63,7 @@ class saroman:
         self.need_own_install = False
         self.generate_field_map = True # If false remember to change self.field_map_name to point to your field map!
         self.parse_gdml = True
+        self.visual = False
 
         #Should be implemented as input values#
         self.train_sample = 0
@@ -74,7 +74,7 @@ class saroman:
         self.seed = 100
         self.Nevts = 5000
         self.inttype = 'CC'
-        self.Bfield = 1.5
+        self.Bfield = 1.5 #Tesla
 
         #Mind geometry
         #Different types of geometry, 3 represents a rectangular detector.
@@ -94,7 +94,7 @@ class saroman:
         #de_dx found at pdg.lbl.gov/2015/AtomicNuclearProperties
         self.MIND_active_mat = 'G4_POLYSTYRENE'
         self.MIND_active_de_dx = 0.2052 #MeV/mm
-        self.MIND_thickness_active = 1.5 # cm
+        self.MIND_thickness_active = 3.0#1.5 # cm
         self.MIND_thickness_sigma = self.MIND_thickness_active / math.sqrt(12)
         self.MIND_width_active = 1.5 #cm
         self.MIND_width_sigma = self.MIND_width_active / math.sqrt(12)
@@ -299,33 +299,20 @@ class saroman:
 
     def Handle_commandline_input(self,argv):
         '''
-        Handles commandline flags, CIO are implemented, if there are no flags the code is run depending on how the variables are setup in __init__
+        Handles commandline flags, CIOV are implemented,
+        if there are no flags the code is run depending on how the variables are setup in __init__
         '''
+        self.Set_environment()
         if argv==[]:
-            if self.need_third_party_install:
-                self.handle_third_party.Download_and_install_genie_depencencies()
-            self.Set_environment()
-            if self.need_third_party_install:
-                self.Download_config_and_build_third_party()
-            if self.need_own_install:
-                self.Clean_up_own()
-                self.Config_and_build_own()
-            if self.generate_field_map:
-                self.Generate_field_map()
-            if self.parse_gdml:
-                self.xml_parser.Parse_file()
-
-            self.Run_genie()
-            self.Run_simulation()
-            self.Run_digitization()
-            self.Run_reconstruction()
+            self.Run_saroman()
 
         else:
             try:
-                opts, args = getopt.getopt(argv,"CIOB")
+                opts, args = getopt.getopt(argv,"CIOBV")
                 #print args[0]
             except getopt.GetoptError:
-                print 'saronman.py -C to clean, -I to install, and -O to build own, to run when setups is ok have no flags'
+                print 'saronman.py -C to clean, -I to install, -O to build own and -V to run Geant visually.'
+                print 'To run when setups is ok have no flags'
                 sys.exit(2)
             for opt, arg in opts:
                 if opt == '-C':
@@ -341,27 +328,15 @@ class saroman:
                     self.Set_environment()
                     #self.Clean_up_own()
                     self.Config_and_build_own()
+                if opt== '-V':
+                    self.visual = True
+                    self.Run_saroman()
                 if opt== '-B':
-                    if self.need_third_party_install:
-                        self.handle_third_party.Download_and_install_genie_depencencies()
-                    self.Set_environment()
-                    if self.need_third_party_install:
-                        self.Download_config_and_build_third_party()
-                    if self.need_own_install:
-                        self.Clean_up_own()
-                        self.Config_and_build_own()
-                    if self.generate_field_map:
-                        self.Generate_field_map()
-                    if self.parse_gdml:
-                        self.xml_parser.Parse_file()
-
-                    #time.sleep(0.5)
-
+                    self.Run_saroman_check()
                     iter =  args[0]
                     self.out_base  += '/batch'+iter
                     #self.out_base  = os.path.join(self.home, 'batch2/batch'+iter)
                     print self.out_base
-
                     self.Run_genie()
                     self.Run_simulation()
                     self.Run_digitization()
@@ -386,6 +361,35 @@ class saroman:
         outfile.close()
         elapsed = (time.time()-start)
         print 'Time to run process: %s seconds' % elapsed
+
+    def Run_saroman(self):
+        '''
+        Handle all the different flag settings then run saromans different parts.
+        '''
+
+        self.Run_saroman_check()
+
+        self.Run_genie()
+        self.Run_simulation()
+        self.Run_digitization()
+        self.Run_reconstruction()
+
+    def Run_saroman_check(self):
+        '''
+        Handle all the different flag settings.
+        '''
+        if self.need_third_party_install:
+            self.handle_third_party.Download_and_install_genie_depencencies()
+            self.Set_environment()
+        if self.need_third_party_install:
+            self.Download_config_and_build_third_party()
+        if self.need_own_install:
+            self.Clean_up_own()
+            self.Config_and_build_own()
+        if self.generate_field_map:
+            self.Generate_field_map()
+        if self.parse_gdml:
+            self.xml_parser.Parse_file()
 
     def Shell_source(self, script):
         '''
@@ -573,15 +577,14 @@ class saroman:
         self.print_config.print_mindG4_config(vars(self),mindG4config)
 
         mindG4OutLog = os.path.join(mindG4OutDir,'nd_'+self.part+self.inttype+'_'+str(self.seed)+'.log')
-
         self.Shell_source(self.third_party_support+"/install/bin/geant4.sh")
 
-        #Uncomment to run visually
-        #command = [self.exec_base+'/sciNDG4/mindG4','-v',mindG4config]
-        #subprocess.call(command)
-        
-        command = [self.exec_base+'/sciNDG4/mindG4',mindG4config]
-        self.Print_outdata_file(mindG4OutLog,command)
+        if self.visual:
+            command = [self.exec_base+'/sciNDG4/mindG4','-v',mindG4config]
+            subprocess.call(command)
+        else:
+            command = [self.exec_base+'/sciNDG4/mindG4',mindG4config]
+            self.Print_outdata_file(mindG4OutLog,command)
 
     def Run_digitization(self):
         digiOutBase = os.path.join(self.out_base, 'digi_out')
