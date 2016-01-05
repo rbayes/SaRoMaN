@@ -141,16 +141,11 @@
     <box lunit="mm" name="FePlate_solid" x="FeWidth" y="FeHeight" z="FeDepth"/>
     <box lunit="mm" name="PASSIVE_solid" x="FeWidth" y="FeHeight" z="FeDepth + 2*AlWidth"/>
     <box lunit="mm" name="S_solid" x="SciWidth" y="SciHeight" z="SciDepth"/>
-    <!--<box lunit="mm" name="SciXPlane_solid" x="SciX2Width" y="SciX1Height" z="2*BarDepth"/>-->
-    <box lunit="mm" name="SciX1Plane_solid" x="SciX2Width"
-	 y="SciX1Height" z="4*BarDepth"/>
+    <box lunit="mm" name="SciXPlane_solid" x="SciX2Width" y="SciX1Height" z="2*BarDepth"/>
+    <box lunit="mm" name="SciX1Plane_solid" x="SciX1Width" y="SciX1Height" z="BarDepth"/>
+    <box lunit="mm" name="SciX2Plane_solid" x="SciX2Width" y="SciX2Height" z="BarDepth"/>
     <box lunit="mm" name="SciYPlane_solid" x="SciY1Width" y="SciY1Height" z="2*BarDepth"/>
-    <subtraction name="SciXPlane_solid">
-      <first ref="SciX1Plane_solid"/>
-      <second ref="SciYPlane_solid"/>
-      <position name="suboffset"/>
-      <rotation name="subrot"/>
-    </subtraction>
+    <box lunit="mm" name="SciY1Plane_solid" x="SciY1Width" y="SciY1Height" z="BarDepth"/>
     <box lunit="mm" name="SciY2Plane_solid" x="SciY2Width" y="SciY2Height" z="BarDepth"/>
     <box lunit="mm" name="BarX1_solid" x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
     <box lunit="mm" name="BarX2_solid" x="BarWidthX2" y="SciX1Height" z="BarDepth"/>
@@ -225,82 +220,82 @@
 	<parameterised_position_size>
 	  <parameters number="1">
 	    <position name="xbar1" x="(-SciX2Width + BarWidthX1)/2"
-	    y="0" z="-3*BarDepth/2"/>
+	    y="0" z="-BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="2">
 	    <position name="xbar2" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + BarWidthX2"
-	    y="0" z="3*BarDepth/2"/>
+	    y="0" z="BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="3">
 	    <position name="xbar3" x="(-SciX2Width + BarWidthX1)/2 + BarWidthX2"
-	    y="0" z="-3*BarDepth/2"/>
+	    y="0" z="-BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="4">
 	    <position name="xbar4" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 2*BarWidthX2"
-	    y="0" z="3*BarDepth/2"/>
+	    y="0" z="BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="5">
 	    <position name="xbar5" x="(-SciX2Width + BarWidthX1)/2 + 2*BarWidthX2"
-	    y="0" z="-3*BarDepth/2"/>
+	    y="0" z="-BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="6">
 	    <position name="xbar6" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 3*BarWidthX2"
-	    y="0" z="3*BarDepth/2"/>
+	    y="0" z="BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="7">
 	    <position name="xbar7" x="(-SciX2Width + BarWidthX1)/2 + 3*BarWidthX2"
-	    y="0" z="-3*BarDepth/2"/>
+	    y="0" z="-BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="8">
 	    <position name="xbar8" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 4*BarWidthX2"
-	    y="0" z="3*BarDepth/2"/>
+	    y="0" z="BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="9">
 	    <position name="xbar9" x="(-SciX2Width + BarWidthX1)/2 + 4*BarWidthX2"
-	    y="0" z="-3*BarDepth/2"/>
+	    y="0" z="-BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="10">
 	    <position name="xbar10" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 5*BarWidthX2"
-	    y="0" z="3*BarDepth/2"/>
+	    y="0" z="BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="11">
 	    <position name="xbar11" x="(-SciX2Width + BarWidthX1)/2 + 5*BarWidthX2"
-	    y="0" z="-3*BarDepth/2"/>
+	    y="0" z="-BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="12">
 	    <position name="xbar12" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 6*BarWidthX2"
-	    y="0" z="3*BarDepth/2"/>
+	    y="0" z="BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="13">
 	    <position name="xbar13" x="(-SciX2Width + BarWidthX1)/2 + 6*BarWidthX2"
-	    y="0" z="-3*BarDepth/2"/>
+	    y="0" z="-BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="14">
 	    <position name="xbar14" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 7*BarWidthX2"
-	    y="0" z="3*BarDepth/2"/>
+	    y="0" z="BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="15">
 	    <position name="xbar15" x="(-SciX2Width + BarWidthX1)/2 + 7*BarWidthX2"
-	    y="0" z="-3*BarDepth/2"/>
+	    y="0" z="-BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	  <parameters number="16">
 	    <position name="xbar16" x="(-SciX2Width + BarWidthX1 - BarWidthX2)/2 + 8*BarWidthX2"
-	    y="0" z="3*BarDepth/2"/>
+	    y="0" z="BarDepth/2"/>
 	    <box_dimensions x="BarWidthX1" y="SciX1Height" z="BarDepth"/>
 	  </parameters>
 	</parameterised_position_size>
@@ -798,7 +793,6 @@
     </volume>
 
     <!-- Start replicating volumes -->
-    <!--
     <volume name="X1plane">
       <materialref ref="G4_AIR0x19316e30"/>
       <solidref ref="SciX1Plane_solid"/>
@@ -859,7 +853,7 @@
       <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     
-    -->
+    
     <!-- Scintillating planes -->
     <!--
     <volume name="ACTIVE">
@@ -889,11 +883,11 @@
       <solidref ref="S_solid"/>
       <physvol name="XPlane_physi">
         <volumeref ref="XPlane"/>
-        <position name="Xplane_pos" x="0.0" y="0.0" z="0.0"/>
+        <position name="Xplane_pos" x="0.0" y="0.0" z="BarDepth"/>
       </physvol>
       <physvol name="YPlane_physi">
         <volumeref ref="YPlane"/>
-        <position name="YPlane_pos" x="0.0" y="0.0" z="0.0"/>
+        <position name="YPlane_pos" x="0.0" y="0.0" z="-BarDepth"/>
       </physvol>
       <auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
@@ -1005,29 +999,29 @@
 		  z="-DetectorLength/2 + 8*BarDepth + 3 * (FeDepth
 		     + 2*AlWidth + Gap0)/2 + Gap1"/>
       </physvol>
+      <physvol name="SFFFS1_physi">
+        <volumeref ref="SFFFS"/>
+        <position name="SFFFS1_pos" x="0.0" y="0.0"
+		  z="-DetectorLength/2 + 16*BarDepth + 4.5 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
+      </physvol>
       <physvol name="SFModule_physi">
         <volumeref ref="SFModule"/>
         <position name="SFModule_pos" x="0.0" y="0.0"
-		  z="-DetectorLength/2 + 18*BarDepth + 4.5 * (FeDepth
-		     + 2*AlWidth + Gap0) + 2*Gap1"/>
+		  z="-DetectorLength/2 + 26*BarDepth + 7.5 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
       </physvol>
       <physvol name="SFFModule_physi">
         <volumeref ref="SFFModule"/>
         <position name="SFFModule_pos" x="0.0" y="0.0"
-		  z="-DetectorLength/2 + 30*BarDepth + 9 * (FeDepth +
-		     2*AlWidth + Gap0) + 2*Gap1"/>
+		  z="-DetectorLength/2 + 38*BarDepth + 12 * (FeDepth +
+		     2*AlWidth + Gap0) + 3*Gap1"/>
       </physvol>
       <physvol name="SFFFModule_physi">
         <volumeref ref="SFFFModule"/>
         <position name="SFFFModule_pos" x="0.0" y="0.0"
-		  z="-DetectorLength/2 + 48*BarDepth + 21 * (FeDepth
-		     + 2*AlWidth + Gap0) + 2*Gap1"/>
-      </physvol>
-      <physvol name="SFFFS1_physi">
-        <volumeref ref="SFFFS"/>
-        <position name="SFFFS1_pos" x="0.0" y="0.0"
-		  z="-DetectorLength/2 + 64*BarDepth + 31.5 * (FeDepth
-		     + 2*AlWidth + Gap0) + 2*Gap1"/>
+		  z="-DetectorLength/2 + 56*BarDepth + 24 * (FeDepth
+		     + 2*AlWidth + Gap0) + 3*Gap1"/>
       </physvol>
       <physvol name="S1_physi">
         <volumeref ref="ACTIVE"/>

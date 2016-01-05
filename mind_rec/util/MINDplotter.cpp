@@ -1328,14 +1328,21 @@ void MINDplotter::hitBreakUp(fitter& Fit) {
 
   }
   //// First Angles  
-  _Theta1 = atan (((_YMeas[1]-_YMeas[0]) / (_ZMeas[1]-_ZMeas[0])))*180/3.14;  
-  _Theta2 = atan (((_YMeas[3]-_YMeas[2]) / (_ZMeas[3]-_ZMeas[2])))*180/3.14;
-  _Theta3 = atan (((_YMeas[5]-_YMeas[4]) / (_ZMeas[5]-_ZMeas[4])))*180/3.14;
+  if ( Fit.GetNMeas() > 6 ){
+    _Theta1 = atan (((_YMeas[1]-_YMeas[0]) / (_ZMeas[1]-_ZMeas[0])))*180/3.14;  
+    _Theta2 = atan (((_YMeas[3]-_YMeas[2]) / (_ZMeas[3]-_ZMeas[2])))*180/3.14;
+    _Theta3 = atan (((_YMeas[5]-_YMeas[4]) / (_ZMeas[5]-_ZMeas[4])))*180/3.14;
 
-  _Delta1 = _Theta2 - _Theta1 ;
-  _Delta2 = _Theta3 - _Theta2 ;
-
-
+    _Delta1 = _Theta2 - _Theta1 ;
+    _Delta2 = _Theta3 - _Theta2 ;
+  }
+  else {
+    _Theta1 = 0;
+    _Theta2 = 0;
+    _Theta3 = 0;
+    _Delta1 = 0;
+    _Delta2 = 0;
+  }
 
   ////
 

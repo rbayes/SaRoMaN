@@ -116,8 +116,6 @@ void MindEventAction::ProcessHits(G4HCofThisEvent* HCE)
   MindBarHitsCollection* THC =
     (MindBarHitsCollection*)(HCE->GetHC(collection_id));
 
-  // std::cout<<(THC->entries())<<std::endl;
-
   for (G4int i=0; i<(THC->entries()); i++) {
   
     bhep::hit* bhit = new bhep::hit("tracking");
