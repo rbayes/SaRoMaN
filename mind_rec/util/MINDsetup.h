@@ -100,7 +100,7 @@ protected:
     
   double B_int;
   EVector BField;
-  double fieldScale;
+  double _fieldScale;
   MINDfieldMapReader BFieldMap;
    
   //-------------------------------------------------------------//

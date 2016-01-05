@@ -18,6 +18,7 @@ import math
 class field_map_generator:
 
 	def __init__(self, Bmag, height, width, npanels):
+		#Assume Bmag in tesla, height, width in meters and npanels as a number.
 
 		#Setup all the required units. Only stepSize can/should be changed.
 		self.mm = 1
@@ -25,14 +26,14 @@ class field_map_generator:
 		self.meter = 1000*self.mm
 		self.meter2 = self.meter*self.meter
 		self.nanosecond = 1
-		self.second = self.nanosecond * 1.e+9 * self.nanosecond
+		self.second = self.nanosecond * 1.e+9
 		self.megaelectronvolt = 1
 		self.eplus = 1
 		self.megavolt = self.megaelectronvolt/self.eplus
 		self.volt = 1.e-6 * self.megavolt
 		self.tesla = self.volt * self.second / self.meter2
 
-		self.Bx = Bmag#*self.tesla
+		self.Bx = Bmag
 		self.hmax = height #* self.cm
 		self.wmax = width #* self.cm
 		self.seg = npanels

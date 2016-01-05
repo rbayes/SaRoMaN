@@ -50,8 +50,8 @@ GENERATION generator S SINGLE_PARTICLE
 GENERATION particle_name S %(part)s
 
 ### Particle kinetic energy will be sample between these two values (in GeV)
-GENERATION energy_min    D 0.400
-GENERATION energy_max    D 0.500
+GENERATION energy_min    D 0.100
+GENERATION energy_max    D 1.0
 
 '''% dict(dictionary, **vars(self))
 		elif(self.GenerationMode == 'GENIE'):
@@ -67,6 +67,8 @@ JOB output_dst    S %(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(intt
 JOB number_events I %(Nevts)s
 
 JOB random_seed I 13243%(seed)s
+
+JOB ref_phys_list S QGSP_BERT_EMV
 
 ### GEOMETRY configuration parameters #####################
 

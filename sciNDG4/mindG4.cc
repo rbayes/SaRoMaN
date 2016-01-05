@@ -80,7 +80,10 @@ int main(int argc, char** argv)
   runMgr->SetUserInitialization(new MindDetectorConstruction);
   // runMgr->SetUserInitialization(new MindQGSP_BERT);//QGSP_BERT);
   G4PhysListFactory factory;
-  G4VModularPhysicsList* physlist = factory.GetReferencePhysList("QGSP_BERT_EMV");
+  G4VModularPhysicsList* physlist = 
+    factory.GetReferencePhysList(
+    MindConfigService::Instance().Job().GetSParam("ref_phys_list"));
+  //G4VModularPhysicsList* physlist = factory.GetReferencePhysList("QGSP_BERT_EMV");
   runMgr->SetUserInitialization(physlist);
   runMgr->SetUserAction(new MindPrimaryGeneration);
   

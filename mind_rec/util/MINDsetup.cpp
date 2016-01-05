@@ -280,75 +280,30 @@ void MINDsetup::addProperties(){
   _msetup.message("+++ addProperties function +++",bhep::VERBOSE);
 
   //-------------------- magnetic field ------------------//
-    
-  BField = EVector(3,0);
-  BField[1] = B_int;
 
   _zaxis = EVector(3,0);
   _zaxis[2]=1;
-  /*
-  // _gsetup.set_volume_property("mother","BField",BField);
-  const dict::Key vol_name = "Detector";
-  const dict::Key vert_name = "VertDetector";
-  //  _msetup.message("+++B Field added to MOTHER:",BField,bhep::VERBOSE);
-  // step = 1*cm;
-  if(OctGeom==3)
-    _gsetup.set_volume_property_to_sons("mother","BField",BField);
-  else { 
-    _gsetup.set_volume_property_to_sons(vol_name,RP::BFieldMap,BFieldMap);
-    if(VERT_z > 0.0)
-      _gsetup.set_volume_property_to_sons(vert_name,"BField",BField);
-  }
-  // _gsetup.set_volume_property_to_sons("mother","de_dx",de_dx);
 
-  //Instead of fixed de_dx, the energy deposition ditribution map 
-   
-  _de_dx_map = new DeDxMap(de_dx_min*MeV/mm);
-  _de_dx_map_scint = new DeDxMap(de_dx_scint*MeV/mm);
-  _gsetup.set_volume_property_to_sons(vol_name,RP::de_dx_map,*_de_dx_map);
-  if(VERT_z > 0.0)
-    _gsetup.set_volume_property_to_sons(vert_name,RP::de_dx_map,*_de_dx_map_scint);
-  _gsetup.set_volume_property_to_sons("mother",RP::SurfNormal,_zaxis);
-  // _gsetup.set_volume_property_to_sons("mother",RP::StepSize,step);
-  // _gsetup.set_volume_property_to_sons(vol_name,"BField",BField);
-//   _gsetup.set_volume_property_to_sons(vol_name,"de_dx",de_dx);
-  // _gsetup.set_volume_property_to_sons(vol_name,RP::SurfNormal,_zaxis);
-
-  // const dict::Key vol_name = "Detector";
-  // _gsetup.set_volume_property("mother","X0",X0AIR);
-  // _gsetup.set_volume_property(vol_name,"X0",X0AIR);
-    
-  // const dict::Key vol_name = "Detector";
-  // _gsetup.set_volume_property(vol_name,"BField",BField);
-  // _gsetup.set_volume_property(vol_name,"BFieldMap",BFieldMap);
-  _msetup.message("+++B Field added to MIND:","BFieldMap",bhep::VERBOSE);
-  
-  if(StepSize){
-    _gsetup.set_volume_property(vol_name,"StepSize",StepSize);
-    if(VERT_z > 0.0)
-      _gsetup.set_volume_property(vert_name,"StepSize",StepSize);
-  }
-  _gsetup.set_volume_property(vol_name,"X0",X0Eff);
-  if(VERT_z > 0.0)
-    _gsetup.set_volume_property(vert_name,"X0",X0Sc);
-//   _msetup.message("+++X0 added to MIND:",X0,bhep::VERBOSE);
-
-//   // _gsetup.set_volume_property(vol_name,"de_dx",de_dx);
-//   _msetup.message("+++de/dx added to MIND:",de_dx,bhep::VERBOSE);
-*/
-   
-  // dict::Key vol_name;
   string current_string;
   dict::Key vol_name;
  
-  for(map<string, std::vector<double> >::const_iterator it = _gdml_solid_map.begin();
-      it != _gdml_solid_map.end(); ++it)
+  /*
+
+  Fill the detector subvolumes with the correct properties by iterating over each part, finding
+  the ammount of iron and scintilator and the total size of the module.
+  */
+  for(map<string, std::vector<double> >::const_iterator it = _gdml_pos_map.begin();
+      it != _gdml_pos_map.end(); ++it)
     {
+
+      //double fieldScale = _fieldScale;
+      double fieldScale = 1;
       string name = it->first;
       int numScint=0;
       int numFe=0;
       vol_name = it->first;
       
+      // From the name, count the number of S and F.
       for(unsigned int len= 0; len < name.length(); len++)
 	{
 	  current_string = name.at(len);
@@ -360,19 +315,45 @@ void MINDsetup::addProperties(){
 	    {
 	      numFe++;
 	    }
+	  else if("M" == current_string)
+	    {
+	      if(numFe ==3)
+		{
+		  numFe *= 6;
+		  numScint *= 6;
+		}
+	      else
+		{
+		  numFe *=3;
+		  numScint *=3;
+		}
+	      break;
+	    }
 	  else
 	    {
 	      break;
 	    }
 	}
+
+      // Find the solid reference for the module
+      std::map<string,std::vector<double> >::iterator it_int;
       
-      if (numScint != 0 || numFe != 0)
+      if(isdigit(it->first.at(it->first.length() -1)))
+	{
+	  //If the string ends on a digit, remove it before using as a key
+	  it_int =_gdml_solid_map.find(it->first.substr(0,it->first.length()-1));
+	} 
+      else
+	{
+	  it_int =_gdml_solid_map.find(it->first);
+	}
+  
+	if ((numScint != 0 || numFe != 0) & it_int!= _gdml_solid_map.end())
 	{
 	  // Calculate the appropriate properties and add them to the boxes
 	  //cout<<"YES"<<endl;
 	  
 	  // Should be done in readParam
-
 	  double wSc = SCINT_z / (SCINT_z + AIR_z*(numScint+1)*rel_denAS);
 	  double X01 = (X0Sc*X0AIR) / (wSc*(X0AIR-X0Sc) + X0Sc);
 	  double wFe = IRON_z/(IRON_z + ((SCINT_z+AIR_z)*numScint+AIR_z)*rel_denSI*(wSc*(1-rel_denAS)+rel_denAS));
@@ -382,12 +363,17 @@ void MINDsetup::addProperties(){
 	  double X0Eff = 1./(wFe/X0Fe + wSc/X01);
 
 	  //double length = numScint * AIR_z +numScint * SCINT_z + numFe * IRON_z;
-	  double length = it->second[2];
+	  double length = it_int->second[2]; // Simply taken from the solid reference.
 
 	  double de_dx = (numScint * SCINT_z * de_dx_scint + numFe * IRON_z * de_dx_fe)/length;
 
-	  fieldScale *= IRON_z > 0 ? IRON_z/length : 1.0;
+	  std::cout<<"modulelength "<<length<<" numFe "<<numFe<<" numScint "<<numScint<<std::endl;
+	  std::cout<<"iron_z "<<IRON_z<<" scint_z "<<SCINT_z<<std::endl;
+
+	  fieldScale *= numFe > 0 ? IRON_z*numFe/length : 0;
+	  //fieldScale *= IRON_z *numFe;
 	  
+	  std::cout<<"Local Field Scaling is "<<fieldScale<<std::endl;
 	  BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
 
 	  _de_dx_map = new DeDxMap(de_dx*MeV/mm);
@@ -395,7 +381,8 @@ void MINDsetup::addProperties(){
 
 	  _gsetup.set_volume_property(vol_name,RP::de_dx_map,*_de_dx_map);
 	  _gsetup.set_volume_property(vol_name,"X0",X0Eff);
-	  _gsetup.set_volume_property_to_sons("mother",RP::BFieldMap,BFieldMap);
+	  //_gsetup.set_volume_property_to_sons("mother",RP::BFieldMap,BFieldMap);
+	  _gsetup.set_volume_property(vol_name,RP::BFieldMap,BFieldMap);
 
 	}
     }  
@@ -473,11 +460,11 @@ void MINDsetup::readParam(){
     //                       |  MAGNETIC FIELD |                    //
     // -------------------------------------------------------------//
     
-    fieldScale = 1.0;
-    if (_pstore.find_dstore("fieldScale") ) {
-      fieldScale = _pstore.fetch_dstore("fieldScale");
-      std::cout<<"Field Scaling is "<<fieldScale<<std::endl;
-    }
+    _fieldScale = 1.0;
+    //if (_pstore.find_dstore("fieldScale") ) {
+      //_fieldScale = _pstore.fetch_dstore("fieldScale");
+      //std::cout<<"Field Scaling is "<<_fieldScale<<std::endl;
+    //}
 
     Bmap = _pstore.fetch_sstore("mag_field_map");
 	  
@@ -551,6 +538,10 @@ void MINDsetup::readParam(){
 
   //read gdml_parsed file
   _gdml_parsed_path = _pstore.fetch_sstore("xml_parsed");
+
+
+  // Fill _gdml_solid_map with all the solid references and
+  // Fill  _gdml_pos_map with all the actual parts with their positions.
 
   std::ifstream file;
   file.open (_gdml_parsed_path.c_str());
