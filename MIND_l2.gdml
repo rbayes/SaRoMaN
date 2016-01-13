@@ -167,7 +167,7 @@
 
   <structure>
     <volume name="FePlate">
-        <materialref ref="G4_AIR0x19316e30"/>
+        <materialref ref="G4_Fe0x1931f240"/>
         <solidref ref="FePlate_solid"/>
 	<auxiliary auxtype="EMField" auxvalue="MagMap"/>
     </volume>
@@ -177,7 +177,7 @@
 	<auxiliary auxtype="EMField" auxvalue="NULL"/>
     </volume>
     <volume name="PASSIVE">
-      <materialref ref="G4_Fe0x1931f240"/>
+      <materialref ref="G4_AIR0x19316e30"/>
       <solidref ref="PASSIVE_solid"/>
       <physvol name="Brace0_physi">
         <volumeref ref="BRACE"/>
