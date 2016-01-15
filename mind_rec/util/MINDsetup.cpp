@@ -129,25 +129,7 @@ void MINDsetup::createGeom(){
   // Volume* det = new Box(pos,xaxis,yaxis,MIND_x/2,MIND_y/2,MIND_z/2);
     
   dict::Key vol_name;
-  //Volume* det;
-  //Volume* vdet;
-  /*
-  if(OctGeom==1)
-    det = new MINDplate(pos,xaxis,yaxis,MIND_x/2,MIND_y/2,MIND_z/2,
-				EAR_width, EAR_height);
-  else if(OctGeom==2)
-    det = new EMINDplate(pos,xaxis,yaxis,
-			    MIND_x/2,MIND_y/2,MIND_z/2,
-			    EAR_width,EAR_height);
-  else if(OctGeom==3)
-    det = new Box(pos, zaxis, xaxis, MOTHER_z/2., MOTHER_x/2, MOTHER_y/2);
-  else{
-    det = new Tube(pos,zaxis,MIND_z/2,MIND_x/2);
-    if(VERT_z > 0)
-      vdet = new Box(vpos, zaxis, xaxis, VERT_z/2., VERT_x/2., VERT_y/2.);
-  }
-  _msetup.message("MIND volume generated",bhep::VERBOSE);
-  */
+
   for(map<string, std::vector<double> >::const_iterator it = _gdml_pos_map.begin();
       it != _gdml_pos_map.end(); ++it)
     {
@@ -170,9 +152,20 @@ void MINDsetup::createGeom(){
       if(it_int!= _gdml_solid_map.end())
 	{
 	  //cout << it_int->first<<endl;
-	  det = new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
-			it_int->second[0]/2, it_int->second[1]/2);
-	  _gsetup.add_volume("mother",vol_name,det);
+	  //det = new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
+	  //		it_int->second[0]/2, it_int->second[1]/2);
+
+	  detVector.push_back(new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
+	  		      it_int->second[0]/2, it_int->second[1]/2));
+
+	  //_gsetup.add_volume("mother",vol_name,det);
+	  _gsetup.add_volume("mother",vol_name,detVector.back());
+
+	  vector<double> tempVector;
+	  tempVector.push_back(pos[2]);
+	  tempVector.push_back(it_int->second[2]/2);
+
+	  moduleDataMap[vol_name] = tempVector;
 	}
       //  std::cout << it->first << " " << it->second[0] << " " << it->second[1] << " "  <<it->second[2]<< "\n";
     }

@@ -91,8 +91,10 @@ protected:
     
   //seed for fit
   void ComputeSeed(const Trajectory& traj,State& seed, int firsthit=0);
-  void ComputeMomFromParabola(const Trajectory& traj, int nplanes, int firsthit, EVector& V);
+  //void ComputeMomFromParabola(const Trajectory& traj, int nplanes, int firsthit, EVector& V);
   void ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsthit, EVector& V);
+
+  double RangeMomentum(double length,double nodeZ);
 
   //seed error
   void ApplyCovarianceFactor(double factor, EMatrix& C0);

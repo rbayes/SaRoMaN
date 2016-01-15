@@ -48,8 +48,14 @@ public:
   EVector getBField(EVector pos){return BFieldMap.vector(pos);}
   double getPieceWidth() {return _pieceWidth;}
 
+  std::map<dict::Key,vector<double> > getModuleDataMap() {return moduleDataMap;}
+
+  // vol_name, module position z, module size z, wFe
+  std::map<dict::Key,vector<double> > moduleDataMap;
+
   Volume* mother;
   Volume* det;
+  vector<Volume*> detVector;
   Volume* vdet;
   Volume* Fe_slab;
 

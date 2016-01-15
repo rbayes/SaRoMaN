@@ -882,128 +882,6 @@ double fitf2(Double_t *x,Double_t *par) {
 }
 
 //*****************************************************************************
-void fitter::ComputeMomFromParabola(const Trajectory& traj, int nplanes, int firsthit, EVector& V){
-  //*****************************************************************************
-
-  //Some catchers for pointless returns.
-  int fitcatch;
-  //
-  int nfit, sign;
-  int fitRange[3];
-  const int fitpoints = nplanes - firsthit;
-  
-  double xpos[fitpoints], ypos[fitpoints], zpos[fitpoints];
-  double upos[fitpoints], vpos[fitpoints];
-
-  int pos = 0;
-
-  EVector currentpos = EVector(3,0);
-  EVector currentB   = EVector(3,0);
-  EVector z = EVector(3,0);
-  z[2] = 1;
-  double Bmean=0;
-  for( int ipoint=firsthit; ipoint < nplanes; ipoint ++ ){
-    xpos[pos] = traj.node(ipoint).measurement().position()[0];
-    ypos[pos] = traj.node(ipoint).measurement().position()[1];
-    zpos[pos] = traj.node(ipoint).measurement().position()[2]
-      - traj.node(firsthit).measurement().position()[2];
-    currentpos[0] = traj.node(ipoint).measurement().position()[0];
-    currentpos[1] = traj.node(ipoint).measurement().position()[1];
-    currentpos[2] = 0.;
-    currentB = _geom.getBField(currentpos);
-    upos[pos] = xpos[pos] > 0 ? asin(ypos[pos]/currentpos.norm())
-      : -asin(ypos[pos]/currentpos.norm());
-    vpos[pos] = dot(currentpos,crossprod(z,currentB))/currentB.norm();
-    Bmean += currentB.norm();
-    ++pos;
-  }
-  Bmean /= pos;
-  Bmean /= tesla;
-  
-  if (fitpoints <= 15) { nfit = 1; fitRange[0] = fitpoints;}
-  else if (fitpoints <= 40) { 
-    nfit = 2;
-    fitRange[0] = 15; fitRange[1] = (int)(0.7*fitpoints);
-  }
-  else if (fitpoints > 40) { 
-    nfit = 3;
-    fitRange[0] = 15; fitRange[1] = (int)(fitpoints/2); fitRange[2] = (int)(0.7*fitpoints);
-  }
-  for (int ifit = 0;ifit < nfit;ifit++) {
-    TGraph *trajFitXZ = new TGraph(fitRange[ifit],zpos, xpos);
-    TGraph *trajFitYZ = new TGraph(fitRange[ifit],zpos, ypos);
-    TGraph *trajFitUZ = new TGraph(fitRange[ifit],zpos, upos);
-    TGraph *trajFitVZ = new TGraph(fitRange[ifit],zpos, vpos);
-    
-    TF1 *func = new TF1("fit",fitf2,-3,3,3);
-    func->SetParameters(0.,0.,0.001,0.0001,0.0001);
-    func->SetParNames("a", "b", "c", "d", "e");
-    
-    TF1 *func2 = new TF1("fit2",fitf2,-3,3,3);
-    func2->SetParameters(0.,0.,0.001,0.0001,0.0001);
-    func2->SetParNames("f", "g", "h", "i", "j");
-
-    TF1 *func3 = new TF1("fit3",fitf2,-3,3,3);
-    func->SetParameters(0.,0.,0.001,0.0001,0.0001);
-    func->SetParNames("a1", "b1", "c1", "d1", "e1");
-    
-    TF1 *func4 = new TF1("fit4",fitf2,-3,3,3);
-    func2->SetParameters(0.,0.,0.001,0.0001,0.0001);
-    func2->SetParNames("f1", "g1", "h1", "i1", "j1");
-
-    fitcatch = trajFitXZ->Fit("fit", "QN");
-    fitcatch = trajFitYZ->Fit("fit2", "QN");
-    fitcatch = trajFitUZ->Fit("fit3", "QN");
-    fitcatch = trajFitVZ->Fit("fit4", "QN");
-    
-    double b = func->GetParameter(1);
-    double c = func->GetParameter(2);
-    double g = func2->GetParameter(1);
-    /*double f = func2->GetParameter(0);
-      double a = func->GetParameter(0);
-      double h = func2->GetParameter(2);  
-      double a1 = func3->GetParameter(0);
-      double b1 = func3->GetParameter(1);
-      double c1 = func3->GetParameter(2);  
-      double f1 = func4->GetParameter(0);*////
-    double g1 = func4->GetParameter(1);
-    double h1 = func4->GetParameter(2);  
-    
-    if (ifit == 0) {
-
-      V[4] = g;   //func2->GetParameter(1);
-      V[3] = b;
-
-      if (h1!=0) {
-	V[5] = 1./(-0.3*Bmean*pow((1+g1*g1),3./2.)/
-		   (2*h1)*0.01);
-	V[5] /= GeV;
-	sign = (int)( V[5]/fabs( V[5] ));
-      } else V[5] = 0;
-    } else {
-      if ((int)(-c/fabs(c)) == sign) {
-	V[4] = g;
-	V[3] = b;
-	V[5] = 1/(-0.3*Bmean*pow((1+g1*g1),3./2.)/(2*h1)*0.01);
-	V[5] /= GeV;
-      } else break;
-    }
-    
-    delete trajFitXZ;
-    delete trajFitYZ;
-    delete trajFitUZ;
-    delete trajFitVZ;
-  
-    delete func;
-    delete func2;
-    delete func3;
-    delete func4;
-  }
-  
-  //std::cout<<"Momentum guess from polynomial fit: p/q = "<<1./V[5]<<std::endl;
-}
-
-//*****************************************************************************
 void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsthit, EVector& V){
   //*****************************************************************************
 
@@ -1121,8 +999,14 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   Bmean /=Npts;
   
   double wFe = _geom.get_Fe_prop();
-  double p = (wFe*(0.017143*GeV/cm * pathlength - 1.73144*GeV)
-	      + (1- wFe)*(0.00277013*GeV/cm * pathlength + 1.095511*GeV));
+  //double p = (wFe*(0.017143*GeV/cm * pathlength - 1.73144*GeV)
+  //      + (1- wFe)*(0.00277013*GeV/cm * pathlength + 1.095511*GeV));
+
+  std::cout<<"pathLength: "<<pathlength<<std::endl;
+  double p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
+
+  std::cout<<"P value in ComputeMomFromRange: "<<p<<std::endl;
+
   double meansign = 1;
   if(sumDR != 0) {
     //std::cout<<"sumDR = "<<sumDR<<std::endl;
@@ -1140,7 +1024,10 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   V[3] = dr.at(pi3)[0]/dr.at(pi3)[2];
   V[4] = dr.at(pi4)[1]/dr.at(pi4)[2];
   if(isContained && p != 0)
-    V[5] = meansign/fabs(p);
+    {
+      V[5] = meansign/fabs(p);
+      std::cout<<"fitter::ComputeMomFromRange is contained, p="<<p<<std::endl;
+    }
   else{
     // meansign = 0;
     // Consider a fit to a subset of points at the begining of the track
@@ -1157,6 +1044,8 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
     //double wt = TMath::Gaus(fabs(pt), p, 0.25*p, true);
     // std::cout<<pt<<std::endl;
     // meansign += wt * pt/fabs(pt);
+
+    std::cout<<"fitter::ComputeMomFromRange is not contained, p="<<p<<std::endl;
     
     delete localcurveUW;      
     delete func;
@@ -1182,6 +1071,77 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   _initialqP = V[5];
   // _m.message("_initialqP ="<<_initialqP,bhep::VERBOSE);
   
+}
+
+/***************************************************************************************/
+double fitter::RangeMomentum(double length,double nodeZ){
+  /***************************************************************************************/
+  // Get momentum depending on length. Did it go through each submodule? Get specific wFe
+  // for each submodule.
+  std::map<dict::Key,vector<double> > moduleDataMap = _geom.getModuleDataMap();
+  double p = 0;
+
+  for (std::map<dict::Key,vector<double> >::iterator it=moduleDataMap.begin();
+       it!=moduleDataMap.end(); ++it)
+    {
+      double module_pos = it->second[0];
+      double module_half_size = it->second[1];
+      double wFe = it->second[2];
+
+      //std::cout<<"Fitter "<<module_pos<<" "<<module_half_size<<" "
+      //     <<wFe<<" "<<nodeZ<<" "<<length<<std::endl;
+
+      std::cout<<"Fitter "<<nodeZ<<" "<<length<<" "<<wFe<<" "<<module_pos<<std::endl;
+
+      //Sanity checking movement forward 
+
+      if(!((module_pos+module_half_size)>nodeZ))
+	{
+	  continue;
+	}
+      //Sanity checking not outside range forward 
+      if(!((module_pos-module_half_size)<(nodeZ+length)))
+	{
+	  continue;
+	  std::cout<<"Fitter not in range"<<std::endl;
+	  
+	}
+
+      // Started in module
+      if(nodeZ < (module_pos + module_half_size) && nodeZ > (module_pos - module_half_size))
+	{
+	  //Did it go through?
+	  if(length > (module_half_size + module_pos - nodeZ))
+	    {
+	      p+=(module_half_size + module_pos - nodeZ)*wFe;
+	      std::cout<<"Fitter start through"<<std::endl;
+	    }
+	  else
+	    {
+	      p+=length*wFe;
+	      std::cout<<"Fitter start stop"<<std::endl;
+	    }
+	}
+      // Through the whole module
+      else if((nodeZ + length) > (module_pos + module_half_size))
+	{
+	   p += 2*module_half_size * wFe;
+	   std::cout<<"Fitter through"<<std::endl;
+	}
+      // Stop in the module
+      else if((nodeZ + length) < (module_pos + module_half_size))
+	{
+	  p+=(module_half_size + module_pos - nodeZ -length)*wFe;
+	  std::cout<<"Fitter stop"<<std::endl;
+	}	 
+    }
+
+  //std::cout<<"In Map p "<<p<<std::endl;
+
+  p= p/1000; //Get correct units.
+
+  return p;
+
 }
 
 //*****************************************************************************
