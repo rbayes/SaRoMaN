@@ -1093,12 +1093,6 @@ double fitter::RangeMomentum(double length,double nodeZ){
 
       std::cout<<"Fitter "<<nodeZ<<" "<<length<<" "<<wFe<<" "<<module_pos<<std::endl;
 
-      //Sanity checking movement forward 
-
-      if(!((module_pos+module_half_size)>nodeZ))
-	{
-	  continue;
-	}
       //Sanity checking not outside range forward 
       if(!((module_pos-module_half_size)<(nodeZ+length)))
 	{
@@ -1107,31 +1101,19 @@ double fitter::RangeMomentum(double length,double nodeZ){
 	  
 	}
 
-      // Started in module
-      if(nodeZ < (module_pos + module_half_size) && nodeZ > (module_pos - module_half_size))
-	{
-	  //Did it go through?
-	  if(length > (module_half_size + module_pos - nodeZ))
-	    {
-	      p+=(module_half_size + module_pos - nodeZ)*wFe;
-	      std::cout<<"Fitter start through"<<std::endl;
-	    }
-	  else
-	    {
-	      p+=length*wFe;
-	      std::cout<<"Fitter start stop"<<std::endl;
-	    }
-	}
       // Through the whole module
       else if((nodeZ + length) > (module_pos + module_half_size))
 	{
 	   p += 2*module_half_size * wFe;
+	   std::cout<<"p+="<<2*module_half_size * wFe<<std::endl;
 	   std::cout<<"Fitter through"<<std::endl;
 	}
       // Stop in the module
       else if((nodeZ + length) < (module_pos + module_half_size))
 	{
-	  p+=(module_half_size + module_pos - nodeZ -length)*wFe;
+	  p+=((length + nodeZ) - (module_pos - module_half_size))*wFe;
+	  //p+=(module_half_size + module_pos -(length+nodeZ))*wFe;
+	  std::cout<<"p+="<<((length + nodeZ) - (module_pos - module_half_size))*wFe<<std::endl;
 	  std::cout<<"Fitter stop"<<std::endl;
 	}	 
     }
