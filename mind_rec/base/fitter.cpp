@@ -1138,8 +1138,6 @@ double fitter::RangeMomentum(double length,double nodeZ){
 
   //std::cout<<"In Map p "<<p<<std::endl;
 
-  p= p/1000; //Get correct units.
-
   return p;
 
 }

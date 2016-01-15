@@ -360,6 +360,8 @@ void MINDsetup::addProperties(){
 
 	  double de_dx = (numScint * SCINT_z * de_dx_scint + numFe * IRON_z * de_dx_fe)/length;
 
+	  moduleDataMap[vol_name].push_back(de_dx);
+
 	  std::cout<<"modulelength "<<length<<" numFe "<<numFe<<" numScint "<<numScint<<std::endl;
 	  std::cout<<"iron_z "<<IRON_z<<" scint_z "<<SCINT_z<<std::endl;
 
