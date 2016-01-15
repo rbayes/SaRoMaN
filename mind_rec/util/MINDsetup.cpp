@@ -165,7 +165,7 @@ void MINDsetup::createGeom(){
 	  tempVector.push_back(pos[2]);
 	  tempVector.push_back(it_int->second[2]/2);
 
-	  moduleDataMap[vol_name] = tempVector;
+	  _moduleDataMap[vol_name] = tempVector;
 	}
       //  std::cout << it->first << " " << it->second[0] << " " << it->second[1] << " "  <<it->second[2]<< "\n";
     }
@@ -360,7 +360,7 @@ void MINDsetup::addProperties(){
 
 	  double de_dx = (numScint * SCINT_z * de_dx_scint + numFe * IRON_z * de_dx_fe)/length;
 
-	  moduleDataMap[vol_name].push_back(de_dx);
+	  _moduleDataMap[vol_name].push_back(de_dx);
 
 	  std::cout<<"modulelength "<<length<<" numFe "<<numFe<<" numScint "<<numScint<<std::endl;
 	  std::cout<<"iron_z "<<IRON_z<<" scint_z "<<SCINT_z<<std::endl;
@@ -369,10 +369,16 @@ void MINDsetup::addProperties(){
 	  //fieldScale *= IRON_z *numFe;
 	  
 	  std::cout<<"Local Field Scaling is "<<fieldScale<<std::endl;
-	  BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
+	  //BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
+	  BFieldMap = MINDfieldMapReader(Bmap,1);
+	  // Let the scale always be one and fill the proper one in moduleDataMap, the scaling is done in 
+	  // getBfield below.
+
+	  double copy = fieldScale;
+	  _moduleDataMap[vol_name].push_back(copy);
 
 	  _de_dx_map = new DeDxMap(de_dx*MeV/mm);
-	  _de_dx_map_scint = new DeDxMap(de_dx_scint*MeV/mm);
+	  //_de_dx_map_scint = new DeDxMap(de_dx_scint*MeV/mm);
 
 	  _gsetup.set_volume_property(vol_name,RP::de_dx_map,*_de_dx_map);
 	  _gsetup.set_volume_property(vol_name,"X0",X0Eff);
@@ -382,6 +388,40 @@ void MINDsetup::addProperties(){
 	}
     }  
 }
+
+
+EVector MINDsetup::getBField(EVector pos){
+  // Has become more advance now that we have subdetectors, find the fieldScale in moduelDataMap 
+  //and return the value properly scaled.
+
+
+  EVector BfieldVector = BFieldMap.vector(pos);
+  
+  double properScale = 0;
+  double zCoord = pos[2];
+
+  for (std::map<dict::Key,vector<double> >::iterator it=_moduleDataMap.begin();
+       it!=_moduleDataMap.end(); ++it)
+    {
+      // vol_name, module position z, module size z, wFe, magfieldScale
+      double module_pos = it->second[0];
+      double module_half_size = it->second[1];
+      double fieldScale = it->second[3];
+      
+      if(zCoord>=(module_pos - module_half_size) && zCoord<=(module_pos + module_half_size))
+	{
+	  properScale = fieldScale;
+	  break;
+	}
+
+    }
+
+
+
+  return properScale*BfieldVector;
+}
+
+
 
 void MINDsetup::readParam(){
 

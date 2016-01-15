@@ -45,13 +45,14 @@ public:
   double get_Fe_prop(){return _wFe;}
   double& getDeDx(){return de_dx;}
   void setDeDx(double d){de_dx = d;}
-  EVector getBField(EVector pos){return BFieldMap.vector(pos);}
+  //EVector getBField(EVector pos){return BFieldMap.vector(pos);}
+  EVector getBField(EVector pos);
   double getPieceWidth() {return _pieceWidth;}
 
-  std::map<dict::Key,vector<double> > getModuleDataMap() {return moduleDataMap;}
+  std::map<dict::Key,vector<double> > getModuleDataMap() {return _moduleDataMap;}
 
-  // vol_name, module position z, module size z, wFe
-  std::map<dict::Key,vector<double> > moduleDataMap;
+  // vol_name, module position z, module size z, wFe, MagFieldScale
+  std::map<dict::Key,vector<double> > _moduleDataMap;
 
   Volume* mother;
   Volume* det;
