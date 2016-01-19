@@ -108,7 +108,9 @@ protected:
   double B_int;
   EVector BField;
   double _fieldScale;
-  MINDfieldMapReader BFieldMap;
+  //MINDfieldMapReader BFieldMap;
+  vector<MINDfieldMapReader*> BFieldMapVec;
+  MINDfieldMapReader _generalBFieldMap;
    
   //-------------------------------------------------------------//
   
@@ -122,8 +124,9 @@ protected:
   double de_dx_scint;
   double de_dx_fe;
   //double de_dx_min;
+  //vector<DeDxMap*> de_dx_map_vec;
   DeDxMap* _de_dx_map;
-  DeDxMap* _de_dx_map_scint;
+  //DeDxMap* _de_dx_map_scint;
   std::string Bmap;
   
   EVector _zaxis;

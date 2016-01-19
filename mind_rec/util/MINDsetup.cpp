@@ -279,6 +279,8 @@ void MINDsetup::addProperties(){
 
   string current_string;
   dict::Key vol_name;
+
+  _generalBFieldMap = MINDfieldMapReader(Bmap,_fieldScale);
  
   /*
 
@@ -289,8 +291,8 @@ void MINDsetup::addProperties(){
       it != _gdml_pos_map.end(); ++it)
     {
 
-      //double fieldScale = _fieldScale;
-      double fieldScale = 1;
+      double fieldScale = _fieldScale;
+      //double fieldScale = 1;
       string name = it->first;
       int numScint=0;
       int numFe=0;
@@ -370,7 +372,8 @@ void MINDsetup::addProperties(){
 	  
 	  std::cout<<"Local Field Scaling is "<<fieldScale<<std::endl;
 	  //BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
-	  BFieldMap = MINDfieldMapReader(Bmap,1);
+	  BFieldMapVec.push_back(new MINDfieldMapReader(Bmap,fieldScale));
+	  //BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
 	  // Let the scale always be one and fill the proper one in moduleDataMap, the scaling is done in 
 	  // getBfield below.
 
@@ -378,12 +381,15 @@ void MINDsetup::addProperties(){
 	  _moduleDataMap[vol_name].push_back(copy);
 
 	  _de_dx_map = new DeDxMap(de_dx*MeV/mm);
+	  //de_dx_map_vec.push_back(new DeDxMap(de_dx*MeV/mm));
 	  //_de_dx_map_scint = new DeDxMap(de_dx_scint*MeV/mm);
 
 	  _gsetup.set_volume_property(vol_name,RP::de_dx_map,*_de_dx_map);
+	  // _gsetup.set_volume_property(vol_name,RP::de_dx_map,*de_dx_map_vec.back());
 	  _gsetup.set_volume_property(vol_name,"X0",X0Eff);
 	  //_gsetup.set_volume_property_to_sons("mother",RP::BFieldMap,BFieldMap);
-	  _gsetup.set_volume_property(vol_name,RP::BFieldMap,BFieldMap);
+	  //_gsetup.set_volume_property(vol_name,RP::BFieldMap,BFieldMap);
+	  _gsetup.set_volume_property(vol_name,RP::BFieldMap,*BFieldMapVec.back());
 
 	}
     }  
@@ -394,8 +400,9 @@ EVector MINDsetup::getBField(EVector pos){
   // Has become more advance now that we have subdetectors, find the fieldScale in moduelDataMap 
   //and return the value properly scaled.
 
+  // Return the value from a general fieldmap scaled correctly for the subdetector.
 
-  EVector BfieldVector = BFieldMap.vector(pos);
+  EVector BfieldVector = _generalBFieldMap.vector(pos);
   
   double properScale = 0;
   double zCoord = pos[2];
@@ -497,7 +504,7 @@ void MINDsetup::readParam(){
     
     _fieldScale = 1.0;
     //if (_pstore.find_dstore("fieldScale") ) {
-      //_fieldScale = _pstore.fetch_dstore("fieldScale");
+    //_fieldScale = _pstore.fetch_dstore("fieldScale");
       //std::cout<<"Field Scaling is "<<_fieldScale<<std::endl;
     //}
 
