@@ -34,7 +34,7 @@ public:
   
   //-------------- main functions --------------//
   //void initialize(const bhep::gstore& pstore, bhep::prlevel vlevel, Setup& det, double wFe);
-  void Initialize(const bhep::gstore& pstore, bhep::prlevel vlevel, double wFe);
+  void Initialize(const bhep::gstore& pstore, bhep::prlevel vlevel, double wFe, MINDsetup* geom);
   bool Execute(const vector<cluster*>& hits,
 	       vector<Trajectory*>& vtrajs, vector<cluster*>& hads);
   void Finalize();
@@ -69,7 +69,8 @@ public:
   void set_int_type(const string name);
   //R
   double correctEdep(double edep, double X, double Y, double Z);
-  double RangeMomentum(double length);
+  //double RangeMomentum(double length);
+  double RangeMomentum(double length,double nodeZ);
   
 protected:
   

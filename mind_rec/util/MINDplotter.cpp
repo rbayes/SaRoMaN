@@ -331,7 +331,7 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
       ///range of q/p calculation ?
 
       _rangqP[0][i] = trajs[i]->quality("initialqP");
-      _rangqP[1][i] = Fit.get_classifier().RangeMomentum(trajs[i]->length());
+      //_rangqP[1][i] = Fit.get_classifier().RangeMomentum(trajs[i]->length());
       // _rangqP[1][i] = _rangqP[0][i] - _qP[0][i];
       // _rangqP[2][i] = _qP[1][i] - _rangqP[0][i];
       
