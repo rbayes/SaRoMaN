@@ -143,7 +143,7 @@ EVector Recpack::MINDfieldMapReader::compute_vector(const EVector& pos) const {
       double dBxdx = (Bx1 - Bx0)/(x2 - x1);
       double dBydx = (By1 - By0)/(x2 - x1);
       double dBxdy = (Bx2 - Bx0)/(y2 - y1);
-      double dBydy = (By2 - Bx0)/(y2 - y1);
+      double dBydy = (By2 - By0)/(y2 - y1);
       
       BField[0] = _fieldScale*(Bx0+dBxdx*(pos[0]-x1)+dBxdy*(pos[1]-y1));
       BField[1] = _fieldScale*(By0+dBydx*(pos[0]-x1)+dBydy*(pos[1]-y1));
