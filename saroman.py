@@ -71,8 +71,8 @@ class saroman:
         self.pid = -14
         
         #self.seed = 5000 * random.random()
-        self.seed = 100
-        self.Nevts = 5000
+        self.seed = 1000
+        self.Nevts = 1000
         self.inttype = 'CC'
         self.Bfield = 1.5 #Tesla
 
@@ -138,7 +138,7 @@ class saroman:
 
         #Setup for xml_parser.py
         self.xml_parser = xml_parser(self.xml_file_path,self.parsed_file_path)
-        self.useGDML = 1
+        self.useGDML = 0
         if self.parse_gdml:
             self.useGDML = 1
 
@@ -146,6 +146,11 @@ class saroman:
         self.ASeed = str(self.seed + 1000)
 
         #Config file variables not generalized
+        #Particle kinetic energy will be sample between these two values (in GeV)
+        self.part_eng_min = 1.200
+        self.part_eng_max = 1.200
+
+        
         self.config_digi_seed = 107311191
         self.config_digi_eng_res = 0.11 #(%%)
         self.config_digi_gaus_sigma = 1.0 #(cm)

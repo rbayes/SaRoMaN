@@ -64,7 +64,7 @@ void fitter::Initialize() {
     _clusters = new hit_clusterer( _store );
 
   ///initialize classifier
-  get_classifier().Initialize( _store, _level, _geom.get_Fe_prop() );
+  get_classifier().Initialize( _store, _level, _geom.get_Fe_prop(), &_geom);
 
   _m.message("+++ End of init function ++++",bhep::VERBOSE);
 }
@@ -226,6 +226,8 @@ bool fitter::Execute(bhep::particle& part,int evNo){
     rec_had_edep(0);
   // rec_had_energy();
   
+  std::cout<<"Final trajectory =" << _traj<<std::endl;
+  
   _m.message(" I am ******************fitter end",bhep::VERBOSE); 
   
   //return _fitted;
@@ -327,15 +329,17 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   for (nDIt = _traj.nodes().begin();nDIt!=_traj.nodes().end();nDIt++)
     if ( (*nDIt)->status("fitted") )
       _fitCheck++;
-  // cout<<"fitCheck="<<_fitCheck<<" for trajectory size "<<_traj.size()<<endl;
+  
+  //cout<<"fitCheck="<<_fitCheck<<" for trajectory size "<<_traj.size()<<endl;
   
   ///length of the traj
   if(_traj.status(RP::fitted) && _fitCheck > 0){
 	
     ok = man().matching_svc().compute_length(_traj, _length);///
-	  // std::cout<<"Length = "<<length<<std::endl;
+    //std::cout<<"_traj length = "<<_length<<std::endl;
   }
 
+  //std::cout<<"Final trajectory =" << _traj<<std::endl;
   // traj.set_status("fitted", ok);
 
   return ok; 
@@ -848,10 +852,10 @@ void fitter::ComputeSeed(const Trajectory& traj, State& seedState, int firsthit)
   
   // But use a larger covariance matrix
   // diagonal covariance matrix
-  C[0][0] = C[1][1] = 9.*cm*cm;
-  C[2][2] = EGeo::zero_cov()/2;
-  C[3][3] = C[4][4] = 1.;
-  C[5][5] = pow(v[5],2)*3;
+  C[0][0] = C[1][1] = 9.*cm*cm;  // Expected pos res x,y
+  C[2][2] = EGeo::zero_cov()/2;  // Expected pos res z
+  C[3][3] = C[4][4] = 1.; // Expected pos dx/dz, dy/dz
+  C[5][5] = pow(v[5],2)*3; // Expected pos dx/dz, dy/dz
   
   // seedState.set_name(RP::particle_helix);
   seedState.set_name(RP::representation,RP::slopes_curv_z);
@@ -932,6 +936,7 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
     pos0[1] = ypos[ipoint-firsthit];
     pos0[2] = zpos[ipoint-firsthit];
     EVector B0 = _geom.getBField(pos0);
+    std::cout<<"B0 in fitter::ComputeMomFromRange: "<<B0[0]<<" "<<B0[1]<<" "<<B0[2]<<std::endl;
     B.push_back(B0);
     Bmean += B0.norm();
     upos[ipoint-firsthit] = // sqrt(pos0[0]*pos0[0] + pos0[1]*pos0[1]);
@@ -958,14 +963,15 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
 	EVector Ddr = dr1 - dr0;
 	EVector pos = EVector(3,0);
 	pos[0] = xpos[k-1]; pos[1] = ypos[k-1]; pos[2] = zpos[k-1]; 
-	EVector B = _geom.getBField(pos);
+	//	EVector B = _geom.getBField(pos);
+	//std::cout<<"B in fitter::ComputeMomFromRange: "<<B[0]<<" "<<B[1]<<" "<<B[2]<<std::endl;
 	double dR = dot(ddr, crossprod(Z, B0))/ (crossprod(Z,B0).norm());
 	double DR = dot(Ddr, crossprod(Z, B0))/ (crossprod(Z,B0).norm());
 	if(pdR != 0.0){
 	  if(!cuspfound && DR/fabs(DR) == pdR/fabs(pdR)){
 	    // sumDR += fabs(dR) > 0.0 ? dR/fabs(dR):0.0;
 	    sumDR += dR;
-	    // pdR = dR;
+	    // pdR = dR; 
 	    pdR = dR;
 	  }
 	  else if(dR/fabs(dR) != pdR/fabs(pdR)){
@@ -998,7 +1004,7 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   }
   Bmean /=Npts;
   
-  double wFe = _geom.get_Fe_prop();
+  //double wFe = _geom.get_Fe_prop();
   //double p = (wFe*(0.017143*GeV/cm * pathlength - 1.73144*GeV)
   //      + (1- wFe)*(0.00277013*GeV/cm * pathlength + 1.095511*GeV));
 
