@@ -103,9 +103,9 @@ void gdml_hit_constructor::clustering(const std::vector<bhep::hit*>& zSortedHits
       rawHitsTH1F->Fill((*hitIt)->x()[2]);
       
       if(hitIt + 1 != zSortedHits.end()){ nextZ = (*(hitIt + 1))->ddata( "barPosZ" );}
-      else {nextZ = currZ + 2 * _activeLength;}
+      else {nextZ = currZ + 3./2. * _activeLength;}
 
-      if(fabs(currZ-nextZ) < 2 * _activeLength)
+      if(fabs(currZ-nextZ) < 3./2. * _activeLength)
 	{
 	  moduleHits.push_back((*hitIt));
 	}
