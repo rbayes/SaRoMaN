@@ -970,7 +970,9 @@ bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj,
     pSeed *= fabs(VRad)/VRad;
   
   
-  V[5] = 1./pSeed;
+  //V[5] = 1./pSeed;
+
+  cout<<"In get_patternRec_seed: "<<pSeed<<" "<<V[5]<<" "<<1/V[5]<<endl;
   
   //Errors
   M[0][0] = M[1][1] = 15.*cm*cm;
