@@ -356,6 +356,7 @@ void MINDsetup::addProperties(){
 	  _wFe = wFe;
 
 	  double X0Eff = 1./(wFe/X0Fe + wSc/X01);
+	  X0EffVec.push_back(X0Eff);
 
 	  //double length = numScint * AIR_z +numScint * SCINT_z + numFe * IRON_z;
 	  double length = it_int->second[2]; // Simply taken from the solid reference.
@@ -385,8 +386,9 @@ void MINDsetup::addProperties(){
 	  //_de_dx_map_scint = new DeDxMap(de_dx_scint*MeV/mm);
 
 	  _gsetup.set_volume_property(vol_name,RP::de_dx_map,*_de_dx_map);
-	  // _gsetup.set_volume_property(vol_name,RP::de_dx_map,*de_dx_map_vec.back());
-	  _gsetup.set_volume_property(vol_name,"X0",X0Eff);
+	  //_gsetup.set_volume_property(vol_name,RP::de_dx_map,*de_dx_map_vec.back());
+	  //_gsetup.set_volume_property(vol_name,"X0",X0Eff);
+	  _gsetup.set_volume_property(vol_name,"X0",X0EffVec.back());
 	  //_gsetup.set_volume_property_to_sons("mother",RP::BFieldMap,BFieldMap);
 	  //_gsetup.set_volume_property(vol_name,RP::BFieldMap,BFieldMap);
 	  _gsetup.set_volume_property(vol_name,RP::BFieldMap,*BFieldMapVec.back());

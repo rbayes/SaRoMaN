@@ -120,6 +120,8 @@ protected:
   double de_dx;
   double _wFe;
 
+  vector<double> X0EffVec;
+
   //for de/dx map
   double de_dx_scint;
   double de_dx_fe;
