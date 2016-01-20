@@ -129,25 +129,7 @@ void MINDsetup::createGeom(){
   // Volume* det = new Box(pos,xaxis,yaxis,MIND_x/2,MIND_y/2,MIND_z/2);
     
   dict::Key vol_name;
-  //Volume* det;
-  //Volume* vdet;
-  /*
-  if(OctGeom==1)
-    det = new MINDplate(pos,xaxis,yaxis,MIND_x/2,MIND_y/2,MIND_z/2,
-				EAR_width, EAR_height);
-  else if(OctGeom==2)
-    det = new EMINDplate(pos,xaxis,yaxis,
-			    MIND_x/2,MIND_y/2,MIND_z/2,
-			    EAR_width,EAR_height);
-  else if(OctGeom==3)
-    det = new Box(pos, zaxis, xaxis, MOTHER_z/2., MOTHER_x/2, MOTHER_y/2);
-  else{
-    det = new Tube(pos,zaxis,MIND_z/2,MIND_x/2);
-    if(VERT_z > 0)
-      vdet = new Box(vpos, zaxis, xaxis, VERT_z/2., VERT_x/2., VERT_y/2.);
-  }
-  _msetup.message("MIND volume generated",bhep::VERBOSE);
-  */
+
   for(map<string, std::vector<double> >::const_iterator it = _gdml_pos_map.begin();
       it != _gdml_pos_map.end(); ++it)
     {
@@ -170,9 +152,20 @@ void MINDsetup::createGeom(){
       if(it_int!= _gdml_solid_map.end())
 	{
 	  //cout << it_int->first<<endl;
-	  det = new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
-			it_int->second[0]/2, it_int->second[1]/2);
-	  _gsetup.add_volume("mother",vol_name,det);
+	  //det = new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
+	  //		it_int->second[0]/2, it_int->second[1]/2);
+
+	  detVector.push_back(new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
+	  		      it_int->second[0]/2, it_int->second[1]/2));
+
+	  //_gsetup.add_volume("mother",vol_name,det);
+	  _gsetup.add_volume("mother",vol_name,detVector.back());
+
+	  vector<double> tempVector;
+	  tempVector.push_back(pos[2]);
+	  tempVector.push_back(it_int->second[2]/2);
+
+	  _moduleDataMap[vol_name] = tempVector;
 	}
       //  std::cout << it->first << " " << it->second[0] << " " << it->second[1] << " "  <<it->second[2]<< "\n";
     }
@@ -286,6 +279,8 @@ void MINDsetup::addProperties(){
 
   string current_string;
   dict::Key vol_name;
+
+  _generalBFieldMap = MINDfieldMapReader(Bmap,_fieldScale);
  
   /*
 
@@ -296,8 +291,8 @@ void MINDsetup::addProperties(){
       it != _gdml_pos_map.end(); ++it)
     {
 
-      //double fieldScale = _fieldScale;
-      double fieldScale = 1;
+      double fieldScale = _fieldScale;
+      //double fieldScale = 1;
       string name = it->first;
       int numScint=0;
       int numFe=0;
@@ -361,11 +356,14 @@ void MINDsetup::addProperties(){
 	  _wFe = wFe;
 
 	  double X0Eff = 1./(wFe/X0Fe + wSc/X01);
+	  X0EffVec.push_back(X0Eff);
 
 	  //double length = numScint * AIR_z +numScint * SCINT_z + numFe * IRON_z;
 	  double length = it_int->second[2]; // Simply taken from the solid reference.
 
 	  double de_dx = (numScint * SCINT_z * de_dx_scint + numFe * IRON_z * de_dx_fe)/length;
+
+	  _moduleDataMap[vol_name].push_back(de_dx);
 
 	  std::cout<<"modulelength "<<length<<" numFe "<<numFe<<" numScint "<<numScint<<std::endl;
 	  std::cout<<"iron_z "<<IRON_z<<" scint_z "<<SCINT_z<<std::endl;
@@ -374,19 +372,65 @@ void MINDsetup::addProperties(){
 	  //fieldScale *= IRON_z *numFe;
 	  
 	  std::cout<<"Local Field Scaling is "<<fieldScale<<std::endl;
-	  BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
+	  //BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
+	  BFieldMapVec.push_back(new MINDfieldMapReader(Bmap,fieldScale));
+	  //BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
+	  // Let the scale always be one and fill the proper one in moduleDataMap, the scaling is done in 
+	  // getBfield below.
+
+	  double copy = fieldScale;
+	  _moduleDataMap[vol_name].push_back(copy);
 
 	  _de_dx_map = new DeDxMap(de_dx*MeV/mm);
-	  _de_dx_map_scint = new DeDxMap(de_dx_scint*MeV/mm);
+	  //de_dx_map_vec.push_back(new DeDxMap(de_dx*MeV/mm));
+	  //_de_dx_map_scint = new DeDxMap(de_dx_scint*MeV/mm);
 
 	  _gsetup.set_volume_property(vol_name,RP::de_dx_map,*_de_dx_map);
-	  _gsetup.set_volume_property(vol_name,"X0",X0Eff);
+	  //_gsetup.set_volume_property(vol_name,RP::de_dx_map,*de_dx_map_vec.back());
+	  //_gsetup.set_volume_property(vol_name,"X0",X0Eff);
+	  _gsetup.set_volume_property(vol_name,"X0",X0EffVec.back());
 	  //_gsetup.set_volume_property_to_sons("mother",RP::BFieldMap,BFieldMap);
-	  _gsetup.set_volume_property(vol_name,RP::BFieldMap,BFieldMap);
+	  //_gsetup.set_volume_property(vol_name,RP::BFieldMap,BFieldMap);
+	  _gsetup.set_volume_property(vol_name,RP::BFieldMap,*BFieldMapVec.back());
 
 	}
     }  
 }
+
+
+EVector MINDsetup::getBField(EVector pos){
+  // Has become more advance now that we have subdetectors, find the fieldScale in moduelDataMap 
+  //and return the value properly scaled.
+
+  // Return the value from a general fieldmap scaled correctly for the subdetector.
+
+  EVector BfieldVector = _generalBFieldMap.vector(pos);
+  
+  double properScale = 0;
+  double zCoord = pos[2];
+
+  for (std::map<dict::Key,vector<double> >::iterator it=_moduleDataMap.begin();
+       it!=_moduleDataMap.end(); ++it)
+    {
+      // vol_name, module position z, module size z, wFe, magfieldScale
+      double module_pos = it->second[0];
+      double module_half_size = it->second[1];
+      double fieldScale = it->second[3];
+      
+      if(zCoord>=(module_pos - module_half_size) && zCoord<=(module_pos + module_half_size))
+	{
+	  properScale = fieldScale;
+	  break;
+	}
+
+    }
+
+
+
+  return properScale*BfieldVector;
+}
+
+
 
 void MINDsetup::readParam(){
 
@@ -462,7 +506,7 @@ void MINDsetup::readParam(){
     
     _fieldScale = 1.0;
     //if (_pstore.find_dstore("fieldScale") ) {
-      //_fieldScale = _pstore.fetch_dstore("fieldScale");
+    //_fieldScale = _pstore.fetch_dstore("fieldScale");
       //std::cout<<"Field Scaling is "<<_fieldScale<<std::endl;
     //}
 

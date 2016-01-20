@@ -77,7 +77,7 @@ event_classif::~event_classif() {
 
 //Initialization of the class
 //***********************************************************************
-void event_classif::Initialize(const bhep::gstore& pstore, bhep::prlevel vlevel, double wFe) {
+void event_classif::Initialize(const bhep::gstore& pstore, bhep::prlevel vlevel, double wFe, MINDsetup* geom) {
   //***********************************************************************
 
   _m = bhep::messenger( vlevel );
@@ -91,6 +91,8 @@ void event_classif::Initialize(const bhep::gstore& pstore, bhep::prlevel vlevel,
   _voxEdge = _infoStore.fetch_dstore("rec_boxX") * cm;
 
   _FeWeight = wFe;
+
+  _geom = *geom;
   
   double vertdepth = _infoStore.find_dstore("vertexDepth")?
     _infoStore.fetch_dstore("vertexDepth") : 0.0;
@@ -1020,6 +1022,8 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
   int minindex = nMeas;
   double minR = 99999.999, pdR = 0.0, sumdq=0;
   double pathlength=0;/// tminR=9999.9;
+
+  double firstNodeZ = track.nodes()[nMeas-1]->measurement().position()[2];
   
 
   pos[0] = x[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[0];
@@ -1064,7 +1068,8 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
   
   
   ///double wFe = geom.get_Fe_prop();
-  double p = RangeMomentum(pathlength);
+  //double p = RangeMomentum(pathlength);
+  double p = RangeMomentum(pathlength,firstNodeZ);
 
   TGraph *gr1 = new TGraph((const int)minindex, z, x);
   TGraph *gr2 = new TGraph((const int)minindex, z, y);
@@ -2010,12 +2015,55 @@ double event_classif::correctEdep(double edep, double X, double Y, double Z)
 
 
 /***************************************************************************************/
-double event_classif::RangeMomentum(double length){
+double event_classif::RangeMomentum(double length, double nodeZ){
   /***************************************************************************************/
+  std::map<dict::Key,vector<double> > moduleDataMap = _geom.getModuleDataMap();
+  double p = 0;
+
+  for (std::map<dict::Key,vector<double> >::iterator it=moduleDataMap.begin();
+       it!=moduleDataMap.end(); ++it)
+    {
+      double module_pos = it->second[0];
+      double module_half_size = it->second[1];
+      double wFe = it->second[2];
+
+      //std::cout<<"Fitter "<<module_pos<<" "<<module_half_size<<" "
+      //     <<wFe<<" "<<nodeZ<<" "<<length<<std::endl;
+
+      std::cout<<"Fitter "<<nodeZ<<" "<<length<<" "<<wFe<<" "<<module_pos<<std::endl;
+
+      //Sanity checking not outside range forward 
+      if(!((module_pos-module_half_size)<(nodeZ+length)))
+	{
+	  continue;
+	  std::cout<<"Fitter not in range"<<std::endl;
+	  
+	}
+
+      // Through the whole module
+      else if((nodeZ + length) > (module_pos + module_half_size))
+	{
+	   p += 2*module_half_size * wFe;
+	   std::cout<<"p+="<<2*module_half_size * wFe<<std::endl;
+	   std::cout<<"Fitter through"<<std::endl;
+	}
+      // Stop in the module
+      else if((nodeZ + length) < (module_pos + module_half_size))
+	{
+	  p+=((length + nodeZ) - (module_pos - module_half_size))*wFe;
+	  //p+=(module_half_size + module_pos -(length+nodeZ))*wFe;
+	  std::cout<<"p+="<<((length + nodeZ) - (module_pos - module_half_size))*wFe<<std::endl;
+	  std::cout<<"Fitter stop"<<std::endl;
+	}	 
+    }
+
+  //std::cout<<"In Map p "<<p<<std::endl;  
+
+
   // Computing the momentum of a track based on the range
   // Parameters calculated from "Atomic Data and Nuclear Data Tables 78, 183-356 (2001)"
-  double p = (_FeWeight*(0.011844*GeV * pow((length/cm),1.03235))
-	      + (1- _FeWeight)*(0.0023705067*GeV* pow(length/cm,1.00711577)));
+  //double p = (_FeWeight*(0.011844*GeV * pow((length/cm),1.03235))
+  //      + (1- _FeWeight)*(0.0023705067*GeV* pow(length/cm,1.00711577)));
   return p;
   // Should be compared to G4 simulation directly.
 }

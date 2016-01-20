@@ -45,11 +45,18 @@ public:
   double get_Fe_prop(){return _wFe;}
   double& getDeDx(){return de_dx;}
   void setDeDx(double d){de_dx = d;}
-  EVector getBField(EVector pos){return BFieldMap.vector(pos);}
+  //EVector getBField(EVector pos){return BFieldMap.vector(pos);}
+  EVector getBField(EVector pos);
   double getPieceWidth() {return _pieceWidth;}
+
+  std::map<dict::Key,vector<double> > getModuleDataMap() {return _moduleDataMap;}
+
+  // vol_name, module position z, module size z, wFe, MagFieldScale
+  std::map<dict::Key,vector<double> > _moduleDataMap;
 
   Volume* mother;
   Volume* det;
+  vector<Volume*> detVector;
   Volume* vdet;
   Volume* Fe_slab;
 
@@ -101,7 +108,9 @@ protected:
   double B_int;
   EVector BField;
   double _fieldScale;
-  MINDfieldMapReader BFieldMap;
+  //MINDfieldMapReader BFieldMap;
+  vector<MINDfieldMapReader*> BFieldMapVec;
+  MINDfieldMapReader _generalBFieldMap;
    
   //-------------------------------------------------------------//
   
@@ -111,12 +120,15 @@ protected:
   double de_dx;
   double _wFe;
 
+  vector<double> X0EffVec;
+
   //for de/dx map
   double de_dx_scint;
   double de_dx_fe;
   //double de_dx_min;
+  //vector<DeDxMap*> de_dx_map_vec;
   DeDxMap* _de_dx_map;
-  DeDxMap* _de_dx_map_scint;
+  //DeDxMap* _de_dx_map_scint;
   std::string Bmap;
   
   EVector _zaxis;
