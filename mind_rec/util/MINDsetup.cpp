@@ -281,6 +281,7 @@ void MINDsetup::addProperties(){
   dict::Key vol_name;
 
   _generalBFieldMap = MINDfieldMapReader(Bmap,_fieldScale);
+  _gsetup.set_volume_property("mother","X0",X0AIR);
  
   /*
 
@@ -349,18 +350,25 @@ void MINDsetup::addProperties(){
 	  //cout<<"YES"<<endl;
 	  
 	  // Should be done in readParam
-	  double wSc = SCINT_z / (SCINT_z + AIR_z*(numScint+1)*rel_denAS);
-	  double X01 = (X0Sc*X0AIR) / (wSc*(X0AIR-X0Sc) + X0Sc);
-	  double wFe = IRON_z/(IRON_z + ((SCINT_z+AIR_z)*numScint+AIR_z)*rel_denSI*(wSc*(1-rel_denAS)+rel_denAS));
+	  //double wSc = SCINT_z / (SCINT_z + AIR_z*(numScint+1)*rel_denAS);
+	  //double X01 = (X0Sc*X0AIR) / (wSc*(X0AIR-X0Sc) + X0Sc);
+	  //double wFe = IRON_z/(IRON_z + ((SCINT_z+AIR_z)*numScint+AIR_z)*rel_denSI*(wSc*(1-rel_denAS)+rel_denAS));
 	  
+	  double length = it_int->second[2]; // Simply taken from the solid reference.
+
+	  double wSc = numScint *SCINT_z / length;
+	  double wFe = numFe * IRON_z / length;
+	  
+	  double X0Eff = X0Fe * wFe + X0Sc * wSc;
+
 	  _wFe = wFe;
 
-	  double X0Eff = 1./(wFe/X0Fe + wSc/X01);
+	  //double X0Eff = 1./(wFe/X0Fe + wSc/X01);
 	  //double X0Eff = 1./(wFe/X0Fe + wSc/X0Sc);
 	  X0EffVec.push_back(X0Eff);
 
 	  //double length = numScint * AIR_z +numScint * SCINT_z + numFe * IRON_z;
-	  double length = it_int->second[2]; // Simply taken from the solid reference.
+	  //double length = it_int->second[2]; // Simply taken from the solid reference.
 
 	  double de_dx = (numScint * SCINT_z * de_dx_scint + numFe * IRON_z * de_dx_fe)/length;
 

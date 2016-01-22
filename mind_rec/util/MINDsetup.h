@@ -111,7 +111,7 @@ protected:
   //MINDfieldMapReader BFieldMap;
   vector<MINDfieldMapReader*> BFieldMapVec;
   MINDfieldMapReader _generalBFieldMap;
-   
+
   //-------------------------------------------------------------//
   
   //------------------- PROPERTIES OF MATERIALS -----------------//
