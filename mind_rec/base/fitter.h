@@ -82,6 +82,11 @@ public:
 
   event_classif& get_classifier(){ return _classify; }
 
+  double get_momentum_guess(int pos){return _momentum_guess_vec[pos];}
+  double get_momentum_guess_length(){return _momentum_guess_vec.size();}
+
+  vector<double> _momentum_guess_vec;
+
 protected:
   
   //void resetVirtualPlanes(); 
@@ -95,6 +100,8 @@ protected:
   void ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsthit, EVector& V);
 
   double RangeMomentum(double length,double nodeZ);
+  double MomentumFromCurvature(const Trajectory& traj, double length);
+  double MomentumFromDeflection(const Trajectory& traj, int firsthit);
 
   //seed error
   void ApplyCovarianceFactor(double factor, EMatrix& C0);
