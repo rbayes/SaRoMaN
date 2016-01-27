@@ -84,6 +84,10 @@ void MINDsetup::createGeom(){
   _msetup.message("+++ CreatGeom function +++",bhep::VERBOSE);
   
   //----- axes for definition of volumes and surfaces ----//
+
+  _detector_z_max = 0;
+  _detector_z_min = 0;
+
   
   xaxis=EVector(3,0); xaxis[0] = 1.; 
   yaxis=EVector(3,0); yaxis[1] = 1.; 
@@ -134,6 +138,7 @@ void MINDsetup::createGeom(){
       it != _gdml_pos_map.end(); ++it)
     {
       std::map<string,std::vector<double> >::iterator it_int;
+      // Get the middle position of the module
       vol_name = it->first;
       pos[0]= it->second[0];
       pos[1]= it->second[1];
@@ -155,6 +160,13 @@ void MINDsetup::createGeom(){
 	  //det = new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
 	  //		it_int->second[0]/2, it_int->second[1]/2);
 
+	  if((pos[2] + it_int->second[2]/2 > _detector_z_max)) 
+	    _detector_z_max = (pos[2] + it_int->second[2]/2);
+
+	  if((pos[2] - it_int->second[2]/2 < _detector_z_min)) 
+	    _detector_z_min = (pos[2] - it_int->second[2]/2);
+	  
+	  // Create the box with the position and the dimentions of the module
 	  detVector.push_back(new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
 	  		      it_int->second[0]/2, it_int->second[1]/2));
 

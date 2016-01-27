@@ -60,6 +60,13 @@ public:
   Volume* vdet;
   Volume* Fe_slab;
 
+  // z max and min in the detector volume.
+  double getZMax() {return _detector_z_max;}
+  double getZMin() {return _detector_z_min;}
+
+  double _detector_z_max;
+  double _detector_z_min;
+
  
 protected:
     
