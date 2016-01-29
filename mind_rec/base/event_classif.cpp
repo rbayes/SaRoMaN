@@ -11,16 +11,12 @@
  *                                                                     *
  * Author: Andrew Laing, Feb. 2009                                     *
  ***********************************************************************/
- 
 
 #include <event_classif.h>
 #include <recpack/stc_tools.h>
 #include <TMath.h>
 
-
-
 using namespace bhep;
-
 
 class sortTrajByHits{
 public:
@@ -28,17 +24,15 @@ public:
     if (t1->size() > t2->size()) return true;
     return false;
   }
-
 };
+
 class sortTrajByLength{
 public:
   bool  operator()(const Trajectory* t1,const Trajectory* t2 ){
     if (t1->length() > t2->length()) return true;
     return false;
   }
-
 };
-
 
 class sortHitsByR{
 public:
@@ -48,31 +42,24 @@ public:
     if (r1 > r2) return true;
     return false;
   }
-  
 };
+
 class sortHitsByZ{
 public:
   bool  operator()(cluster* hit1, cluster* hit2 ){
     if (hit2->position()[2] > hit1->position()[2]) return true;
     return false;
-  }
-  
+  } 
 };
-
 
 //**********************************************************************
 event_classif::event_classif() {
   //**********************************************************************
-
-  
-
 }
 
 //***********************************************************************
 event_classif::~event_classif() {
   //***********************************************************************
-
-
 }
 
 //Initialization of the class
@@ -109,10 +96,8 @@ void event_classif::Initialize(const bhep::gstore& pstore, bhep::prlevel vlevel,
     _likeTree = new TTree("h1", "Possible Likelihood parameters");
     
     /// branches for likelihhod file 
-    set_branches();
-    
+    set_branches(); 
   }
-  
 }
 
 //Execution of the class
@@ -126,14 +111,12 @@ bool event_classif::Execute(const vector<cluster*>& hits,
   ///reset variable for each event
   reset();
   
-  
   ///copy hits
   std::vector<cluster*> hits2 = hits;
 
   ///start looking for trajectories
   bool ok;
   while (hits2.size() > 5 && (int)vtrajs.size() <= _maxNtraj) {  
-    
     
     ///create trajectory     
     Trajectory* traj = new Trajectory();
@@ -143,18 +126,14 @@ bool event_classif::Execute(const vector<cluster*>& hits,
     
     ///sort hits in increasing Z positions
     sort( hits2.begin(), hits2.end(), sortHitsByZ() );
-    
-
 
     ///calculate the number of planes containing single hit and arrange the z-position, energy of the hits in increasing z 
     //Occupancy.
     ok = get_plane_occupancy( hits2 );
-    
+
     ///called if liklihood output has to generate
     if ( _outLike )
       output_liklihood_info( hits2 );
-    
-    
 
     /// CA and PR both
     ok = chargeCurrent_analysis(hits2, *traj, hads);
@@ -162,34 +141,24 @@ bool event_classif::Execute(const vector<cluster*>& hits,
 
     _m.message("nmeas in traj=",traj->size(),"  and hadrons left=",hads.size()," failType=",_failType, bhep::VERBOSE);
     
-  
     ///if CA and free section KF filtering not fails   
     //if(_failType != 4 && _failType != 5 && traj->nmeas()>=5 )  {
     if(ok) 
       {
-	
 	///for liklhood
 	if (_outLike)
 	  traj_like( hits2 );
 	
 	if ( _outLike ) out_like();
 	
-	
 	//fill the vector of trajectories
 	vtrajs.push_back(traj);
-	
-	
 	///set information of trajectory
 	fill_traj_info( *traj); 
-	
 	// reset each trajectory informations    
 	reset_traj_info();
-    
-	
 	///clear vector of clusters
 	hits2.clear();
-	
-	
 	///if hadrons > 5 then loop
 	if((int)hads.size() >= _min_hits || (int)vtrajs.size() > _maxNtraj) hits2 = hads;
 	else break;
@@ -198,14 +167,12 @@ bool event_classif::Execute(const vector<cluster*>& hits,
 	hads.clear();
       }
     else {
-      
       hads=hits2;
       _m.message("hadron left =",hads.size(), bhep::VERBOSE);
       
       hits2.clear();
       delete traj;
       break;
-      
     }
   }
   _m.message("eventclass::PR, size = ", _vPR_seed.size()," vtraj size =",vtrajs.size(), bhep::VERBOSE);
@@ -214,7 +181,6 @@ bool event_classif::Execute(const vector<cluster*>& hits,
   if(vtrajs.size()>1)  sort( vtrajs.begin(), vtrajs.end(), sortTrajByLength());
 
   return ok;
-  
 }
 
 //***********************************************************************
@@ -227,8 +193,6 @@ void event_classif::Finalize() {
 
     delete _outFileEv;
   }
-
- 
 }
 
 //***********************************************************************
@@ -275,8 +239,6 @@ void event_classif::readParam() {
 
   _octGeom  = _infoStore.find_istore("IsOctagonal") ?
     _infoStore.fetch_istore("IsOctagonal"): 1;
-
-
 }
 
 //***********************************************************************
@@ -310,10 +272,6 @@ void event_classif::reset(){
   _vPR_seed.clear();
   _nRadPlanes=0;
   _planeEnd.reset();
-  
-  
-  ///
-  
 }
 
 //***********************************************************************
@@ -321,7 +279,6 @@ bool event_classif::get_plane_occupancy(vector<cluster*>& hits){
   //***********************************************************************
   //Gets plane occupancies and total plane energies.
   //Needs hits in increasing z order.
-  
   
   //   std::cout<<"+++++I am in get_plane_occupancy"<<std::endl;
   _m.message("++++ Calculating plane energies and occupancies ++++",bhep::VERBOSE);
@@ -350,7 +307,7 @@ bool event_classif::get_plane_occupancy(vector<cluster*>& hits){
     // Avoid a hit with an undefined z position
     if ( fabs(testZ) >  _detLength ) 
       continue;
-    
+    // If nan.
     if(testX != testX) continue;
     if(testY != testY) continue;
     if(testZ != testZ) continue;
@@ -411,8 +368,6 @@ bool event_classif::get_plane_occupancy(vector<cluster*>& hits){
     //total energy 
     if ( !_outLike ) _visEng += plane->GetEng();
     
-     
-    
     imeas +=  plane->GetNHits();
     _meanOcc += (double) plane->GetNHits();
 
@@ -461,11 +416,6 @@ bool event_classif::get_plane_occupancy(vector<cluster*>& hits){
    
   return ok;
 }
-
-
-
-
-
 
 //***********************************************************************
 void event_classif::assess_event(vector<cluster*>& hits)
@@ -518,7 +468,6 @@ void event_classif::assess_event(vector<cluster*>& hits)
   } else {
     //A more complicated endpoint.
     
-
     ///calculate the occupancy of the end planes
     for ( int pl =_planes.size() -1; pl >= _endLongPlane; pl--){
       endMeanOcc += (double)_planes[pl]->GetNHits();
@@ -559,122 +508,6 @@ void event_classif::assess_event(vector<cluster*>& hits)
   _m.message("planeEnd info :: end planeNo=",_planeEnd.GetPlaneNo(), bhep::VERBOSE);
 }
 
-
-
-
-//***********************************************************************
-bool event_classif::muon_extraction_through_PatterRec(vector<cluster*>& hits,
-						      Trajectory& muontraj, vector<cluster*>& hads){
-  //***********************************************************************
-  _m.message("++++ Performing muon reconstruction ++++",bhep::VERBOSE);
-  //cout<<"inside muon_extraction_through_PatterRec"<<endl;
-  
-  muontraj.reset();
-  bool ok = true;
-  
-  _recChi = EVector(3,0);
-  _recChi[1] = 100000; //SetLarge dummy value for minChiHadron bit.
-  
-  
-  
-  /*//looking into beginning of planes to guess vertex hitno, to exclude backward particle hits and if not found then  excluded_hits = 0; _exclPlanes = 0; i.e, vertGuess =0*/
-  _vertGuess = exclude_backwards_particle();
-  
-  
-  ///Zpos of vertex
-  _vertGuessZ = hits[_vertGuess]->position()[2];
-  
-  //cout<<"_vertGuess ="<<_vertGuess<<"  "<<hits[_vertGuess]->position()[2]<<endl;
-  
-  const dict::Key candHit = "inMu";
-  const dict::Key hit_in = "True";
-  const dict::Key not_in = "False";
-  
-  
-  
-   //add measurements to muontraj 
-  if ( _longestSingle >= _min_seed_hits && _endLongPlane > 0.5*(double)_nplanes ){
-    
-    for(int pl=_planeEnd.GetPlaneNo(); pl >= _exclPlanes+_min_check; pl-- ){
-      
-      if(_planes[pl]->GetNHits()!=1) break;
-      
-      RecObject* ro = dynamic_cast<RecObject*>(&(*(_planes[pl]->GetHits()[0])));
-      muontraj.add_node(Node(*ro));
-      
-      (_planes[pl]->GetHits()[0])->set_name(candHit, hit_in);
-    }
-  }  else {
-    // Run a combinatorial selection of hits in the event from the plane
-    double minDistHit=9999;
-    
-    for(int pl=_planeEnd.GetPlaneNo(); pl > 0; pl--){
-      if(_planes[pl]->GetNHits()==2){
-	// Find the hit that has a minimum distance to an adjacent hit.
-      }
-    }
-  }
-    
-    
-    
-    //cout<<" after Z search ::traj.nmeas()="<<muontraj.nmeas()<<endl; 
-    
-  //radial search
-  /*
-  if( (int)muontraj.size() < _min_seed_hits )
-    {
-      ok = perform_radial_search(hits, muontraj);
-    } 
-  */
-  
-  
-  
-  //information from the trajectory 
-  _lastIso = (int)muontraj.size();
-  _m.message(" _lastIso = ",_lastIso,bhep::DETAILED);
-    
-    
-    ///freeplanes inside the candidate muon trajectory
-    if ( !_outLike ) _freeplanes = (int)muontraj.size();
-    //cout<<" _freeplanes ="<< _freeplanes<<"  _meanOcc="<< _meanOcc<<endl;
-    
-    
-    //set to reconstruction mode.
-    if ( !MINDfitman::instance().in_rec_mode() )
-      MINDfitman::instance().rec_mode();
-    
-    
-    ///for free track with atleast 5 hits  
-    if ( _meanOcc == 1 ){
-      _intType = 2;
-    
-      if ( (int)muontraj.size() >= _min_seed_hits ) ///?? how many atleast
-	ok = muon_extraction( hits, muontraj, hads);
-    else ok = false;
-      
-    } else  {
-      if ( (int)muontraj.size() < _min_seed_hits) {
-	_intType = 5;
-	if (!_isTASD) // (!_isTASD)
-	  ok = invoke_cell_auto( hits, muontraj, hads);
-	else ok = false;
-	  if ( !ok ) _failType = 4;
-	if(!ok) cout<<" invoke_cell_auto not ok"<<endl;
-	
-      } else {
-	if ( _badplanes !=0 ) _intType = 3;
-	ok = muon_extraction( hits, muontraj, hads);
-	
-      }
-      
-    }
-    return ok;
-    
-}
-
-
-
-
 //***********************************************************************
 bool event_classif::chargeCurrent_analysis(vector<cluster*>& hits,
 						      Trajectory& muontraj, vector<cluster*>& hads){
@@ -688,172 +521,83 @@ bool event_classif::chargeCurrent_analysis(vector<cluster*>& hits,
   _recChi = EVector(3,0);
   _recChi[1] = 100000; //SetLarge dummy value for minChiHadron bit.
   
-  
-  
-  /*//looking into beginning of planes to guess vertex hitno, to exclude backward particle hits and if not found then  excluded_hits = 0; _exclPlanes = 0; i.e, vertGuess =0*/
-  _vertGuess = exclude_backwards_particle();
-  
+  /*//looking into beginning of planes to guess vertex hitno, to exclude backward particle hits and 
+if not found then  excluded_hits = 0; _exclPlanes = 0; i.e, vertGuess =0*/
+  //_vertGuess = exclude_backwards_particle();
   
   ///Zpos of vertex
-  _vertGuessZ = hits[_vertGuess]->position()[2];
+  //_vertGuessZ = hits[_vertGuess]->position()[2];
+
+  //Zpos of the start of hits.
+  _vertGuessZ = hits[0]->position()[2];
   
-  _m.message("_vertGuess =",_vertGuess,"  Z= ",hits[_vertGuess]->position()[2], bhep::VERBOSE);
+  //_m.message("_vertGuess =",_vertGuess,"  Z= ",hits[_vertGuess]->position()[2], bhep::VERBOSE);
   
   const dict::Key candHit = "inMu";
   const dict::Key hit_in = "True";
   const dict::Key not_in = "False";
   
   
-  
+  //if ( _longestSingle >= _min_seed_hits && _endLongPlane > 0.5*(double)_nplanes ){
   ///add single occupancy planes measurements to muontraj 
-  
-  if ( _longestSingle >= _min_seed_hits && _endLongPlane > 0.5*(double)_nplanes ){
+  //for(int pl=_planeEnd.GetPlaneNo(); pl >= _exclPlanes+_min_check; pl-- ){
+  for(int pl=_planeEnd.GetPlaneNo(); pl >= _min_check; pl-- ){
     
-    for(int pl=_planeEnd.GetPlaneNo(); pl >= _exclPlanes+_min_check; pl-- ){
-      
-      if(_planes[pl]->GetNHits()!=1) break;
-      
-      RecObject* ro = dynamic_cast<RecObject*>(&(*(_planes[pl]->GetHits()[0])));
-      muontraj.add_node(Node(*ro));
-      (_planes[pl]->GetHits()[0])->set_name(candHit, hit_in);
-    }
-  }
-
+    if(_planes[pl]->GetNHits()!=1) break;
+    
+    RecObject* ro = dynamic_cast<RecObject*>(&(*(_planes[pl]->GetHits()[0])));
+    muontraj.add_node(Node(*ro));
+    (_planes[pl]->GetHits()[0])->set_name(candHit, hit_in);
+  }  
+  
   _m.message("The free section muontraj=",muontraj, bhep::DETAILED); 
-  
-  
   
   //information from the trajectory 
   _lastIso = (int)muontraj.size();
   _m.message(" _lastIso = ",_lastIso,bhep::DETAILED);
   
-  
   ///freeplanes inside the candidate muon trajectory
   if ( !_outLike ) _freeplanes = (int)muontraj.size();
   _m.message(" _freeplanes =",_freeplanes,"  _meanOcc=",_meanOcc, bhep::DETAILED);
-  
   
   //set to reconstruction mode.
   if ( !MINDfitman::instance().in_rec_mode() )
     MINDfitman::instance().rec_mode();
   
-  
-  ///for free track with atleast 5 hits  
-  if ( _meanOcc == 1){
-    _intType = 2;
-    /// if ( muontraj.size() !=0 )
-    if((int)muontraj.size() >= _min_seed_hits)
-      ok = muon_extraction( hits, muontraj, hads);
-    else ok = false;
-    
-  } else {
-    if ( (int)muontraj.size() < _min_seed_hits ) {
-      _intType = 5;
-      if (!_isTASD)
-	ok = invoke_cell_auto( hits, muontraj, hads);
+  //for free tracks, _meanOcc ==1;
+  if ( _meanOcc == 1)
+    {
+      _intType = 2;
+      // Do we have enough hits to perform a curve fit?
+      //if (_longestSingle >= _min_seed_hits){
+      if((int)muontraj.size() >= _min_seed_hits){ok = muon_extraction( hits, muontraj, hads);} 
+      //Low momentum track, we need atleast 4 hits to be able to get momenta and charge.
+      else if((int)muontraj.size() >= 4){ok = LowMomentumExtraction( hits, muontraj, hads);}
       else ok = false;
-      if ( !ok ) _failType = 4;
-
-      if(!ok)  _m.message(" invoke_cell_auto not ok", bhep::VERBOSE);
-            
-    } else {
-      if ( _badplanes !=0 ) _intType = 3;
-      ok = muon_extraction( hits, muontraj, hads);
+      
+    } 
+  else 
+    {
+      if ( (int)muontraj.size() < _min_seed_hits ) {
+	_intType = 5;
+	if (!_isTASD)
+	  ok = invoke_cell_auto( hits, muontraj, hads);
+	else ok = false;
+	if ( !ok ) _failType = 4;
+	
+	if(!ok)  _m.message(" invoke_cell_auto not ok", bhep::VERBOSE);
+	
+      } 
+      else {
+	if ( _badplanes !=0 ) _intType = 3;
+	ok = muon_extraction( hits, muontraj, hads);
+	
+      }
       
     }
-    
-  }
    
   return ok;
-  
 }
-
-
-
-
-
-
-//***********************************************************************
-int event_classif::exclude_backwards_particle(){
-  //***********************************************************************
-  //Try to exclude some occurencies of  backwards had by looking
-  //for spaces between the early planes
-  //occupancy from the start of the event.
-  //cout<<"inside exclude_backwards_particle"<<endl;
-
-  
-  int check_planes;
-
-  
-  if ( _nplanes >= 50 ) check_planes = 21;
-  else check_planes = (int)( 0.4 * _nplanes ) + 1;
-  
-  int excluded_hits = 0;
-  _exclPlanes = 0;
-  bool found = false;
-  
-  ///look into first 40% planes from vertex  
-  for (int pl = 1; pl < check_planes; pl++){
-    
-    ///why backwards if separation b/w two planes >104 mm ??   
-    if ( abs( _planes[pl]->GetZ() - _planes[pl-1]->GetZ() ) >  2*_pieceLength ){
-      found = true;
-      
-      ///Exclude the hits and planes
-      excluded_hits += _planes[pl]->GetNHits();
-      _exclPlanes++;
-      
-      continue;
-    }
-    
-  }
-  
-  return excluded_hits;
-}
-
-
-
-
-
-//
-//***********************************************************************
-/*void event_classif::use_mini_cellAuto(const int occ, Trajectory& muontraj){
-  //***********************************************************************
-  //
-  double disp[occ];
-  long minPos;
-  double nextX = (*(_hitIt-occ))->vector()[0];
-  double nextY = (*(_hitIt-occ))->vector()[1];
-
-
-
-  //calculate x,y displacement to hit in next plane.
-  for (int i=0;i<occ;i++){
-
-    disp[i] = sqrt( pow( (*(_hitIt-i))->vector()[0] - nextX, 2) +
-		    pow( (*(_hitIt-i))->vector()[1] - nextY, 2) );
-
-  }
-
-
-  //find the smallest displacement.
-  minPos = TMath::LocMin( occ, disp );
-
-
-  //Add selected hit to trajectory.
-  muontraj.add_measurement( *(*(_hitIt-minPos)) );
-  const dict::Key candHit = "inMu";
-  const dict::Key hit_in = "True";
-  (*(_hitIt-minPos))->set_name(candHit, hit_in);
-
-  //move iterator so next plane hit is the next in line.
-  _hitIt -= occ-1;
-
-}
-
-*/
-
-
 
 //***********************************************************************
 bool event_classif::muon_extraction(vector<cluster*>& hits,
@@ -884,15 +628,9 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
   ok = get_patternRec_seed( patternSeed, muontraj, hits);
   if(!ok)  _m.message(" get_patternRec_seed not ok",bhep::DETAILED); 
   
-
-
-
   if ( ok )
     ok = perform_muon_extraction( patternSeed, hits, muontraj, hads);
   if(!ok) _m.message("perform_muon_extraction not ok",bhep::DETAILED);
-
-
-
 
   ///assign the seed state
   if ( ok )
@@ -909,9 +647,6 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
   return ok;
 }
 
-
-
-
 //***********************************************************************
 bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj,
 					vector<cluster*>& hits) {
@@ -922,14 +657,10 @@ bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj,
   EVector V(6,0); EVector V2(1,0);
   EMatrix M(6,6,0); EMatrix M2(1,1,0);
   
-
-
   ///x,y,z values of the 1st node
   V[0] = muontraj.nodes()[0]->measurement().vector()[0];
   V[1] = muontraj.nodes()[0]->measurement().vector()[1];
   V[2] = muontraj.nodes()[0]->measurement().position()[2];
-
-
 
   //direction
   double dqtot = fit_parabola( V, muontraj);
@@ -938,7 +669,7 @@ bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj,
   ///if cluster contains hits then _Xtent is the diff in z b/w 0th and last hit in cluster 
   ///if not, then _Xtent is the diff in z b/w 1st and one before last node (? not last node)
 
-
+  /*
   if ( hits.size() != 0 ){
 
     _Xtent = hits[_endLongSing]->position()[2]
@@ -947,32 +678,25 @@ bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj,
   } else {
      
     _Xtent = muontraj.nodes()[(int)muontraj.size()-1]->measurement().position()[2]
-      - muontraj.nodes()[0]->measurement().position()[2];
-    
+      - muontraj.nodes()[0]->measurement().position()[2]; 
   }
   
   _m.message("xtent=",_Xtent, bhep::VERBOSE);
-
+  */
   //2 pSeed = 668 + 1.06*_Xtent; //estimate in MeV, log for fit.
-  double pSeed = (9180-6610*_FeWeight) + (-2.76+4.01*_FeWeight)*_Xtent; //best for 3/2 seg
-
-
-  //set_de_dx( pSeed/GeV );
-
+  // double pSeed = (9180-6610*_FeWeight) + (-2.76+4.01*_FeWeight)*_Xtent; //best for 3/2 seg
 
 
   //Use slope in bending plane to try and get correct sign for momentum seed.
   // pSeed *= -fabs(V[3])/V[3];//Pos. gradient in X is ~negative curvature.
   // Assume that the R-Z plane is the bending plane for the toroidal field
   double VRad =  dqtot/fabs(dqtot);
-  // (V[3]*V[0] + V[4]*V[1])/sqrt(V[0] * V[0] + V[1] * V[1]);
-  if( VRad != 0 ) 
-    pSeed *= fabs(VRad)/VRad;
-  
+  //if( VRad != 0 ) 
+  //pSeed *= fabs(VRad)/VRad;
   
   //V[5] = 1./pSeed;
 
-  cout<<"In get_patternRec_seed: "<<pSeed<<" "<<V[5]<<" "<<1/V[5]<<endl;
+  cout<<"In get_patternRec_seed: "<<V[5]<<" "<<1/V[5]<<endl;
   
   //Errors
   M[0][0] = M[1][1] = 15.*cm*cm;
@@ -1022,12 +746,14 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
   double x[(const int)nMeas], y[(const int)nMeas], 
     z[(const int)nMeas], u[(const int)nMeas];/// r[(const int)nMeas];
   int minindex = nMeas;
-  double minR = 99999.999, pdR = 0.0, sumdq=0;
-  double pathlength=0;/// tminR=9999.9;
+  //double minR = 99999.999, pdR = 0.0, sumdq=0;
+  //double pathlength=0;/// tminR=9999.9;
 
   double firstNodeZ = track.nodes()[nMeas-1]->measurement().position()[2];
-  
 
+  double pathlength=track.nodes()[0]->measurement().position()[2] - firstNodeZ;
+  
+  /*
   pos[0] = x[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[0];
   pos[1] = y[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[1];
   z[nMeas-1] = track.nodes()[nMeas-1]->measurement().position()[2];
@@ -1067,18 +793,21 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
     pdR = dR.norm();
     sumdq += dq;
   }
+  cout<<"sumdq/(nMeas-2): "<<sumdq/(nMeas-2)<<endl;
   
-  
+  */
   ///double wFe = geom.get_Fe_prop();
   //double p = RangeMomentum(pathlength);
   double p = RangeMomentum(pathlength,firstNodeZ);
 
-  TGraph *gr1 = new TGraph((const int)minindex, z, x);
-  TGraph *gr2 = new TGraph((const int)minindex, z, y);
-  TGraph *gr3 = new TGraph((const int)minindex, z, u);
+  double p2 = MomentumFromDeflection(track,0);
 
-  TF1 *fun = new TF1("parfit","[0]+[1]*x",-3,3);
-  fun->SetParameters(0.,0.001);
+  //TGraph *gr1 = new TGraph((const int)minindex, z, x);
+  //TGraph *gr2 = new TGraph((const int)minindex, z, y);
+  // TGraph *gr3 = new TGraph((const int)minindex, z, u);
+
+  //TF1 *fun = new TF1("parfit","[0]+[1]*x",-3,3);
+  //fun->SetParameters(0.,0.001);
   TF1 *fun2 = new TF1("parfit2","[0]+[1]*x+[2]*x*x",-3,3);
   fun2->SetParameters(0.,0.001,0.001);
   
@@ -1099,9 +828,9 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
 
   vec[5] = meansign/p;
 
-  delete gr1;
-  delete gr2;
-  delete fun;
+  //delete gr1;
+  //delete gr2;
+  //delete fun;
   // return sumdq;
   return qtilde;
 
@@ -2011,9 +1740,83 @@ double event_classif::correctEdep(double edep, double X, double Y, double Z)
   return corrEng;
 }
 
+/***************************************************************************************/
+double event_classif::MomentumFromDeflection(const Trajectory& traj, int firsthit){
+  /***************************************************************************************/
 
+  // Calculate the momentum from the deflection angle between hits.
+  // The momentum is proportional to the magnetic field * change in angle.
+  // Take an 
+  // Must start of with an angle, use the first 2 hits for this.
 
+  // Emperical factor between momentum and angle
 
+  double fac = 1;//6/1.235 * 1e9;
+
+  EVector Z = EVector(3,0); Z[2] = 1;
+
+  double sumRelP =0;
+
+  double num_tracks = traj.size() -3 - firsthit;
+    
+  for (int ipoint=firsthit;ipoint <=num_tracks;ipoint++)
+    {
+      
+      EVector pos0 = traj.node(ipoint).measurement().position();
+      EVector pos1 = traj.node(ipoint + 1).measurement().position();
+      EVector pos2 = traj.node(ipoint + 2).measurement().position();
+      
+      cout<<"pos0: "<<pos0[0]<<" "<<pos0[1]<<" "<<pos0[2]<<endl;
+      cout<<"pos1: "<<pos1[0]<<" "<<pos1[1]<<" "<<pos1[2]<<endl;
+      cout<<"pos2: "<<pos2[0]<<" "<<pos2[1]<<" "<<pos2[2]<<endl;
+
+      EVector B0 = _geom.getBField(pos0);
+      EVector B1 = _geom.getBField(pos1);
+
+      if(dot(B0,B1) <= 0)
+	{
+	  //sumRelP = 0;
+	  num_tracks = ipoint -firsthit;
+	  break;
+	}
+      
+      EVector dPos0 = pos1-pos0;
+      EVector dPos1 = pos2-pos1;
+      //cout<<"dPos0: "<<dPos0[0]<<" "<<dPos0[1]<<" "<<dPos0[2]<<endl;
+      //cout<<"dPos1: "<<dPos1[0]<<" "<<dPos1[1]<<" "<<dPos1[2]<<endl;
+      
+      // dot(dPos,crossprod(Z, B0))/crossprod(Z, B0).norm();
+
+      // Get the angle.
+      // Opposite side
+      double dPos0T = dot(dPos0,crossprod(Z, B0))/crossprod(Z, B0).norm();
+      double theta0 = atan(dPos0T/dot(dPos0,Z));
+      
+      //double theta0 =  acos(dot(dPos0,Z)/sqrt(dot(dPos0,dPos0)));
+      //cout<<"theta 0: "<< theta0<<endl;
+      
+      //cout<<"theta 0: "<< theta0<<" "<<theta0c<<" "<<pos1[2]<<" "<<pos0[2]<<" "<<B0[0]<<endl;
+      double dPos1T = dot(dPos1,crossprod(Z, B1))/crossprod(Z, B1).norm();
+      double theta1 = atan(dPos1T/dot(dPos1,Z));
+      //double theta1 =  acos(dot(dPos1,Z)/sqrt(dot(dPos1,dPos1)));
+      //cout<<"theta 1: "<< theta1<<endl;
+
+      double dTheta = theta1 -theta0;
+      double relP = sqrt(dot(B1,B1)) / dTheta;
+
+      sumRelP += relP;
+      
+      cout<<"dtheta: "<<dTheta<<endl;
+    }
+  
+  //cout<<"sumRelP/num: "<<sumRelP/(traj.size()-3)<<endl;
+
+  double p = fac*sumRelP/(num_tracks);
+
+  cout<<"momentum guess from deflection: "<<p<<endl;
+
+  return p;
+}
 
 
 /***************************************************************************************/
@@ -2238,88 +2041,176 @@ bool event_classif::get_radial_occupancy(vector<cluster*>& hits)
   return ok;
 }
 
+//***********************************************************************
+bool event_classif::LowMomentumExtraction(vector<cluster*>& hits,
+				    Trajectory& muontraj, vector<cluster*>& hads) {
+  //***********************************************************************
 
+  _m.message("++++ event_classif::low_momentum_extraction +++++++++++++", bhep::VERBOSE);
+ 
+  //Calculate the momentum and the charge for short tracks.
 
-///***********************************************************************
-bool event_classif::perform_radial_search(vector<cluster*>& hits, Trajectory& muontraj)
-  ///***********************************************************************
-{
+  bool ok =false;
+  int nMeas = muontraj.size();
+  double firstNodeZ = muontraj.nodes()[nMeas-1]->measurement().position()[2];
+  double pathlength=muontraj.nodes()[0]->measurement().position()[2] - firstNodeZ;
 
-  //radial search
-  int kount = 0;
-
-  bool ok = true;
-  muontraj.reset();
+  double p = RangeMomentum(pathlength,firstNodeZ);
   
-  /// define the keys
-  const dict::Key candHit = "inMu";
-  const dict::Key hit_in = "True";
-  const dict::Key not_in = "False";
+  double q = CalculateCharge(muontraj);
 
+  // Give the momentum a charge.
+  p *= q;
 
-  //plane
-  plane_info* planeEnd = new plane_info();
+  // How give this to the track without using the fitter? Can we give it to the fitter given so few hits?
 
-
-  vector<cluster*> temp_hits = hits;
-
+  /*
+  State patternSeed;
   
+  ok = get_patternRec_seed( patternSeed, muontraj, hits);
+  if(!ok)  _m.message(" get_patternRec_seed not ok",bhep::DETAILED); 
   
-  ///sort hits by R independent of Z  
-  sort(temp_hits.begin(), temp_hits.end(), sortHitsByR());
-    
-  ///calculate radial occupancy 
-  ok = get_radial_occupancy( temp_hits );
-  _m.message("after get_radial_occ:: radialOcc =",_radialLongest,bhep::VERBOSE);
-    
-    
-  //look for radial free section
-  // _m.message("vertex Z=",_planeZ[0],"   hits begin=",hits[_vertGuess]->position()[2],bhep::DETAILED);
-  // cout<<"vertex Z="<<_planeZ[0]<<"   hits begin="<<hits[_vertGuess]->position()[2]<<endl;
+  if ( ok )
+    ok = perform_muon_extraction( patternSeed, hits, muontraj, hads);
+  if(!ok) _m.message("perform_muon_extraction not ok",bhep::DETAILED);
 
-  if (temp_hits.back()->position()[2] > hits[_vertGuess]->position()[2] ){
-      
-    planeEnd = _radPlanes[_radPlanes.size() -1];
-   
-    for(int pl = planeEnd->GetPlaneNo(); pl >= 0; pl-- ){
-	
-      if(_radPlanes[pl]->GetNHits()!=1) break;
-      RecObject* ro = dynamic_cast<RecObject*>(&(*_radPlanes[pl]->GetHits()[0]));
-      if(fabs(ro->position()[2]) < _detLength) muontraj.add_node( Node(*ro)  );
-	
-      (_radPlanes[pl]->GetHits()[0])->set_name(candHit, hit_in);
-	
-	
-      ///
-      if (muontraj.size()>=1) _m.message(" 1:temp_hits[muontraj.size()]->position()[2] ",temp_hits.at(muontraj.size())->position()[2],"  temp_hits[muontraj.size()-1]->position()[2]=",temp_hits.at(muontraj.size()-1)->position()[2], bhep::DETAILED);
-	
-      //if (muontraj.nmeas()>=1) cout<<" 1:temp_hits[muontraj.nmeas()]->position()[2] "<<temp_hits[muontraj.nmeas()]->position()[2]<<"  temp_hits[muontraj.nmeas()-1]->position()[2]="<<temp_hits[muontraj.nmeas()-1]->position()[2]<<endl;
-      //if (muontraj.nmeas()>=1 && temp_hits[muontraj.nmeas()]->position()[2] != temp_hits[muontraj.nmeas()-1]->position()[2]) kount = muontraj.nmeas();
-	
-    }
-  }
-  /*  
-  else {
-      
-    for(int pl=0; pl<=planeEnd->GetPlaneNo(); pl++ ){
-	
-      if(_radPlanes[pl]->GetNHits()!=1) break;
-	
-      RecObject* ro = dynamic_cast<RecObject*>(&(*(_radPlanes[pl]->GetHits()[0])));
-      if( ro!=NULL ){
-	if(ro->position()[2])
-	  if(fabs(ro->position()[2] ) < _detLength) 
-	    muontraj.add_node(Node(*ro));
-	(_radPlanes[pl]->GetHits()[0])->set_name(candHit, hit_in);
-      }
-      
-      if (muontraj.size()>=1) _m.message(" 1:temp_hits[muontraj.size()]->position()[2] ",temp_hits.at(muontraj.size())->position()[2],"  temp_hits[muontraj.size()-1]->position()[2]=",temp_hits.at(muontraj.size()-1)->position()[2], bhep::DETAILED);
-    }
-  }
-  */  
-  _m.message("kount=",kount,"  temp_hits end Z=",temp_hits.back()->position()[2]," and begin =",temp_hits.front()->position()[2],"  size=",temp_hits.size(), bhep::DETAILED);
-  temp_hits.clear();
-  delete planeEnd;
+  ///assign the seed state
+  if ( ok )
+    _seedState = patternSeed;
+  
+  if(ok) _m.message(" event_class: traj nmeas=",muontraj.size()," intType =",_intType,"  && PR seed is=",_seedState,bhep::DETAILED);
+
+  /// to get all the PR seed for reseed_traj inside fitter
+  
+  if(ok) _vPR_seed.push_back(_seedState);
+  
+  */
   return ok;
 }
 
+//***********************************************************************
+double event_classif::CalculateCharge(Trajectory& track) {
+  //***********************************************************************
+  // No longer well named
+
+  int fitcatcher;
+  int nMeas = track.size();
+
+  if (nMeas > 4) nMeas = 4;
+
+  EVector pos(3,0);
+  EVector Z(3,0); Z[2] = 1;
+  double x[(const int)nMeas], y[(const int)nMeas], 
+    z[(const int)nMeas], u[(const int)nMeas];/// r[(const int)nMeas];
+  int minindex = nMeas;
+  double minR = 99999.999, pdR = 0.0, sumdq=0;
+  double pathlength=0;/// tminR=9999.9;
+
+  double firstNodeZ = track.nodes()[nMeas-1]->measurement().position()[2];
+  
+  pos[0] = x[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[0];
+  pos[1] = y[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[1];
+  z[nMeas-1] = track.nodes()[nMeas-1]->measurement().position()[2];
+  pos[2] = 0.0;
+
+  for (int iMeas = nMeas-2;iMeas >= 0;iMeas--){
+    x[iMeas] = track.nodes()[iMeas]->measurement().vector()[0];
+    y[iMeas] = track.nodes()[iMeas]->measurement().vector()[1];
+    z[iMeas] = track.nodes()[iMeas]->measurement().position()[2];
+    // get the b-field from the previous step
+    EVector B = _geom.getBField(pos);
+    u[iMeas] = dot(pos, crossprod(Z,B))/crossprod(Z,B).norm();
+    pos[0] = x[iMeas];  pos[1] = y[iMeas];   pos[2] = z[iMeas];
+    EVector dR = EVector(3,0);
+    dR[0] = x[iMeas+1] - x[iMeas];
+    dR[1] = y[iMeas+1] - y[iMeas];
+    dR[2] = z[iMeas+1] - z[iMeas];
+    double dq = 0.;
+    pathlength += dR.norm();
+    if(iMeas < nMeas-3){
+      EVector dR1 = EVector(3,0);
+      dR1[0] = x[iMeas+2] - x[iMeas+1];
+      dR1[1] = y[iMeas+2] - y[iMeas+1];
+      dR1[2] = z[iMeas+2] - z[iMeas+1];
+      EVector ddR = dR1 + dR;
+      dq = dot(ddR, crossprod(Z,B))/ (crossprod(Z,B).norm());
+    }
+    if(pdR != 0)
+      if(// minR < R && dR/fabs(dR) == -pdR/fabs(pdR) && 
+	 (x[iMeas]/fabs(x[iMeas]) != x[iMeas+1]/fabs(x[iMeas+1]) ||
+	  y[iMeas]/fabs(y[iMeas]) != y[iMeas+1]/fabs(y[iMeas+1]))){ 
+	// Sign change and minimum momentum
+	minR = pos.norm();
+	minindex = iMeas;
+	sumdq = 0.0;
+      }
+    pdR = dR.norm();
+    sumdq += dq;
+  }
+  //cout<<"sumdq/(nMeas-2): "<<sumdq/(nMeas-2)<<endl;
+
+  //How was this relevant??
+  //TF1 *fun = new TF1("parfit2","[0]+[1]*x+[2]*x*x",-3,3);
+  //fun->SetParameters(0.,0.001,0.001);
+
+  //double qtilde = -0.3*pow(1+fun->GetParameter(1),3./2.)/
+  //(2*fun->GetParameter(2));
+  //int meansign = (int)(qtilde/fabs(qtilde));
+  //delete fun;
+  //return qtilde;
+  int meansign = sumdq/fabs(sumdq);
+  
+  return meansign;
+}
+
+/*
+bool event_classif::get_patternRec_seed_low_track(State& seed, Trajectory& muontraj,
+					vector<cluster*>& hits) {
+ 
+
+  EVector V(6,0); EVector V2(1,0);
+  EMatrix M(6,6,0); EMatrix M2(1,1,0);
+  
+  ///x,y,z values of the 1st node
+  V[0] = muontraj.nodes()[0]->measurement().vector()[0];
+  V[1] = muontraj.nodes()[0]->measurement().vector()[1];
+  V[2] = muontraj.nodes()[0]->measurement().position()[2];
+
+  //direction
+  double dqtot = fit_parabola( V, muontraj);
+
+  //Pos. gradient in X is ~negative curvature.
+  // Assume that the R-Z plane is the bending plane for the toroidal field
+  double VRad =  dqtot/fabs(dqtot);
+
+  cout<<"In get_patternRec_seed: "<<V[5]<<" "<<1/V[5]<<endl;
+  
+  //Errors
+  M[0][0] = M[1][1] = 15.*cm*cm;
+  M[2][2] = EGeo::zero_cov()/2;
+  M[3][3] = M[4][4] = 1.5;
+  M[5][5] = pow(V[5],2)*4;
+
+  //Sense
+  V2[0] = 1;
+  
+  //Seedstate fit properties
+  seed.set_name(RP::particle_helix);
+  seed.set_name(RP::representation,RP::slopes_curv_z); 
+  seed.set_hv(RP::sense,HyperVector(V2,M2,RP::x));
+  seed.set_hv(HyperVector(V,M,RP::slopes_curv_z));
+  
+  // std::cout<<seed.hv().representation()<<std::endl;
+
+  // std::cout<<"Is good here"<<std::endl;
+  //  man().model_svc().model(RP::particle_helix).representation(RP::slopes_curv_z)
+  //     .convert(seed,RP::default_rep);
+  
+  bool ok = perform_kalman_fit( seed, muontraj);
+  
+  if ( !ok )
+    _failType = 5;
+  
+  return ok;
+}
+*/

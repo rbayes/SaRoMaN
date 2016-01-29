@@ -61,7 +61,6 @@ public:
   
   bool get_plane_occupancy(vector<cluster*>& hits);
   bool get_radial_occupancy(vector<cluster*>& hits);///
-  bool perform_radial_search(vector<cluster*>& hits, Trajectory& muontraj);///
   void assess_event(vector<cluster*>& hits);
  
   
@@ -69,8 +68,9 @@ public:
   void set_int_type(const string name);
   //R
   double correctEdep(double edep, double X, double Y, double Z);
-  //double RangeMomentum(double length);
+
   double RangeMomentum(double length,double nodeZ);
+  double MomentumFromDeflection(const Trajectory& traj, int firsthit = 0);
   
 protected:
   
@@ -81,13 +81,20 @@ protected:
   //Functions to be performed on CC mu candidates.  
   bool chargeCurrent_analysis(vector<cluster*>& hits,
 			      Trajectory& muontraj, vector<cluster*>& hads);
-  bool muon_extraction_through_PatterRec(vector<cluster*>& hits,
-			      Trajectory& muontraj, vector<cluster*>& hads);
   void fill_traj_info(Trajectory& muontraj);
   void reset_traj_info();
-  int exclude_backwards_particle();
+  //int exclude_backwards_particle();
   bool muon_extraction(vector<cluster*>& hits,
 		       Trajectory& muontraj, vector<cluster*>& hads);
+  
+  // Handle low momentum tracks.
+  bool LowMomentumExtraction (vector<cluster*>& hits,
+		       Trajectory& muontraj, vector<cluster*>& hads);
+
+  // Calculate the charge of a track using scattering angles.
+  double CalculateCharge(Trajectory& track);
+
+
   bool get_patternRec_seed(State& seed, Trajectory& muontraj, vector<cluster*>& hits);
   double fit_parabola(EVector& vec, Trajectory& track);
   void set_de_dx(double mom);
