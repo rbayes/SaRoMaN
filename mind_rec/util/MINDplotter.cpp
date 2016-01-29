@@ -453,11 +453,11 @@ void MINDplotter::define_tree_branches() {
   statTree->Branch("evVertex", &_vert, "vert[3]/D");
   statTree->Branch("EvtFail", &_failEvent, "EvtFail/I");
   if (_clu) statTree->Branch("TrueInteraction",&_truInt,"truInt/I");
-  statTree->Branch("NeuEng", &_nuEng, "NuEng/D");
+  statTree->Branch("MuonEng", &_nuEng, "NuEng/D");
   if (_clu) {
-    statTree->Branch("Charm", &_charm, "isCharm/I:pdg/I");
-    statTree->Branch("InteractionQ2", &_Q2, "Q2/D");
-    statTree->Branch("EventPdg",&_pdg, "initnu/I:partPDG/I:nucType/I");
+    //statTree->Branch("Charm", &_charm, "isCharm/I:pdg/I");
+    //statTree->Branch("InteractionQ2", &_Q2, "Q2/D");
+    //statTree->Branch("EventPdg",&_pdg, "initnu/I:partPDG/I:nucType/I");
   }
   statTree->Branch("visibleEng", &_visEng, "visEng/D");
   statTree->Branch("HitsInEvent", &_hitsInEvent, "TotalHits/I");
@@ -566,36 +566,41 @@ void MINDplotter::define_tree_branches() {
   statTree->Branch("Zmeas", &_ZMeas,32000,0);
   statTree->Branch("EngMeas", &_EMeas,32000,0);
 
+  //statTree->Branch("theta0", &_Theta0,32000,0);
+  statTree->Branch("theta1", &_Theta1,32000,0);
+  statTree->Branch("theta2", &_Theta2, 32000,0);
+  statTree->Branch("theta3", &_Theta3, 32000,0);
+
   statTree->Branch("delta1", &_Delta1,32000,0);
   statTree->Branch("delta2", &_Delta2, 32000,0);
 
   ///for hadrons
-  statTree->Branch("NChadnNhad", &_nhad[0], "nChad/I");
-  statTree->Branch("Nhad", &_nhad[1], "nNhad/I");
-  statTree->Branch("hadronP", &_had, "hadP[3]/D");
-  statTree->Branch("EnergyTransfer", &_engTrans, "nu/D");
-  statTree->Branch("hadTruEng", &_hadE[0][0], "truE/D");
-  statTree->Branch("hadTrueE", &_hadEInNucleus, "hadTrueE/D");
+  //statTree->Branch("NChadnNhad", &_nhad[0], "nChad/I");
+  //statTree->Branch("Nhad", &_nhad[1], "nNhad/I");
+  //statTree->Branch("hadronP", &_had, "hadP[3]/D");
+  //statTree->Branch("EnergyTransfer", &_engTrans, "nu/D");
+  //statTree->Branch("hadTruEng", &_hadE[0][0], "truE/D");
+  //statTree->Branch("hadTrueE", &_hadEInNucleus, "hadTrueE/D");
 
-  statTree->Branch("hadRdirP", &_hrecP, "hrdirP[2][3]/D");
+  //statTree->Branch("hadRdirP", &_hrecP, "hrdirP[2][3]/D");
   // statTree->Branch("hadRecEng", &_hadE[1], "hrecE[2]/D");
-  statTree->Branch("hadQESEng", &_hadE[2], "hQESE[2]/D");
+  //statTree->Branch("hadQESEng", &_hadE[2], "hQESE[2]/D");
   // statTree->Branch("hadtransPrfl", &_hadE[3], "htprfl[2]");
-  statTree->Branch("RecShowerDir", _showerDir, "showerDir[10][3]/D");
+  //statTree->Branch("RecShowerDir", _showerDir, "showerDir[10][3]/D");
 
-  statTree->Branch("ChadMomX", &_chadP[0], "chadPx/D");
-  statTree->Branch("ChadMomY", &_chadP[1], "chadPy/D");
-  statTree->Branch("ChadMomZ", &_chadP[2], "chadPz/D");
-  statTree->Branch("ChadMomE", &_chadP[3], "chadE/D");
+  //statTree->Branch("ChadMomX", &_chadP[0], "chadPx/D");
+  //statTree->Branch("ChadMomY", &_chadP[1], "chadPy/D");
+  //statTree->Branch("ChadMomZ", &_chadP[2], "chadPz/D");
+  //statTree->Branch("ChadMomE", &_chadP[3], "chadE/D");
 
-  statTree->Branch("NhadMomX", &_nhadP[0], "nhadPx/D");
-  statTree->Branch("NhadMomY", &_nhadP[1], "nhadPy/D");
-  statTree->Branch("NhadMomZ", &_nhadP[2], "nhadPz/D");
-  statTree->Branch("NhadMomE", &_nhadP[3], "nhadE/D");
+  //statTree->Branch("NhadMomX", &_nhadP[0], "nhadPx/D");
+  //statTree->Branch("NhadMomY", &_nhadP[1], "nhadPy/D");
+  //statTree->Branch("NhadMomZ", &_nhadP[2], "nhadPz/D");
+  //statTree->Branch("NhadMomE", &_nhadP[3], "nhadE/D");
   
-  statTree->Branch("hadDir", &_haddot, "dotProd[2]/D");
-  statTree->Branch("truHitIndex", &_truHitIndex[0], "truHitInd[trajNo]/I");
-  statTree->Branch("candHitIndex", &_truHitIndex[1], "candHitInd[trajNo]/I");
+  //statTree->Branch("hadDir", &_haddot, "dotProd[2]/D");
+  //statTree->Branch("truHitIndex", &_truHitIndex[0], "truHitInd[trajNo]/I");
+  //statTree->Branch("candHitIndex", &_truHitIndex[1], "candHitInd[trajNo]/I");
   
 
   ///HitBreakUp
@@ -913,7 +918,7 @@ bool MINDplotter::extract_true_particle2(const bhep::event& evt) {
   /// neutrino energy of the event
   _nuEng = evt.fetch_dproperty("nuEnergy") * bhep::MeV;
  
-  _m.message(" Neutrino Energy=",evt.fetch_dproperty("nuEnergy"), bhep::VERBOSE);
+  _m.message(" Neurino Energy=",evt.fetch_dproperty("nuEnergy"), bhep::VERBOSE);
 
   ///vector of true particles
   const vector<bhep::particle*> Pospart = evt.true_particles();
@@ -1329,6 +1334,7 @@ void MINDplotter::hitBreakUp(fitter& Fit) {
   }
   //// First Angles  
   if ( Fit.GetNMeas() > 6 ){
+    //_Theta0 = atan (((_YMeas[0]-_tX[0]) / (_ZMeas[0]-_tX[2])))*180/3.14; 
     _Theta1 = atan (((_YMeas[1]-_YMeas[0]) / (_ZMeas[1]-_ZMeas[0])))*180/3.14;  
     _Theta2 = atan (((_YMeas[3]-_YMeas[2]) / (_ZMeas[3]-_ZMeas[2])))*180/3.14;
     _Theta3 = atan (((_YMeas[5]-_YMeas[4]) / (_ZMeas[5]-_ZMeas[4])))*180/3.14;
