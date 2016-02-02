@@ -129,6 +129,7 @@ protected:
   
   MINDsetup _geom;
 
+  int _lowPt;
 
   //Members to store plane occupancy and mean energy.
   int _nplanes;

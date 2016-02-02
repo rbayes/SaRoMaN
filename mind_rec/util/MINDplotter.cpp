@@ -253,7 +253,6 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
   //loop over trajectories
   for(int i=0; i<(int)_trajs_no; i++ ){
     
-    
     _hadHits[i] = Fit.get_had_hits()[i];
 
     // reconstructed unit direction for hadron shower
@@ -269,7 +268,7 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
     ///fit and refit info  
     bool success  = trajs[i]->quality("fitted") && 
       (int)trajs[i]->quality("fitcheck") > 0;
-    
+
     _Fit[i]       = (int)success;
     _fail[i]      = (int)(trajs[i]->quality("failType"));
     _reFit[i]     = (int)trajs[i]->quality("reseed");
@@ -306,8 +305,13 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
       fill_kinematics(*trajs[i], ste, i);///
       
       ///extrapolate upto vertex
+
       ok2 = extrap_to_vertex(*trajs[i], evt.vertex(), Fit, ste, i);
-      
+
+      if(trajs[i]->quality("lowPt") == 1)  // Get around not having a vertex.
+	{
+	  ok2 = true;
+	}
       // 
       
       ///if extrapolate to vertex is successful then fill the parameters
@@ -633,7 +637,7 @@ void MINDplotter::fill_kinematics(const Trajectory& traj, State& ste, const int 
   // information of the 1st fitted node
   EVector v = ste.hv().vector();
   EMatrix C = ste.hv().matrix();
-  
+
   //Reconstructed x,y position.
   //_X[3][0][trajno] = v[0]; _X[3][1][trajno] = v[1];
  
@@ -717,14 +721,19 @@ bool MINDplotter::extrap_to_vertex(const Trajectory& traj,
 
   //cout<<"1st fitted node Z="<<ste.vector()[2]<<"  ;tru vextexZ="<<pos[2]<<endl;
 
-  /// Add the surfaceof vertex and prpagate to that surface
-  fitObj.man().geometry_svc().setup().add_surface("mother","vertex",&surf);
-  bool ok = fitObj.man().navigation_svc().propagate(surf,ste,l);
-  fitObj.man().geometry_svc().setup().remove_surface("vertex");
+  bool ok;
 
-  //Convert to slopes representation.
-  // fitObj.man().model_svc().conversion_svc().representation().convert(ste, RP::slopes_curv_z);
-
+  if(traj.quality("lowPt") != 1) // Get around not having a vertex.
+    {
+      /// Add the surfaceof vertex and prpagate to that surface
+      fitObj.man().geometry_svc().setup().add_surface("mother","vertex",&surf);
+      ok = fitObj.man().navigation_svc().propagate(surf,ste,l);
+      fitObj.man().geometry_svc().setup().remove_surface("vertex");
+      
+      //Convert to slopes representation.
+      // fitObj.man().model_svc().conversion_svc().representation().convert(ste, RP::slopes_curv_z);
+    }
+  
   //Grab fitted vertex information.
   _fittedVert = ste.hv().vector();
   _vertMat = ste.hv().matrix();
