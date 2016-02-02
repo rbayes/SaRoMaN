@@ -611,7 +611,7 @@ if not found then  excluded_hits = 0; _exclPlanes = 0; i.e, vertGuess =0*/
       //if (_longestSingle >= _min_seed_hits){
       //if((int)muontraj.size() >= _min_seed_hits){ok = muon_extraction( hits, muontraj, hads);} 
       // 6Hits is the minimal needed to fit a helix.
-      if((int)muontraj.size() >= 6){ok = muon_extraction( hits, muontraj, hads);} 
+      if((int)muontraj.size() > 6){ok = muon_extraction( hits, muontraj, hads);} 
       //Low momentum track, we need atleast 4 hits to be able to get momenta and charge.
       else if((int)muontraj.size() >= 4){ok = LowMomentumExtraction( hits, muontraj, hads);}
       else ok = false;
@@ -776,6 +776,7 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
   //***********************************************************************
   // No longer well named
 
+  /*
   int fitcatcher;
   int nMeas = track.size();
 
@@ -788,12 +789,6 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
   int minindex = nMeas;
   double minR = 99999.999, pdR = 0.0, sumdq=0;
   //double pathlength=0;/// tminR=9999.9;
-
-  double firstNodeZ = track.nodes()[nMeas-1]->measurement().position()[2];
-  cout<<"firstNodeZ: "<<firstNodeZ<<endl;
-
-  double pathlength=track.nodes()[0]->measurement().position()[2] - firstNodeZ;
-  
   
   pos[0] = x[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[0];
   pos[1] = y[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[1];
@@ -840,11 +835,7 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
   ///double wFe = geom.get_Fe_prop();
   //double p = RangeMomentum(pathlength);
 
-  //double p2 = MomentumFromDeflection(track,0);
-
-  double p = RangeMomentum(pathlength,firstNodeZ);
-
-  
+  //double p2 = MomentumFromDeflection(track,0); 
 
   //TGraph *gr1 = new TGraph((const int)minindex, z, x);
   //TGraph *gr2 = new TGraph((const int)minindex, z, y);
@@ -855,7 +846,7 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
   TF1 *fun2 = new TF1("parfit2","[0]+[1]*x+[2]*x*x",-3,3);
   fun2->SetParameters(0.,0.001,0.001);
   
-  /*fitcatcher = gr1->Fit("parfit", "QN");
+  fitcatcher = gr1->Fit("parfit", "QN");
   vec[3] = fun->GetParameter(1);
 
   fun->SetParameters(0.,0.001);
@@ -865,11 +856,24 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
   // fun->SetParameters(0.,0.001);
   */
   //fitcatcher = gr3->Fit("parfit2", "QN");
-  double qtilde = -0.3*pow(1+fun2->GetParameter(1),3./2.)/
-    (2*fun2->GetParameter(2));
+  // double qtilde = -0.3*pow(1+fun2->GetParameter(1),3./2.)/
+  //(2*fun2->GetParameter(2));
   
   // int meansign = sumdq/fabs(sumdq);
-  int meansign = (int)(qtilde/fabs(qtilde));
+  //int meansign = (int)(qtilde/fabs(qtilde));
+
+  int nMeas = track.size();
+
+  double firstNodeZ = track.nodes()[nMeas-1]->measurement().position()[2];
+  cout<<"firstNodeZ: "<<firstNodeZ<<endl;
+
+  double pathlength=track.nodes()[0]->measurement().position()[2] - firstNodeZ;
+
+  int meansign = CalculateCharge(track);
+
+  cout<<"Charge in fit_parabola: "<<meansign<<endl;
+
+  double p = RangeMomentum(pathlength,firstNodeZ);
 
   vec[5] = meansign/p;
 
@@ -877,7 +881,8 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
   //delete gr2;
   //delete fun;
   // return sumdq;
-  return qtilde;
+  //return qtilde
+  return meansign;
 
 }
 
@@ -2172,9 +2177,12 @@ bool event_classif::LowMomentumExtraction(vector<cluster*>& hits,
 }
 
 //***********************************************************************
-double event_classif::CalculateCharge(Trajectory& track) {
+//double event_classif::CalculateCharge(Trajectory& track) {
   //***********************************************************************
 
+/*
+
+//old code
   int fitcatcher;
   int nMeas = track.size();
 
@@ -2186,7 +2194,7 @@ double event_classif::CalculateCharge(Trajectory& track) {
     z[(const int)nMeas], u[(const int)nMeas];/// r[(const int)nMeas];
   int minindex = nMeas;
   double minR = 99999.999, pdR = 0.0, sumdq=0;
-  double pathlength=0;/// tminR=9999.9;
+  //double pathlength=0;/// tminR=9999.9;
 
   double firstNodeZ = track.nodes()[nMeas-1]->measurement().position()[2];
   
@@ -2246,6 +2254,83 @@ double event_classif::CalculateCharge(Trajectory& track) {
   
   return meansign;
 }
+
+*/
+
+//***********************************************************************
+double event_classif::CalculateCharge(Trajectory& track) {
+  //***********************************************************************
+
+  int fitcatcher;
+  int nMeas = track.size();
+
+  //if (nMeas > 4) nMeas = 4;
+
+  EVector pos(3,0);
+  EVector Z(3,0); Z[2] = 1;
+  double x[(const int)nMeas], y[(const int)nMeas], 
+    z[(const int)nMeas], u[(const int)nMeas];/// r[(const int)nMeas];
+  int minindex = nMeas;
+  double minR = 99999.999, pdR = 0.0, sumdq=0;
+  //double pathlength=0;/// tminR=9999.9;
+
+  double firstNodeZ = track.nodes()[nMeas-1]->measurement().position()[2];
+  
+  pos[0] = x[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[0];
+  pos[1] = y[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[1];
+  pos[2] = z[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[2];
+  //pos[2] = 0.0;
+
+  for (int iMeas = nMeas-2;iMeas >= 0;iMeas--){
+    x[iMeas] = track.nodes()[iMeas]->measurement().vector()[0];
+    y[iMeas] = track.nodes()[iMeas]->measurement().vector()[1];
+    z[iMeas] = track.nodes()[iMeas]->measurement().position()[2];
+
+    // get the b-field from the previous step
+    EVector B = _geom.getBField(pos);
+    pos[0] = x[iMeas];  pos[1] = y[iMeas];   pos[2] = z[iMeas];
+    cout<<"mag B: "<<B[0]<<" "<<B[1]<<" "<<B[2]<<endl;
+    if(crossprod(Z,B).norm() ==0 )
+      {
+	u[iMeas] = 0;
+      }
+    else
+      {
+	u[iMeas] = dot(pos, crossprod(Z,B))/crossprod(Z,B).norm();
+      }
+
+    cout<<"values: z: "<<z[iMeas]<<" u: "<<u[iMeas]<<endl;
+  }
+
+  TGraph *gr = new TGraph((const int)minindex, z, u);
+  
+  TF1 *fun = new TF1("parfit2","[0]+[1]*x+[2]*x*x",-3,3);
+  fun->SetParameters(0.,0.001,0.001);
+
+  fitcatcher = gr->Fit("parfit2", "QN");
+
+  //cout<<"Parameters: "<<fun->GetParameter(1)<<" "<<fun->GetParameter(2)<<endl;
+
+  // Positive particle -> Positive parameters -> Qtilde +
+  // Negative Particle -> Negative parameters -> Qtilde -
+
+  double qtilde = 0.3*pow(1+fun->GetParameter(1),3./2.)/
+  (2*fun->GetParameter(2));
+  int meansign = (int)(qtilde/fabs(qtilde));
+  //delete fun;
+  //return qtilde;
+  //int meansign = sumdq/fabs(sumdq);
+  
+  return meansign;
+}
+
+
+
+
+
+
+
+
 
 /*
 bool event_classif::get_patternRec_seed_low_track(State& seed, Trajectory& muontraj,

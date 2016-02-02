@@ -93,6 +93,7 @@ protected:
 
   // Calculate the charge of a track using scattering angles.
   double CalculateCharge(Trajectory& track);
+  //double CalculateCharge2(Trajectory& track);
 
 
   bool get_patternRec_seed(State& seed, Trajectory& muontraj, vector<cluster*>& hits);
