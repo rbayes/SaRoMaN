@@ -871,6 +871,20 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
 
   double pathlength=track.nodes()[0]->measurement().position()[2] - firstNodeZ;
 
+  // Need to get the start Z-pos of the last Scintilator module.
+  double zMax = 1600; //mm
+  std::cout<<"pathLength: "<<pathlength<<std::endl;
+  double final_Zpos=track.nodes()[0]->measurement().position()[2];
+  std::cout<<"Final_Zpos"<<final_Zpos<<endl;
+
+  if(final_Zpos > zMax)
+    {//Track went through the detector
+      cout<<"Went through the detector"<<endl;
+      // p=MomentumFromDeflection(traj,firsthit);
+    }
+
+
+
   int meansign = CalculateCharge(track);
 
   cout<<"Charge in fit_parabola: "<<meansign<<endl;
@@ -1677,9 +1691,8 @@ void event_classif::set_int_type(const string name){
 }
 
 
-//***********************************************************************
+/*
 double event_classif::correctEdep(double edep, double X, double Y, double Z)
-  //***********************************************************************
 {
 
   double sum1 = 0;
@@ -1789,6 +1802,27 @@ double event_classif::correctEdep(double edep, double X, double Y, double Z)
     sum1 += exp( -(yedge + fabs(Y))/_WLSAtten );
   }
   double corrEng = 4*edep/sum1;
+  return corrEng;
+}
+
+*/
+
+//***********************************************************************
+double event_classif::correctEdep(double edep, double X, double Y, double Z)
+  //***********************************************************************
+{
+
+  double sum1 = 0;
+  double xedge = _detX/2.;
+  double yedge = _detY/2.;
+
+  sum1 = exp(-(xedge + fabs(X))/_WLSAtten);
+  sum1 += exp(-(3*xedge-fabs(X))/_WLSAtten);
+  sum1 += exp(-(yedge + fabs(Y))/_WLSAtten);
+  sum1 += exp(-(3*yedge-fabs(Y))/_WLSAtten);
+
+  double corrEng = 2*edep/sum1;
+
   return corrEng;
 }
 
@@ -2282,6 +2316,8 @@ double event_classif::CalculateCharge(Trajectory& track) {
   int nMeas = track.size();
 
   //if (nMeas > 4) nMeas = 4;
+
+  // If we pass through the detector, remove the last 2? Plane hits.
 
   EVector pos(3,0);
   EVector Z(3,0); Z[2] = 1;
