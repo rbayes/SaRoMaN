@@ -610,8 +610,10 @@ if not found then  excluded_hits = 0; _exclPlanes = 0; i.e, vertGuess =0*/
       // Do we have enough hits to perform a curve fit?
       //if (_longestSingle >= _min_seed_hits){
       //if((int)muontraj.size() >= _min_seed_hits){ok = muon_extraction( hits, muontraj, hads);} 
-      // 6Hits is the minimal needed to fit a helix.
-      if((int)muontraj.size() > 6){ok = muon_extraction( hits, muontraj, hads);} 
+      // 7Hits is the minimal needed to fit a helix.
+      //if((int)muontraj.size() > 6){ok = muon_extraction( hits, muontraj, hads);}
+      // 10Hits is needed to produce a propper helical fit without any free parameters.
+      if((int)muontraj.size() > 9){ok = muon_extraction( hits, muontraj, hads);} 
       //Low momentum track, we need atleast 4 hits to be able to get momenta and charge.
       else if((int)muontraj.size() >= 4){ok = LowMomentumExtraction( hits, muontraj, hads);}
       else ok = false;
@@ -2142,15 +2144,30 @@ bool event_classif::LowMomentumExtraction(vector<cluster*>& hits,
   
   //State currstate = traj.state(traj.first_fitted_node());
   //muontraj.nodes()[0]->set_state(seedState);
+
   muontraj.nodes()[muontraj.first_fitted_node()]->set_state(seedState);
-  muontraj.set_quality("fitted",true);
   muontraj.set_quality("initialqP",p);
-  muontraj.set_quality("fitcheck", 4);
-  //muontraj.set_quality("lowPt",1);
 
-  _lowPt = 1;
 
-  ok = true;
+  // Not expecting anything with charge 0.
+  if(p != 0)
+    {
+      muontraj.set_quality("fitted",true);
+      muontraj.set_quality("fitcheck", 4);
+      //muontraj.set_quality("lowPt",1);
+      _lowPt = 1;
+      
+      ok = true;
+    }
+  else
+    {
+      muontraj.set_quality("fitted",false);
+      muontraj.set_quality("fitcheck", 0);
+      _lowPt = 0;
+      
+      ok = false;
+    }
+
 
   /*
   State patternSeed;
@@ -2298,7 +2315,7 @@ double event_classif::CalculateCharge(Trajectory& track) {
       {
 	u[iMeas] = dot(pos, crossprod(Z,B))/crossprod(Z,B).norm();
       }
-
+    cout<<pos[0]<<" "<<pos[1]<<" "<<pos[2]<<endl;
     cout<<"values: z: "<<z[iMeas]<<" u: "<<u[iMeas]<<endl;
   }
 
@@ -2320,6 +2337,12 @@ double event_classif::CalculateCharge(Trajectory& track) {
   //delete fun;
   //return qtilde;
   //int meansign = sumdq/fabs(sumdq);
+
+  // Handle low qtilde.
+  if(fabs(meansign) > 1)
+    {
+      meansign = 0;
+    }
   
   return meansign;
 }
