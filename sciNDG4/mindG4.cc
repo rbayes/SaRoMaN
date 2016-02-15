@@ -17,7 +17,7 @@
 #include "MindEventAction.h"
 #include "MindTrackingAction.h"
 #include "MindSteppingAction.h"
-// #include "MindQGSP_BERT.h"
+//#include "MindQGSP_BERT.h"
 #include "MindUtils.h"
 
 #include <G4RunManager.hh>
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
   
   // geometry, generation and physics
   runMgr->SetUserInitialization(new MindDetectorConstruction);
-  // runMgr->SetUserInitialization(new MindQGSP_BERT);//QGSP_BERT);
+  //runMgr->SetUserInitialization(new MindQGSP_BERT);//QGSP_BERT);
   G4PhysListFactory factory;
   G4VModularPhysicsList* physlist = 
     factory.GetReferencePhysList(
@@ -143,6 +143,19 @@ int main(int argc, char** argv)
     UI->ApplyCommand("/run/verbose 0");
     UI->ApplyCommand("/event/verbose 0");
     UI->ApplyCommand("/tracking/verbose 0");
+
+    if(MindConfigService::Instance().Job().PeekSParam("UI_inactivate"))
+      {
+	UI->ApplyCommand
+	  ("/process/inactivate "+MindConfigService::Instance().Job().GetSParam("UI_inactivate"));
+	cout<<"HERE: "<<MindConfigService::Instance().Job().GetSParam("UI_inactivate")<<endl;
+      }
+
+    //UI->ApplyCommand("/process/inactivate muMsc"); // Turn of muon multiple scattering
+    //UI->ApplyCommand("/process/inactivate msc"); // Turn of multiple scattering
+    //UI->ApplyCommand("/process/inactivate muDecay");
+    //UI->ApplyCommand("/process/inactivate muMinusCaptureAtRest");
+    //UI->ApplyCommand("/process/list"); // List all of the active processes
     
     // start the run
     G4int numEvents = 
