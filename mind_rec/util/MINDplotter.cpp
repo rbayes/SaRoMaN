@@ -987,7 +987,7 @@ bool MINDplotter::extract_true_particle2(const bhep::event& evt) {
 
       //Set true values of muon mom. etc.
       //True q/P.
-      _tqP[trajNo] = _tQ[trajNo]/_truPart->p();
+      _tqP[trajNo] = _tQ[trajNo]*_truPart->p();
     
       // cout<<"tru mom="<<1./_tqP[trajNo]<<" charge="<<_tQ[trajNo]<<endl;
       
