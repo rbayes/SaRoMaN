@@ -334,8 +334,8 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
       
       ///range of q/p calculation ?
 
-      _rangqP[0][i] = trajs[i]->quality("initialqP");
-      //_rangqP[1][i] = Fit.get_classifier().RangeMomentum(trajs[i]->length());
+      _rangqP[0][i] = 1./trajs[i]->quality("initialqP");
+      // _rangqP[1][i] = Fit.get_classifier().RangeMomentum(trajs[i]->length());
       // _rangqP[1][i] = _rangqP[0][i] - _qP[0][i];
       // _rangqP[2][i] = _qP[1][i] - _rangqP[0][i];
       
@@ -453,52 +453,52 @@ void MINDplotter::define_tree_branches() {
   //*************************************************************************************
 
   ///for each event
-  statTree->Branch("Evt", &_evNo, "EventNo/I");
-  statTree->Branch("evVertex", &_vert, "vert[3]/D");
-  statTree->Branch("EvtFail", &_failEvent, "EvtFail/I");
-  if (_clu) statTree->Branch("TrueInteraction",&_truInt,"truInt/I");
-  statTree->Branch("MuonEng", &_nuEng, "NuEng/D");
+  statTree->Branch("MC_Evt", &_evNo, "MC_EventNo/I");
+  statTree->Branch("MC_evVertex", &_vert, "MC_vert[3]/D");
+  statTree->Branch("recon_EvtFail", &_failEvent, "recon_EvtFail/I");
+  if (_clu) statTree->Branch("MC_TrueInteraction",&_truInt,"MC_truInt/I");
+  statTree->Branch("MC_PrimaryEng", &_nuEng, "MC_KEng/D");
   if (_clu) {
     //statTree->Branch("Charm", &_charm, "isCharm/I:pdg/I");
     //statTree->Branch("InteractionQ2", &_Q2, "Q2/D");
     //statTree->Branch("EventPdg",&_pdg, "initnu/I:partPDG/I:nucType/I");
   }
-  statTree->Branch("visibleEng", &_visEng, "visEng/D");
-  statTree->Branch("HitsInEvent", &_hitsInEvent, "TotalHits/I");
+  statTree->Branch("raw_visibleEng", &_visEng, "raw_visEng/D");
+  statTree->Branch("raw_HitsInEvent", &_hitsInEvent, "raw_TotalHits/I");
  
   ///for each traj 
-  statTree->Branch("TrajectoryNo", &_trajs_no, "trajNo/I");
-  statTree->Branch("hadronHits", &_hadHits, "hadHits[10]/I");
-  statTree->Branch("NonMuonEdep", &_nonMuonEdep, "HadEdep[10]/D");
-  statTree->Branch("LongMuTraj", &_muontraj[0], "longMuTraj/I");
-  statTree->Branch("NoMuTraj", &_muontraj[1], "noMuTraj/I");
+  statTree->Branch("classif_NumTrajectory", &_trajs_no, "trajNo/I");
+  statTree->Branch("traj_hadronHits", &_hadHits, "traj_hadHits[trajNo]/I");
+  statTree->Branch("traj_NonMuonEdep", &_nonMuonEdep, "traj_HadEdep[trajNo]/D");
+  statTree->Branch("classif_LongMuTraj", &_muontraj[0], "longMuTraj/I");
+  statTree->Branch("classif_NoMuTraj", &_muontraj[1], "noMuTraj/I");
 
-  statTree->Branch("TrajVertex", &_vertZ, "trajVert[10]/D");
-  statTree->Branch("Fitted", &_Fit, "success[trajNo]/I");
-  statTree->Branch("backFit",&_reFit,"backFit[trajNo]/I");
-  statTree->Branch("Fail", &_fail, "FailType[trajNo]/I");
-  statTree->Branch("interaction",&_intType,"Inter[trajNo]/I");
+  statTree->Branch("traj_TrajVertex", &_vertZ, "traj_trajVert[trajNo]/D");
+  statTree->Branch("traj_Fitted", &_Fit, "traj_success[trajNo]/I");
+  statTree->Branch("traj_backFit",&_reFit,"traj_backFit[trajNo]/I");
+  statTree->Branch("traj_Fail", &_fail, "traj_FailType[trajNo]/I");
+  statTree->Branch("traj_interaction",&_intType,"traj_Inter[trajNo]/I");
 
   ///
-  statTree->Branch("visEngTraj",&_engTraj, "engTraj[trajNo]/D");
+  statTree->Branch("traj_visEng",&_engTraj, "traj_eng[trajNo]/D");
   // statTree->Branch("visEngSel", &_engSelTraj, "engSelTraj[trajNo]/D");
-  statTree->Branch("trajEngDep",&_engvar[0],"meanDep[trajNo]/D");
-  statTree->Branch("trajEngVar",&_engvar[1],"engVar[trajNo]/D");
-  statTree->Branch("trajLowDep",&_engvar[2],"lowDep[trajNo]/D");
-  statTree->Branch("trajHighDep",&_engvar[3],"highDep[trajNo]/D");
+  statTree->Branch("traj_EngDep",&_engvar[0],"traj_meanDep[trajNo]/D");
+  statTree->Branch("traj_EngVar",&_engvar[1],"traj_engVar[trajNo]/D");
+  statTree->Branch("traj_LowDep",&_engvar[2],"traj_lowDep[trajNo]/D");
+  statTree->Branch("traj_HighDep",&_engvar[3],"traj_highDep[trajNo]/D");
 
   
-  statTree->Branch("Planes", &_plns[0], "nplanes[10]/I");
-  statTree->Branch("FPlanes",&_plns[1], "freeplanes[10]/I");
+  statTree->Branch("traj_Planes", &_plns[0], "traj_nplanes[trajNo]/I");
+  statTree->Branch("traj_FPlanes",&_plns[1], "traj_freeplanes[trajNo]/I");
  
 
   ///position  
-  statTree->Branch("TrueXPosition", &_tX[0], "truXPos/D");
-  statTree->Branch("TrueYPosition", &_tX[1], "truYPos/D");
-  statTree->Branch("RecXPosition", &_X[0][0],"recXPos[trajNo]/D");
-  statTree->Branch("RecYPosition", &_X[0][1], "recYPos[trajNo]/D");
-  statTree->Branch("ErrXPosition", &_X[1][0], "ErrXPos[trajNo]/D");
-  statTree->Branch("ErrYPosition", &_X[1][1], "ErrYPos[trajNo]/D");
+  statTree->Branch("MCtr_TrueXPosition", &_tX[0][0], "MCtr_vertXPos[trajNo]/D");
+  statTree->Branch("MCtr_TrueYPosition", &_tX[1][0], "MCtr_vertYPos[trajNo]/D");
+  statTree->Branch("traj_vertXPosition", &_X[0][0],"traj_vertXPos[trajNo]/D");
+  statTree->Branch("traj_vertYPosition", &_X[0][1], "traj_vertYPos[trajNo]/D");
+  statTree->Branch("traj_ErrXPosition", &_X[1][0], "traj_ErrXPos[trajNo]/D");
+  statTree->Branch("traj_ErrYPosition", &_X[1][1], "traj_ErrYPos[trajNo]/D");
   //statTree->Branch("RecXPosition_WVE", &_X[3][0], "recXPos_WVE[trajNo]/D");
   //statTree->Branch("RecYPosition_WVE", &_X[3][1], "recYPos_WVE[trajNo]/D");
   //statTree->Branch("ErrXPosition_WVE", &_X[2][0], "ErrXPos_WVE[trajNo]/D");
@@ -507,14 +507,14 @@ void MINDplotter::define_tree_branches() {
   //statTree->Branch("YPull", &_X[5][1], "pull_y[trajNo]/D");
 
   ///Directions
-  statTree->Branch("TrueXDirection", &_tTh[0], "truXTh[trajNo]/D");
-  statTree->Branch("TrueYDirection", &_tTh[1], "truYTh[trajNo]/D");
-  statTree->Branch("TruDirection", _tUnitDir, "truDir[trajNo][3]/D");
-  statTree->Branch("RecDirection", _recUnitDir, "recDir[trajNo][3]/D");
-  statTree->Branch("RecXDirection", &_Th[0][0], "recXTh[trajNo]/D");
-  statTree->Branch("RecYDirection", &_Th[0][1], "recYTh[trajNo]/D");
-  statTree->Branch("ErrXDirection", &_Th[1][0], "ErrXTh[trajNo]/D");
-  statTree->Branch("ErrYDirection", &_Th[1][1], "ErrYTh[trajNo]/D");
+  statTree->Branch("MCtr_XDirection", &_tTh[0], "MCtr_XTh[trajNo]/D");
+  statTree->Branch("MCtr_YDirection", &_tTh[1], "MCtr_YTh[trajNo]/D");
+  statTree->Branch("MCtr_Direction", _tUnitDir, "MCtr_Dir[trajNo][3]/D");
+  statTree->Branch("traj_Direction", _recUnitDir, "traj_Dir[trajNo][3]/D");
+  statTree->Branch("traj_XDirection", &_Th[0][0], "traj_XTh[trajNo]/D");
+  statTree->Branch("traj_YDirection", &_Th[0][1], "traj_YTh[trajNo]/D");
+  statTree->Branch("traj_ErrXDirection", &_Th[1][0], "traj_ErrXTh[trajNo]/D");
+  statTree->Branch("traj_ErrYDirection", &_Th[1][1], "traj_ErrYTh[trajNo]/D");
   // statTree->Branch("RecXDirection_WVE", &_Th[3][0], "recXTh_WVE[trajNo]/D");
   // statTree->Branch("RecYDirection_WVE", &_Th[3][1], "recYTh_WVE[trajNo]/D");
   // statTree->Branch("ErrXDirection_WVE", &_Th[4][0], "ErrXTh_WVE[trajNo]/D");
@@ -524,10 +524,10 @@ void MINDplotter::define_tree_branches() {
 
 
   ///Momentum
-  statTree->Branch("TruMom", &_tqP, "truqP[trajNo]/D");
-  statTree->Branch("RecMom", &_qP[0], "recqP[trajNo]/D");
-  statTree->Branch("ErrMom", &_qP[1], "ErrqP[trajNo]/D");
-  statTree->Branch("RecMomNE", &_qP[2], "recqPNE[trajNo]/D");
+  statTree->Branch("MCtr_Mom", &_tqP, "MCtr_qP[trajNo]/D");
+  statTree->Branch("traj_Mom", &_qP[0], "traj_qP[trajNo]/D");
+  statTree->Branch("traj_ErrMom", &_qP[1], "traj_ErrqP[trajNo]/D");
+  statTree->Branch("traj_MomNE", &_qP[2], "traj_qPNE[trajNo]/D");
   // statTree->Branch("RecMom_WVE", &_qP[3], "recqP_WVE[trajNo]/D");
   // statTree->Branch("ErrMom_WVE", &_qP[4], "ErrqP_WVE[trajNo]/D");
   // statTree->Branch("MomPull", &_qP[5], "pull_mom[trajNo]/D");
@@ -535,48 +535,48 @@ void MINDplotter::define_tree_branches() {
 
 
   ///Charge 
-  statTree->Branch("TruCharge", &_tQ, "truQ[trajNo]/I");
-  statTree->Branch("TruPDG", &_tPDG, "truPDG[trajNo]/I");
-  statTree->Branch("RecCharge", &_Q[0], "recQ[trajNo]/I");
-  statTree->Branch("ID", &_Q[1], "ID[trajNo]/I");
+  statTree->Branch("MCtr_Charge", &_tQ, "MCtr_Q[trajNo]/I");
+  statTree->Branch("MCtr_PDG", &_tPDG, "MCtr_truPDG[trajNo]/I");
+  statTree->Branch("traj_Charge", &_Q[0], "traj_Q[trajNo]/I");
+  statTree->Branch("MCtr_ID", &_Q[1], "MCtr_ID[trajNo]/I");
 
 
 
-  statTree->Branch("length", &_leng,"lenTraj[trajNo]/D");
+  statTree->Branch("traj_length", &_leng,"traj_len[trajNo]/D");
   ///range of qP calculations only for success ?
-  statTree->Branch("initrangqP", &_rangqP[0],"intrangqP[trajNo]/D");
-  statTree->Branch("rangqP", &_rangqP[1],"rangqP[trajNo]/D");
+  statTree->Branch("traj_initrangqP", &_rangqP[0],"traj_intrangqP[trajNo]/D");
+  // statTree->Branch("traj_rangqP", &_rangqP[1],"traj_rangqP[trajNo]/D");
   //statTree->Branch("rangErr", &_rangqP[1],"rangErr[trajNo]/D");
   //statTree->Branch("rangdiff", &_rangqP[2],"recrangediff[trajNo]/D");
 
-  statTree->Branch("FitChiInfo", &_Chi[0], "trajChi[trajNo]/D");
-  statTree->Branch("MaxFitChiInfo", &_Chi[1], "MaxLoc[trajNo]/D");
-  statTree->Branch("TotalFitChiInfo", &_Chi[2], "TotalChi2[trajNo]/D");
-  statTree->Branch("NDoF", &_ndf, "ndof[trajNo]/I");
-  statTree->Branch("extent", &_Xtent, "xtent[10]/D");
+  statTree->Branch("traj_FitChiInfo", &_Chi[0], "traj_Chi[trajNo]/D");
+  statTree->Branch("traj_MaxFitChiInfo", &_Chi[1], "traj_MaxLoc[trajNo]/D");
+  statTree->Branch("traj_TotalFitChiInfo", &_Chi[2], "traj_TotalChi2[trajNo]/D");
+  statTree->Branch("traj_NDoF", &_ndf, "traj_ndof[trajNo]/I");
+  statTree->Branch("traj_extent", &_Xtent, "traj_xtent[trajNo]/D");
 
   
-  statTree->Branch("NoHits", &_nhits, "nhits[trajNo]/I");
-  statTree->Branch("Nallhits", &_nallhits, "nallhits/I"); 
-  statTree->Branch("XPos", &_XPos,32000,0);
-  statTree->Branch("YPos", &_YPos, 32000,0);
-  statTree->Branch("ZPos", &_ZPos,32000,0);
-  statTree->Branch("EngDeposit", &_Edep,32000,0);
-  statTree->Branch("Time", &_HTime,32000,0);
-  statTree->Branch("positionStart",_positionStart,"positionStart[trajNo][3]/D" );
+  statTree->Branch("traj_NoHits", &_nhits, "traj_nhits[trajNo]/I");
+  statTree->Branch("classif_Nallhits", &_nallhits, "classif_traj_nallhits/I"); 
+  statTree->Branch("trajNode_XPos", &_XPos,32000,0);
+  statTree->Branch("trajNode_YPos", &_YPos, 32000,0);
+  statTree->Branch("trajNode_ZPos", &_ZPos,32000,0);
+  statTree->Branch("trajNode_EngDeposit", &_Edep,32000,0);
+  statTree->Branch("trajNode_Time", &_HTime,32000,0);
+  statTree->Branch("traj_positionStart",_positionStart,"traj_positionStart[trajNo][3]/D" );
   
-  statTree->Branch("Xmeas", &_XMeas,32000,0);  
-  statTree->Branch("Ymeas", &_YMeas, 32000,0);
-  statTree->Branch("Zmeas", &_ZMeas,32000,0);
-  statTree->Branch("EngMeas", &_EMeas,32000,0);
+  statTree->Branch("raw_Xmeas", &_XMeas,32000,0);  
+  statTree->Branch("raw_Ymeas", &_YMeas, 32000,0);
+  statTree->Branch("raw_Zmeas", &_ZMeas,32000,0);
+  statTree->Branch("raw_EngMeas", &_EMeas,32000,0);
 
   //statTree->Branch("theta0", &_Theta0,32000,0);
-  statTree->Branch("theta1", &_Theta1,32000,0);
-  statTree->Branch("theta2", &_Theta2, 32000,0);
-  statTree->Branch("theta3", &_Theta3, 32000,0);
+  statTree->Branch("raw_theta1", &_Theta1,32000,0);
+  statTree->Branch("raw_theta2", &_Theta2, 32000,0);
+  statTree->Branch("raw_theta3", &_Theta3, 32000,0);
 
-  statTree->Branch("delta1", &_Delta1,32000,0);
-  statTree->Branch("delta2", &_Delta2, 32000,0);
+  statTree->Branch("raw_delta1", &_Delta1,32000,0);
+  statTree->Branch("raw_delta2", &_Delta2, 32000,0);
 
   ///for hadrons
   //statTree->Branch("NChadnNhad", &_nhad[0], "nChad/I");
@@ -609,23 +609,23 @@ void MINDplotter::define_tree_branches() {
 
   ///HitBreakUp
   ///statTree->Branch("TruMu", &_hitType[0], "nTruMu/I");
-  statTree->Branch("TruMu", &_hitTrMu, "nTruMu/I");
-  statTree->Branch("InMu", &_hitType[0], "nInMu[trajNo]/I");
-  statTree->Branch("MuInMu", &_hitType[1], "nMuInMu[trajNo]/I");
-  statTree->Branch("fittedNode", &_hitType[2], "nFitN[trajNo]/I");
-  statTree->Branch("hadN", &_hitHad, "nhad/I");
+  statTree->Branch("MC_TruMu", &_hitTrMu, "MC_nTruMu/I");
+  statTree->Branch("traj_InMu", &_hitType[0], "traj_nInMu[trajNo]/I");
+  statTree->Branch("MCtr_MuInMu", &_hitType[1], "MCtr_nMuInMu[trajNo]/I");
+  statTree->Branch("traj_fittedNode", &_hitType[2], "traj_nFitN[trajNo]/I");
+  statTree->Branch("classif_hadN", &_hitHad, "classif_nhad/I");
   
   
   //statTree->Branch("MuHits", &_mus, "truMu[trajNo][nallhits]/I");
   //statTree->Branch("CandHits", &_cand, "inMu[trajNo][nallhits]/B");
   //statTree->Branch("FittedNodes",&_node,"fitNode[trajNo][nallhits]/B");
   //statTree->Branch("HadronNodes",&_had,"hadN[trajNo][nallhits]/B");
-  statTree->Branch("PatRecChi", &_pChi, "maxChiMu/D:MinChiHad/D:MaxConsecHol/D");
+  statTree->Branch("traj_PatRecChi", &_pChi, "maxChiMu[trajNo]/D:MinChiHad[trajNo]/D:MaxConsecHol[trajNo]/D");
 
 
-  statTree->Branch("XHadPos", &_XHadPos,32000,0);
-  statTree->Branch("YHadPos", &_YHadPos, 32000,0);
-  statTree->Branch("ZHadPos", &_ZHadPos,32000,0);
+  statTree->Branch("classif_XHadPos", &_XHadPos,32000,0);
+  statTree->Branch("classif_YHadPos", &_YHadPos, 32000,0);
+  statTree->Branch("classif_ZHadPos", &_ZHadPos,32000,0);
   
   
 }
@@ -656,7 +656,7 @@ void MINDplotter::fill_kinematics(const Trajectory& traj, State& ste, const int 
  
   //Reconstructed q/P without extrapolating to vertex
   if (v[5] !=0) _Q[0][trajno] = (int)( v[5]/fabs(v[5]) );
-  _qP[2][trajno] = v[5];
+  _qP[2][trajno] = 1./v[5];
   
   //cout<<"recqP_WVE="<< _qP[2][trajno]<<endl;
   //Corresponding Error.
@@ -790,13 +790,13 @@ void MINDplotter::momentum_pulls(const int trajno) {
 
   //Reconstructed q/P.
   if (_fittedVert[5] !=0) _Q[0][trajno] = (int)( _fittedVert[5]/fabs(_fittedVert[5]) );
-  _qP[0][trajno] = _fittedVert[5];
+  _qP[0][trajno] = 1./_fittedVert[5];
 
   _m.message("rec Mom =",1./_fittedVert[5],bhep::VERBOSE);
   
   //Corresponding Error.
   if (_vertMat[5][5]>0)
-    _qP[1][trajno] = sqrt(_vertMat[5][5]);
+    _qP[1][trajno] = sqrt(_vertMat[5][5])/_fittedVert[5]/_fittedVert[5];
   
   //Correctly ID'd charge?.
   if (_tQ[trajno] == _Q[0][trajno]) _Q[1][trajno] = 1;
@@ -873,12 +873,16 @@ bool MINDplotter::extract_true_particle1(const bhep::event& evt, const int trajN
   /// loop over true particles
   int count = 0;
   for (int iParts=0;iParts < (int)Pospart.size();iParts++){
-    if (Pospart[iParts]->name().compare("mu-")==0){
+    if (Pospart[iParts]->name().compare("mu-")==0 ||
+	Pospart[iParts]->name().compare("pi-")==0 ||
+	Pospart[iParts]->name().compare("e-")==0){
       _tQ[trajNo] = -1;
       _truPart = Pospart[iParts];
       count++;
     } 
-    else if (Pospart[iParts]->name().compare("mu+")==0){
+    else if (Pospart[iParts]->name().compare("mu+")==0 ||
+	     Pospart[iParts]->name().compare("pi+")==0 ||
+	     Pospart[iParts]->name().compare("e+")==0){
       _tQ[trajNo] = 1;
       _truPart = Pospart[iParts];
       count++;
@@ -904,7 +908,7 @@ bool MINDplotter::extract_true_particle1(const bhep::event& evt, const int trajN
   
   //Set true values of muon mom. etc.
   //True q/P.
-  _tqP[trajNo] = _tQ[trajNo]/_truPart->p();
+  _tqP[trajNo] = _tQ[trajNo]*_truPart->p();
   //True direction.
   _tTh[0][trajNo]= _truPart->px()/_truPart->pz();
   _tTh[1][trajNo]= _truPart->py()/_truPart->pz();
@@ -1502,9 +1506,9 @@ void MINDplotter::patternStats2(fitter& Fit) {
       
       ///pattern Recognition Chi2
       if (_failEvent != 7){
-	_pChi[0] = Fit.get_classifier().get_PatRec_Chis()[0];
-	_pChi[1] = Fit.get_classifier().get_PatRec_Chis()[1];
-	_pChi[2] = Fit.get_classifier().get_PatRec_Chis()[2];
+	_pChi[i][0] = Fit.get_classifier().get_PatRec_Chis()[i][0];
+	_pChi[i][1] = Fit.get_classifier().get_PatRec_Chis()[i][1];
+	_pChi[i][2] = Fit.get_classifier().get_PatRec_Chis()[i][2];
 	
 	_engvar[1][i] = 0;
 	

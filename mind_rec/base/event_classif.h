@@ -44,7 +44,7 @@ public:
   int get_int_type(){ return _intType; }
   int get_vertex(){ return _vertGuess; }
   int get_fail_type(){ return _failType; }
-  EVector& get_PatRec_Chis(){ return _recChi; }
+  std::vector<EVector>& get_PatRec_Chis(){ return _recChi; }
   State& get_patRec_seed(){ return _seedState; }
   std::vector<State>& get_patRec_seed_vector(){ return _vPR_seed; }////
   int get_last_iso(){ return _lastIso; }
@@ -164,7 +164,7 @@ protected:
   
   //Monitoring variables.
   int _failType;
-  EVector _recChi;
+  std::vector<EVector> _recChi;
   State _seedState;
 
   double _FeWeight;

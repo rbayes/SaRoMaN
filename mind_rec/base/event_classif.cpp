@@ -550,8 +550,8 @@ bool event_classif::chargeCurrent_analysis(vector<cluster*>& hits,
   muontraj.reset();
   bool ok = true;
   
-  _recChi = EVector(3,0);
-  _recChi[1] = 100000; //SetLarge dummy value for minChiHadron bit.
+  _recChi.push_back(EVector(3,0));
+  _recChi.back()[1] = 100000; //SetLarge dummy value for minChiHadron bit.
   
   /*//looking into beginning of planes to guess vertex hitno, to exclude backward particle hits and 
 if not found then  excluded_hits = 0; _exclPlanes = 0; i.e, vertGuess =0*/
@@ -1006,13 +1006,13 @@ bool event_classif::perform_muon_extraction(const State& seed, vector<cluster*>&
 	  
 	  //pattern recognition chi2 
 	  if ((_planes[pl]->GetHits()[iht] )->get_mu_prop() > 0.8 )
-	    _recChi[0] = TMath::Max(Chi2[iht], _recChi[0]);
+	    _recChi.back()[0] = TMath::Max(Chi2[iht], _recChi.back()[0]);
 	  else
-	    _recChi[1] = TMath::Min(Chi2[iht], _recChi[1]);
+	    _recChi.back()[1] = TMath::Min(Chi2[iht], _recChi.back()[1]);
 	  
 	  
-	  if ( nConsecHole > _recChi[2] )
-	    _recChi[2] = nConsecHole;
+	  if ( nConsecHole > _recChi.back()[2] )
+	    _recChi.back()[2] = nConsecHole;
 	  
 	  nConsecHole = 0;
 	  
