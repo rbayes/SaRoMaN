@@ -84,6 +84,10 @@ void MINDsetup::createGeom(){
   _msetup.message("+++ CreatGeom function +++",bhep::VERBOSE);
   
   //----- axes for definition of volumes and surfaces ----//
+
+  _detector_z_max = 0;
+  _detector_z_min = 0;
+
   
   xaxis=EVector(3,0); xaxis[0] = 1.; 
   yaxis=EVector(3,0); yaxis[1] = 1.; 
@@ -134,6 +138,7 @@ void MINDsetup::createGeom(){
       it != _gdml_pos_map.end(); ++it)
     {
       std::map<string,std::vector<double> >::iterator it_int;
+      // Get the middle position of the module
       vol_name = it->first;
       pos[0]= it->second[0];
       pos[1]= it->second[1];
@@ -155,6 +160,13 @@ void MINDsetup::createGeom(){
 	  //det = new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
 	  //		it_int->second[0]/2, it_int->second[1]/2);
 
+	  if((pos[2] + it_int->second[2]/2 > _detector_z_max)) 
+	    _detector_z_max = (pos[2] + it_int->second[2]/2);
+
+	  if((pos[2] - it_int->second[2]/2 < _detector_z_min)) 
+	    _detector_z_min = (pos[2] - it_int->second[2]/2);
+	  
+	  // Create the box with the position and the dimentions of the module
 	  detVector.push_back(new Box(pos, zaxis, xaxis, it_int->second[2]/2.,
 	  		      it_int->second[0]/2, it_int->second[1]/2));
 
@@ -281,6 +293,7 @@ void MINDsetup::addProperties(){
   dict::Key vol_name;
 
   _generalBFieldMap = MINDfieldMapReader(Bmap,_fieldScale);
+  _gsetup.set_volume_property("mother","X0",X0AIR);
  
   /*
 
@@ -349,17 +362,25 @@ void MINDsetup::addProperties(){
 	  //cout<<"YES"<<endl;
 	  
 	  // Should be done in readParam
-	  double wSc = SCINT_z / (SCINT_z + AIR_z*(numScint+1)*rel_denAS);
-	  double X01 = (X0Sc*X0AIR) / (wSc*(X0AIR-X0Sc) + X0Sc);
-	  double wFe = IRON_z/(IRON_z + ((SCINT_z+AIR_z)*numScint+AIR_z)*rel_denSI*(wSc*(1-rel_denAS)+rel_denAS));
+	  //double wSc = SCINT_z / (SCINT_z + AIR_z*(numScint+1)*rel_denAS);
+	  //double X01 = (X0Sc*X0AIR) / (wSc*(X0AIR-X0Sc) + X0Sc);
+	  //double wFe = IRON_z/(IRON_z + ((SCINT_z+AIR_z)*numScint+AIR_z)*rel_denSI*(wSc*(1-rel_denAS)+rel_denAS));
 	  
+	  double length = it_int->second[2]; // Simply taken from the solid reference.
+
+	  double wSc = numScint *SCINT_z / length;
+	  double wFe = numFe * IRON_z / length;
+	  
+	  double X0Eff = X0Fe * wFe + X0Sc * wSc;
+
 	  _wFe = wFe;
 
-	  double X0Eff = 1./(wFe/X0Fe + wSc/X01);
+	  //double X0Eff = 1./(wFe/X0Fe + wSc/X01);
+	  //double X0Eff = 1./(wFe/X0Fe + wSc/X0Sc);
 	  X0EffVec.push_back(X0Eff);
 
 	  //double length = numScint * AIR_z +numScint * SCINT_z + numFe * IRON_z;
-	  double length = it_int->second[2]; // Simply taken from the solid reference.
+	  //double length = it_int->second[2]; // Simply taken from the solid reference.
 
 	  double de_dx = (numScint * SCINT_z * de_dx_scint + numFe * IRON_z * de_dx_fe)/length;
 
@@ -381,12 +402,12 @@ void MINDsetup::addProperties(){
 	  double copy = fieldScale;
 	  _moduleDataMap[vol_name].push_back(copy);
 
-	  _de_dx_map = new DeDxMap(de_dx*MeV/mm);
-	  //de_dx_map_vec.push_back(new DeDxMap(de_dx*MeV/mm));
+	  //_de_dx_map = new DeDxMap(de_dx*MeV/mm);
+	  de_dx_map_vec.push_back(new DeDxMap(de_dx*MeV/mm));
 	  //_de_dx_map_scint = new DeDxMap(de_dx_scint*MeV/mm);
 
-	  _gsetup.set_volume_property(vol_name,RP::de_dx_map,*_de_dx_map);
-	  //_gsetup.set_volume_property(vol_name,RP::de_dx_map,*de_dx_map_vec.back());
+	  //_gsetup.set_volume_property(vol_name,RP::de_dx_map,*_de_dx_map);
+	  _gsetup.set_volume_property(vol_name,RP::de_dx_map,*de_dx_map_vec.back());
 	  //_gsetup.set_volume_property(vol_name,"X0",X0Eff);
 	  _gsetup.set_volume_property(vol_name,"X0",X0EffVec.back());
 	  //_gsetup.set_volume_property_to_sons("mother",RP::BFieldMap,BFieldMap);

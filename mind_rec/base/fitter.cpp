@@ -130,101 +130,140 @@ bool fitter::Execute(bhep::particle& part,int evNo){
 
   /// loop over trajectories 
   for (unsigned int i=0; i< _trajs.size(); i++){ 
-    
-    _m.message("inside traj loop::if classifier ok, traj no =",i,"*********",bhep::DETAILED); 
-    ///
-    _fitted = false;
-    _reseed_ok = false;
-    _reseed_called = false;
-    _failType = 0;
-    _intType = 0; //set to 'success' before run to avoid faults in value.
-    ok = true;///track finded by PR or CA ??
-    
-    /// Get the trajectory
-    _traj = *(_trajs[i]);
-    _m.message("fitter::vector_PR size = ", _vPR_seed.size()," & trajno=",i,"  nmeas =",_traj.size(),bhep::DETAILED);
-    
-    //get traj informations
-    int nplanes = 0, freeplanes = 0;
-    double xtent = 0, vertZ =0;
-    
-    //Get traj info before fitting
-    nplanes = (int)(_traj.quality("nplanes"));
-    freeplanes = (int)(_traj.quality("freeplanes"));
-    _intType = (int)(_traj.quality("intType"));
-    _failType = (int)(_traj.quality("failType"));
-    xtent = (double)(_traj.quality("xtent"));
-    vertZ = (double)(_traj.quality("vertZ"));
-    
-    // _m.message("in fitter:: from classifier the traj =",_traj,bhep::DETAILED);
-    _m.message("in fitter: for traj no =",i,"  intType =",_intType,"  failType=",_failType,bhep::VERBOSE);
-    
-    ///sort the nodes in increasing Z (event when PR is not running) 
-    _traj.sort_nodes(RP::z, 1);
-    
-    ///if the traj finding fails during event_classification CA/PR anyone 
-    if(_failType==4 || _failType==5 || _failType==6) ok = false;
  
-    ///track found by finder (CA or PR not failed)
-    State seedState;
-    if (ok) {
-      //SetFit mode to manager.
-      MINDfitman::instance().fit_mode();
-
-      ok = CheckValidTraj(_traj);
-    }
+    _m.message("inside traj loop::if classifier ok, traj no =",i,"*********",bhep::DETAILED); 
     
-    ///fit the trajectory 
-    if (ok) {
-      /// seed for Fit 
-      ComputeSeed(_traj,seedState);
+    // If the track is fitted
+    //if(_trajs[i]->nodes()[0]->status("fitted"))
+    // if(_trajs[i]->quality("fitted"))
+    //if((_trajs[i]->first_fitted_node()).status("fitted"))
+    
+    //if(_trajs[i]->nodes()[_trajs[i]->first_fitted_node()]->status("fitted"))
+    if(_trajs[i]->quality("lowPt") == 1)
+      {
+	//EVector vertex = EVector(3,0);
+	//vertex = _trajs[i]->state(_trajs[i]->first_fitted_node()).vector();
+	
+	cout<<"We have found a fitted track"<<endl;
+	_fitted = true;
+	ok = false; // No need to fit the track if it is fitted!
+	_fitCheck = 1;// ?? Can not set this, thus the track is not added to fitted nodes. Must check this again.
+	_reseed_ok = false;
+	_reseed_called = false;
 
-      /// if (ok)cout<<"if classifier3="<<endl; 
-      _fitted = FitTrajectory(seedState,i);
-      
-      _m.message("- traj node0=",*(_traj.nodes()[0]),bhep::DETAILED);
-      
-      _m.message("- copied trajectory =", _traj,bhep::DETAILED);
-            
-      //
-      //if(ok && _fitted && abs(_length) > maxlength){
-      if(_fitted && abs(_length) > maxlength){
-	maxlength = abs(_length);
-	_muonindex[0] = i;
+	_traj = *(_trajs[i]);
+
+	_traj.set_quality("fitcheck", _fitCheck);
+	_traj.set_quality("fitted",_fitted);
+	_traj.set_quality("lowPt",1);
+	_traj.set_quality("reseed",0);
+	//cout<<"initialqP: "<<(double)(_traj.quality("initialqP"))<<endl;
+	//cout<<"Momentum: "<<_traj.node(_traj.first_fitted_node()).state().vector()[5]<<endl;
+
+	*(_trajs[i]) = _traj;
       }
-      if(nplanes > maxPlanes){
-	maxPlanes = double(nplanes);
-	_muonindex[1] = i;
-      }
-    }
+    else
+      {
     
-    ///assign quality for each trajectory
-    _traj.set_quality("failType",_failType);
-    _traj.set_quality("intType",_intType);
-    _traj.set_quality("nplanes",nplanes);
-    _traj.set_quality("freeplanes",freeplanes);
-    _traj.set_quality("reseed",_reseed_ok);
-    _traj.set_quality("xtent",xtent);
-    _traj.set_quality("initialqP",_initialqP);
-    _traj.set_quality("fitted",_fitted);
-    _traj.set_quality("vertZ", vertZ);
-    _traj.set_quality("fitcheck", _fitCheck);
-    
-    *(_trajs[i]) = _traj;
-    // cout<<"traj ="<<i<<" failType ="<<_failType<<" fitted ="<<(int)traj.quality("fitted")<<endl;;  
-       
-    // std::cout<<"*********************************************"<<std::endl;
-    //std::cout<<" ++++++ Trajectory "<<i<<"  fitted+++++++++++"<<std::endl;
-    //std::cout<<"*********************************************\n"<<std::endl;
-  } // End loop over trajectories.
+	///
+	_fitted = false;
+	_reseed_ok = false;
+	_reseed_called = false;
+	_failType = 0;
+	_intType = 0; //set to 'success' before run to avoid faults in value.
+	ok = true;///track finded by PR or CA ??
+	
+	/// Get the trajectory
+	_traj = *(_trajs[i]);
+	_m.message("fitter::vector_PR size = ", _vPR_seed.size()," & trajno=",i,"  nmeas =",_traj.size(),bhep::DETAILED);
+	
+	//get traj informations
+	int nplanes = 0, freeplanes = 0;
+	double xtent = 0, vertZ =0;
 
-  /// for hadron shower
-  if((int)_trajs.size() != 0)
-    for(int j=0; j<=(int)_trajs.size(); j++)
-      rec_had_edep(j);
-  else 
-    rec_had_edep(0);
-  // rec_had_energy();
+	//Get traj info before fitting
+	nplanes = (int)(_traj.quality("nplanes"));
+	freeplanes = (int)(_traj.quality("freeplanes"));
+	_intType = (int)(_traj.quality("intType"));
+	_failType = (int)(_traj.quality("failType"));
+	xtent = (double)(_traj.quality("xtent"));
+	vertZ = (double)(_traj.quality("vertZ"));
+	
+	// _m.message("in fitter:: from classifier the traj =",_traj,bhep::DETAILED);
+	_m.message("in fitter: for traj no =",i,"  intType =",_intType,"  failType=",_failType,bhep::VERBOSE);
+	
+	///sort the nodes in increasing Z (event when PR is not running) 
+	_traj.sort_nodes(RP::z, 1);
+	
+	///if the traj finding fails during event_classification CA/PR anyone 
+	if(_failType==4 || _failType==5 || _failType==6) ok = false;
+	
+	///track found by finder (CA or PR not failed)
+	State seedState;
+	if (ok) {
+	  //SetFit mode to manager.
+	  MINDfitman::instance().fit_mode();
+	  
+	  ok = CheckValidTraj(_traj);
+	}
+	
+	///fit the trajectory 
+	if (ok) {
+	  /// seed for Fit 
+	  ComputeSeed(_traj,seedState);
+	  
+	  /// if (ok)cout<<"if classifier3="<<endl; 
+	  _fitted = FitTrajectory(seedState,i);
+	  
+	  _m.message("- traj node0=",*(_traj.nodes()[0]),bhep::DETAILED);
+	  
+	  _m.message("- copied trajectory =", _traj,bhep::DETAILED);
+	  
+	  //
+	  //if(ok && _fitted && abs(_length) > maxlength){
+	  if(_fitted && abs(_length) > maxlength){
+	    maxlength = abs(_length);
+	    _muonindex[0] = i;
+	  }
+	  if(nplanes > maxPlanes){
+	    maxPlanes = double(nplanes);
+	    _muonindex[1] = i;
+	  }
+	}
+	
+	cout<<"Fitted: "<<_fitted<<endl;
+	cout<<"Fitcheck: "<<_fitCheck<<endl;
+	cout<<"initialqP: "<<_initialqP<<endl;
+	
+	///assign quality for each trajectory
+	_traj.set_quality("failType",_failType);
+	_traj.set_quality("intType",_intType);
+	_traj.set_quality("nplanes",nplanes);
+	_traj.set_quality("freeplanes",freeplanes);
+	_traj.set_quality("reseed",_reseed_ok);
+	_traj.set_quality("xtent",xtent);
+	_traj.set_quality("initialqP",_initialqP);
+	_traj.set_quality("fitted",_fitted);
+	_traj.set_quality("vertZ", vertZ);
+	_traj.set_quality("fitcheck", _fitCheck);
+	_traj.set_quality("lowPt",0);
+	
+	*(_trajs[i]) = _traj;
+	// cout<<"traj ="<<i<<" failType ="<<_failType<<" fitted ="<<(int)traj.quality("fitted")<<endl;;  
+	
+	// std::cout<<"*********************************************"<<std::endl;
+	//std::cout<<" ++++++ Trajectory "<<i<<"  fitted+++++++++++"<<std::endl;
+	//std::cout<<"*********************************************\n"<<std::endl;
+      } // End loop over trajectories.
+    
+    /// for hadron shower
+    if((int)_trajs.size() != 0)
+      for(int j=0; j<=(int)_trajs.size(); j++)
+	rec_had_edep(j);
+    else 
+      rec_had_edep(0);
+    // rec_had_energy();
+  }  
   
   std::cout<<"Final trajectory =" << _traj<<std::endl;
   
@@ -843,12 +882,12 @@ void fitter::ComputeSeed(const Trajectory& traj, State& seedState, int firsthit)
   ComputeMomFromRange( traj, (int)traj.size(), firsthit, v);
 
   double pSeed;
-  double wFe = _geom.get_Fe_prop();
+  //double wFe = _geom.get_Fe_prop();
   //Approximate p from plot of p vs. no. hits, then approx. de_dx from this.
-  if (v[5] == 0) { //pSeed = (double)(0.060*traj.nmeas())*bhep::GeV;
-    pSeed = (13300-11200*wFe) + (-128+190*wFe)*(double)traj.size();
-    v[5] = 1.0/pSeed;
-  }
+  //if (v[5] == 0) { //pSeed = (double)(0.060*traj.nmeas())*bhep::GeV;
+  //pSeed = (13300-11200*wFe) + (-128+190*wFe)*(double)traj.size();
+  //v[5] = 1.0/pSeed;
+  //}
   
   // But use a larger covariance matrix
   // diagonal covariance matrix
@@ -863,6 +902,8 @@ void fitter::ComputeSeed(const Trajectory& traj, State& seedState, int firsthit)
   v2[0] = 1;
   seedState.set_hv(RP::sense,HyperVector(v2,C2,RP::x));
   seedState.set_hv(HyperVector(v,C,RP::slopes_curv_z));
+
+  std::cout<<"fitter::ComputeSeed 1/v[5]="<<1./v[5]<<std::endl;
 
   _m.message("++ Seed estate after setSeed() in fitter:",seedState,bhep::VERBOSE);
 }
@@ -1008,8 +1049,26 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   //double p = (wFe*(0.017143*GeV/cm * pathlength - 1.73144*GeV)
   //      + (1- wFe)*(0.00277013*GeV/cm * pathlength + 1.095511*GeV));
 
+  // cout<<"Final zpos: "<<traj.node(nplanes -1).measurement().position()[2]<<endl;
+  //cout<<"First zpos: "<< traj.node(firsthit).measurement().position()[2]<<endl;
+  //double Zmax = _geom.getPlaneZ() - 1*cm;
+  //cout<<"Zmax: "<<Zmax<<endl;
+
+  // Need to get the start Z-pos of the last Scintilator module.
+  double zMax = 1600; //mm
   std::cout<<"pathLength: "<<pathlength<<std::endl;
-  double p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
+  double p = 0;
+  double final_Zpos=traj.node(nplanes -1).measurement().position()[2];
+  std::cout<<"Final_Zpos"<<final_Zpos<<endl;
+
+  if(final_Zpos > zMax)
+    {//Track went through the detector
+      cout<<"Went through the detector"<<endl;
+      // p=MomentumFromDeflection(traj,firsthit);
+    }
+  //  p =MomentumFromDeflection(traj,firsthit);
+
+  p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
 
   std::cout<<"P value in ComputeMomFromRange: "<<p<<std::endl;
 
@@ -1032,6 +1091,7 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   if(isContained && p != 0)
     {
       V[5] = meansign/fabs(p);
+      std::cout<<"fitter::ComputeMomFromRange is contained, V[5]="<<1./V[5]<<std::endl;
       std::cout<<"fitter::ComputeMomFromRange is contained, p="<<p<<std::endl;
     }
   else{
@@ -1078,6 +1138,98 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   // _m.message("_initialqP ="<<_initialqP,bhep::VERBOSE);
   
 }
+/***************************************************************************************/
+double fitter::MomentumFromDeflection(const Trajectory& traj, int firsthit){
+  /***************************************************************************************/
+
+  // Calculate the momentum from the deflection angle between hits.
+  // The momentum is proportional to the magnetic field * change in angle.
+  // Take an 
+  // Must start of with an angle, use the first 2 hits for this.
+
+  // Emperical factor between momentum and angle
+
+  double fac = 1;//6/1.235 * 1e9;
+
+  EVector Z = EVector(3,0); Z[2] = 1;
+
+  double sumRelP =0;
+
+  double num_tracks = traj.size() -3 - firsthit;
+    
+  for (int ipoint=firsthit;ipoint <=num_tracks;ipoint++)
+    {
+      
+      EVector pos0 = traj.node(ipoint).measurement().position();
+      EVector pos1 = traj.node(ipoint + 1).measurement().position();
+      EVector pos2 = traj.node(ipoint + 2).measurement().position();
+      
+      //cout<<"pos0: "<<pos0[0]<<" "<<pos0[1]<<" "<<pos0[2]<<endl;
+      //cout<<"pos1: "<<pos1[0]<<" "<<pos1[1]<<" "<<pos1[2]<<endl;
+      //cout<<"pos2: "<<pos2[0]<<" "<<pos2[1]<<" "<<pos2[2]<<endl;
+
+      EVector B0 = _geom.getBField(pos0);
+      EVector B1 = _geom.getBField(pos1);
+
+      if(dot(B0,B1) <= 0)
+	{
+	  //sumRelP = 0;
+	  num_tracks = ipoint -firsthit;
+	  break;
+	}
+      
+      EVector dPos0 = pos1-pos0;
+      EVector dPos1 = pos2-pos1;
+      //cout<<"dPos0: "<<dPos0[0]<<" "<<dPos0[1]<<" "<<dPos0[2]<<endl;
+      //cout<<"dPos1: "<<dPos1[0]<<" "<<dPos1[1]<<" "<<dPos1[2]<<endl;
+      
+      // dot(dPos,crossprod(Z, B0))/crossprod(Z, B0).norm();
+
+      // Get the angle.
+      // Opposite side
+      double dPos0T = dot(dPos0,crossprod(Z, B0))/crossprod(Z, B0).norm();
+      double theta0 = atan(dPos0T/dot(dPos0,Z));
+      
+      //double theta0 =  acos(dot(dPos0,Z)/sqrt(dot(dPos0,dPos0)));
+      //cout<<"theta 0: "<< theta0<<endl;
+      
+      //cout<<"theta 0: "<< theta0<<" "<<theta0c<<" "<<pos1[2]<<" "<<pos0[2]<<" "<<B0[0]<<endl;
+      double dPos1T = dot(dPos1,crossprod(Z, B1))/crossprod(Z, B1).norm();
+      double theta1 = atan(dPos1T/dot(dPos1,Z));
+      //double theta1 =  acos(dot(dPos1,Z)/sqrt(dot(dPos1,dPos1)));
+      //cout<<"theta 1: "<< theta1<<endl;
+
+      double dTheta = theta1 -theta0;
+      double relP = sqrt(dot(B1,B1)) / dTheta;
+
+      sumRelP += relP;
+      
+      //cout<<"dtheta: "<<dTheta<<endl;
+    }
+  
+  //cout<<"sumRelP/num: "<<sumRelP/(traj.size()-3)<<endl;
+
+  double p = fac*sumRelP/(num_tracks);
+
+  cout<<"momentum guess from deflection: "<<p<<endl;
+
+  if(p<100){
+  _momentum_guess_vec.push_back(p);
+  }
+
+  return p;
+}
+
+
+
+
+/***************************************************************************************/
+double fitter::MomentumFromCurvature(const Trajectory& traj, double length){
+  /***************************************************************************************/
+
+
+  return 0;
+}
 
 /***************************************************************************************/
 double fitter::RangeMomentum(double length,double nodeZ){
@@ -1101,9 +1253,9 @@ double fitter::RangeMomentum(double length,double nodeZ){
 
       //Sanity checking not outside range forward 
       if(!((module_pos-module_half_size)<(nodeZ+length)))
-	{
+	{ 
 	  continue;
-	  std::cout<<"Fitter not in range"<<std::endl;
+	  //std::cout<<"Fitter not in range"<<std::endl;
 	  
 	}
 

@@ -60,6 +60,13 @@ public:
   Volume* vdet;
   Volume* Fe_slab;
 
+  // z max and min in the detector volume.
+  double getZMax() {return _detector_z_max;}
+  double getZMin() {return _detector_z_min;}
+
+  double _detector_z_max;
+  double _detector_z_min;
+
  
 protected:
     
@@ -111,7 +118,7 @@ protected:
   //MINDfieldMapReader BFieldMap;
   vector<MINDfieldMapReader*> BFieldMapVec;
   MINDfieldMapReader _generalBFieldMap;
-   
+
   //-------------------------------------------------------------//
   
   //------------------- PROPERTIES OF MATERIALS -----------------//
@@ -126,8 +133,8 @@ protected:
   double de_dx_scint;
   double de_dx_fe;
   //double de_dx_min;
-  //vector<DeDxMap*> de_dx_map_vec;
-  DeDxMap* _de_dx_map;
+  vector<DeDxMap*> de_dx_map_vec;
+  //DeDxMap* _de_dx_map;
   //DeDxMap* _de_dx_map_scint;
   std::string Bmap;
   

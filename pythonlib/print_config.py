@@ -66,9 +66,13 @@ GENERATION generator S GENIE
 JOB output_dst    S %(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(inttype)s_%(seed)s.dst.root
 JOB number_events I %(Nevts)s
 
+#JOB UI_inactivate S muMinusCaptureAtRest
+
 JOB random_seed I 13243%(seed)s
 
 JOB ref_phys_list S QGSP_BERT_EMV
+#JOB ref_phys_list S FTFP_BERT
+#JOB ref_phys_list S QGSP_BIC_EMZ
 
 ### GEOMETRY configuration parameters #####################
 
