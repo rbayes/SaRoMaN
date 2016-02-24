@@ -292,7 +292,10 @@ void MINDsetup::addProperties(){
   string current_string;
   dict::Key vol_name;
 
-  _generalBFieldMap = MINDfieldMapReader(Bmap,_fieldScale);
+  _detector_Bscale_avr = 0;
+
+  //_generalBFieldMap = MINDfieldMapReader(Bmap,_fieldScale);
+  _generalBFieldMap = MINDfieldMapReader(Bmap,1.0);
   _gsetup.set_volume_property("mother","X0",X0AIR);
  
   /*
@@ -300,12 +303,16 @@ void MINDsetup::addProperties(){
   Fill the detector subvolumes with the correct properties by iterating over each part, finding
   the ammount of iron and scintilator and the total size of the module.
   */
+
+  
+
+
   for(map<string, std::vector<double> >::const_iterator it = _gdml_pos_map.begin();
       it != _gdml_pos_map.end(); ++it)
     {
 
-      double fieldScale = _fieldScale;
-      //double fieldScale = 1;
+      //double fieldScale = _fieldScale;
+      double fieldScale = 1.0;
       string name = it->first;
       int numScint=0;
       int numFe=0;
@@ -391,6 +398,8 @@ void MINDsetup::addProperties(){
 
 	  fieldScale *= numFe > 0 ? IRON_z*numFe/length : 0;
 	  //fieldScale *= IRON_z *numFe;
+
+	  _detector_Bscale_avr += fieldScale *length;
 	  
 	  std::cout<<"Local Field Scaling is "<<fieldScale<<std::endl;
 	  //BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
@@ -415,7 +424,9 @@ void MINDsetup::addProperties(){
 	  _gsetup.set_volume_property(vol_name,RP::BFieldMap,*BFieldMapVec.back());
 
 	}
-    }  
+    }
+
+  _detector_Bscale_avr /= (_detector_z_max - _detector_z_min);
 }
 
 
@@ -449,6 +460,13 @@ EVector MINDsetup::getBField(EVector pos){
 
 
   return properScale*BfieldVector;
+}
+
+EVector MINDsetup::getRawBField(EVector pos){
+
+  EVector BfieldVector = _generalBFieldMap.vector(pos);
+  
+  return BfieldVector;
 }
 
 
@@ -525,7 +543,7 @@ void MINDsetup::readParam(){
     //                       |  MAGNETIC FIELD |                    //
     // -------------------------------------------------------------//
     
-    _fieldScale = 1.0;
+    //_fieldScale = 1.0;
     //if (_pstore.find_dstore("fieldScale") ) {
     //_fieldScale = _pstore.fetch_dstore("fieldScale");
       //std::cout<<"Field Scaling is "<<_fieldScale<<std::endl;

@@ -47,6 +47,9 @@ public:
   void setDeDx(double d){de_dx = d;}
   //EVector getBField(EVector pos){return BFieldMap.vector(pos);}
   EVector getBField(EVector pos);
+
+  EVector getRawBField(EVector pos);
+
   double getPieceWidth() {return _pieceWidth;}
 
   std::map<dict::Key,vector<double> > getModuleDataMap() {return _moduleDataMap;}
@@ -63,9 +66,11 @@ public:
   // z max and min in the detector volume.
   double getZMax() {return _detector_z_max;}
   double getZMin() {return _detector_z_min;}
+  double getBScaleAvr() {return _detector_Bscale_avr;}
 
   double _detector_z_max;
   double _detector_z_min;
+  double _detector_Bscale_avr;
 
  
 protected:
@@ -114,7 +119,7 @@ protected:
     
   double B_int;
   EVector BField;
-  double _fieldScale;
+  //double _fieldScale;
   //MINDfieldMapReader BFieldMap;
   vector<MINDfieldMapReader*> BFieldMapVec;
   MINDfieldMapReader _generalBFieldMap;

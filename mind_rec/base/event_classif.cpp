@@ -81,6 +81,8 @@ void event_classif::Initialize(const bhep::gstore& pstore, bhep::prlevel vlevel,
 
   _geom = *geom;
 
+  _supergeom = *geom;
+
   cout<<"max_z: "<<_geom.getZMax()<<endl;
   cout<<"min_z: "<<_geom.getZMin()<<endl;
   
@@ -877,19 +879,27 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
   double final_Zpos=track.nodes()[0]->measurement().position()[2];
   std::cout<<"Final_Zpos"<<final_Zpos<<endl;
 
+  double p;
+
   if(final_Zpos > zMax)
     {//Track went through the detector
-      cout<<"Went through the detector"<<endl;
-      // p=MomentumFromDeflection(traj,firsthit);
+      cout<<"Went through the detector event_classif"<<endl;
+      p=MomentumFromCurvature(track);
     }
 
-
+  else
+    {
+      p = RangeMomentum(pathlength,firstNodeZ);
+    }
 
   int meansign = CalculateCharge(track);
 
   cout<<"Charge in fit_parabola: "<<meansign<<endl;
 
-  double p = RangeMomentum(pathlength,firstNodeZ);
+
+  cout<<"Momentum guess: "<<meansign*p<<endl;
+
+  //double p = RangeMomentum(pathlength,firstNodeZ);
 
   vec[5] = meansign/p;
 
@@ -1826,144 +1836,6 @@ double event_classif::correctEdep(double edep, double X, double Y, double Z)
   return corrEng;
 }
 
-/***************************************************************************************/
-double event_classif::MomentumFromDeflection(const Trajectory& traj, int firsthit){
-  /***************************************************************************************/
-
-  // Calculate the momentum from the deflection angle between hits.
-  // The momentum is proportional to the magnetic field * change in angle.
-
-  double fac = 1;//Should be prop to q*b/m measure emperically.
-
-  EVector Z = EVector(3,0); Z[2] = 1;
-
-  double sumRelP =0;
-
-  //double num_nodes = traj.size() -3 - firsthit;
-
-  double num_nodes = traj.size() -1;
-
-  cout<<num_nodes<<endl;
-
-  // for (int ipoint=firsthit;ipoint <=num_nodes;ipoint++)
-  //for (int ipoint=num_nodes;ipoint >= 2;ipoint--)
-  // for (int ipoint=num_nodes-1;ipoint >= num_nodes-4;ipoint--)
-  //{
-      //EVector pos0 = traj.node(ipoint).measurement().position();
-      //EVector pos1 = traj.node(ipoint + 1).measurement().position();
-      //EVector pos2 = traj.node(ipoint + 2).measurement().position();
-
-  int ipoint = num_nodes -1;
-
-      EVector pos0 = traj.node(ipoint).measurement().position();
-      EVector pos1 = traj.node(ipoint - 1).measurement().position();
-      EVector pos2 = traj.node(ipoint - 2).measurement().position();
-
-      EVector B0 = _geom.getBField(pos0);
-      EVector B1 = _geom.getBField(pos1);
-
-      cout<<pos0[2]<<" "
-	  <<pos1[2]<<" "
-	  <<pos2[2]<<" "
-	  <<B0[0]<<" "
-	  <<B1[0]<<endl;
-      /*
-      if(dot(B0,B1) < 0)
-	{
-	  //sumRelP = 0;
-	  //num_nodes = ipoint -firsthit;
-	  num_nodes = num_nodes -ipoint;
-	  break;
-	}
-      */
-      // Transverse magnetic field component
-      EVector bT = crossprod(Z, B0);
-      double bTcomp = sqrt(dot(bT,bT));
-
-
-      EVector dPos0 = pos1-pos0;
-      dPos0 /= sqrt(dot(dPos0,dPos0));
-      EVector dPos1 = pos2-pos1;
-      dPos1 /= sqrt(dot(dPos1,dPos1));
-
-      double deflection_angle =sqrt(1-dot(dPos0,dPos1));
-
-      cout<<"ang: "<< acos(dot(dPos1,Z)/sqrt(dot(dPos1,dPos1)))<<" "
-	  <<acos(dot(dPos0,Z)/sqrt(dot(dPos0,dPos0)))<<endl;
-      
-      cout<<"diff ang: "<< acos(dot(dPos1,Z)/sqrt(dot(dPos1,dPos1))) -
-	acos(dot(dPos0,Z)/sqrt(dot(dPos0,dPos0)))<<endl;
-
-      cout<<"angle: "<<deflection_angle<<endl;
-
-      sumRelP += fac * deflection_angle;// * bTcomp;
-      //  }
-
-  //double p = sumRelP/(num_nodes);
-  double p = sumRelP/4;
-
-  cout<<"momentum guess from deflection: "<<p<<endl;
-
-  return p;
-}
-
-
-/***************************************************************************************/
-double event_classif::RangeMomentum(double length, double nodeZ){
-  /***************************************************************************************/
-  std::map<dict::Key,vector<double> > moduleDataMap = _geom.getModuleDataMap();
-  double p = 0;
-
-  for (std::map<dict::Key,vector<double> >::iterator it=moduleDataMap.begin();
-       it!=moduleDataMap.end(); ++it)
-    {
-      double module_pos = it->second[0];
-      double module_half_size = it->second[1];
-      double wFe = it->second[2];
-
-      //std::cout<<"Fitter "<<module_pos<<" "<<module_half_size<<" "
-      //     <<wFe<<" "<<nodeZ<<" "<<length<<std::endl;
-
-      std::cout<<"Fitter "<<nodeZ<<" "<<length<<" "<<wFe<<" "<<module_pos<<std::endl;
-
-      //Sanity checking not outside range forward 
-      if(!((module_pos-module_half_size)<(nodeZ+length)))
-	{
-	  continue;
-	  std::cout<<"Fitter not in range"<<std::endl;
-	  
-	}
-
-      // Through the whole module
-      else if((nodeZ + length) > (module_pos + module_half_size))
-	{
-	   p += 2*module_half_size * wFe;
-	   std::cout<<"p+="<<2*module_half_size * wFe<<std::endl;
-	   std::cout<<"Fitter through"<<std::endl;
-	}
-      // Stop in the module
-      else if((nodeZ + length) < (module_pos + module_half_size))
-	{
-	  p+=((length + nodeZ) - (module_pos - module_half_size))*wFe;
-	  //p+=(module_half_size + module_pos -(length+nodeZ))*wFe;
-	  std::cout<<"p+="<<((length + nodeZ) - (module_pos - module_half_size))*wFe<<std::endl;
-	  std::cout<<"Fitter stop"<<std::endl;
-	}	 
-    }
-
-  //std::cout<<"In Map p "<<p<<std::endl;  
-
-
-  // Computing the momentum of a track based on the range
-  // Parameters calculated from "Atomic Data and Nuclear Data Tables 78, 183-356 (2001)"
-  //double p = (_FeWeight*(0.011844*GeV * pow((length/cm),1.03235))
-  //      + (1- _FeWeight)*(0.0023705067*GeV* pow(length/cm,1.00711577)));
-  return p;
-  // Should be compared to G4 simulation directly.
-}
-
-
-
 
 //***********************************************************************
 void event_classif::fill_traj_info( Trajectory& muontraj) {
@@ -2226,168 +2098,6 @@ bool event_classif::LowMomentumExtraction(vector<cluster*>& hits,
   */
   return ok;
 }
-
-//***********************************************************************
-//double event_classif::CalculateCharge(Trajectory& track) {
-  //***********************************************************************
-
-/*
-
-//old code
-  int fitcatcher;
-  int nMeas = track.size();
-
-  if (nMeas > 4) nMeas = 4;
-
-  EVector pos(3,0);
-  EVector Z(3,0); Z[2] = 1;
-  double x[(const int)nMeas], y[(const int)nMeas], 
-    z[(const int)nMeas], u[(const int)nMeas];/// r[(const int)nMeas];
-  int minindex = nMeas;
-  double minR = 99999.999, pdR = 0.0, sumdq=0;
-  //double pathlength=0;/// tminR=9999.9;
-
-  double firstNodeZ = track.nodes()[nMeas-1]->measurement().position()[2];
-  
-  pos[0] = x[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[0];
-  pos[1] = y[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[1];
-  z[nMeas-1] = track.nodes()[nMeas-1]->measurement().position()[2];
-  pos[2] = 0.0;
-
-  for (int iMeas = nMeas-2;iMeas >= 0;iMeas--){
-    x[iMeas] = track.nodes()[iMeas]->measurement().vector()[0];
-    y[iMeas] = track.nodes()[iMeas]->measurement().vector()[1];
-    z[iMeas] = track.nodes()[iMeas]->measurement().position()[2];
-    // get the b-field from the previous step
-    EVector B = _geom.getBField(pos);
-    u[iMeas] = dot(pos, crossprod(Z,B))/crossprod(Z,B).norm();
-    pos[0] = x[iMeas];  pos[1] = y[iMeas];   pos[2] = z[iMeas];
-    EVector dR = EVector(3,0);
-    dR[0] = x[iMeas+1] - x[iMeas];
-    dR[1] = y[iMeas+1] - y[iMeas];
-    dR[2] = z[iMeas+1] - z[iMeas];
-    double dq = 0.;
-    //pathlength += dR.norm();
-    if(iMeas < nMeas-3){
-      EVector dR1 = EVector(3,0);
-      dR1[0] = x[iMeas+2] - x[iMeas+1];
-      dR1[1] = y[iMeas+2] - y[iMeas+1];
-      dR1[2] = z[iMeas+2] - z[iMeas+1];
-      EVector ddR = dR1 + dR;
-      dq = dot(ddR, crossprod(Z,B))/ (crossprod(Z,B).norm());
-    }
-    if(pdR != 0)
-      if(// minR < R && dR/fabs(dR) == -pdR/fabs(pdR) && 
-	 (x[iMeas]/fabs(x[iMeas]) != x[iMeas+1]/fabs(x[iMeas+1]) ||
-	  y[iMeas]/fabs(y[iMeas]) != y[iMeas+1]/fabs(y[iMeas+1]))){ 
-	// Sign change and minimum momentum
-	minR = pos.norm();
-	minindex = iMeas;
-	sumdq = 0.0;
-      }
-    pdR = dR.norm();
-    sumdq += dq;
-  }
-
-  TGraph *gr = new TGraph((const int)minindex, z, u);
-
-  TF1 *fun = new TF1("parfit2","[0]+[1]*x+[2]*x*x",-3,3);
-  fun->SetParameters(0.,0.001,0.001);
-
-  fitcatcher = gr->Fit("parfit2", "QN");
-
-  double qtilde = -0.3*pow(1+fun->GetParameter(1),3./2.)/
-  (2*fun->GetParameter(2));
-  int meansign = (int)(qtilde/fabs(qtilde));
-  //delete fun;
-  //return qtilde;
-  //int meansign = sumdq/fabs(sumdq);
-  
-  return meansign;
-}
-
-*/
-
-//***********************************************************************
-double event_classif::CalculateCharge(Trajectory& track) {
-  //***********************************************************************
-
-  int fitcatcher;
-  int nMeas = track.size();
-
-  //if (nMeas > 4) nMeas = 4;
-
-  // If we pass through the detector, remove the last 2? Plane hits.
-
-  EVector pos(3,0);
-  EVector Z(3,0); Z[2] = 1;
-  double x[(const int)nMeas], y[(const int)nMeas], 
-    z[(const int)nMeas], u[(const int)nMeas];/// r[(const int)nMeas];
-  int minindex = nMeas;
-  double minR = 99999.999, pdR = 0.0, sumdq=0;
-  //double pathlength=0;/// tminR=9999.9;
-
-  double firstNodeZ = track.nodes()[nMeas-1]->measurement().position()[2];
-  
-  pos[0] = x[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[0];
-  pos[1] = y[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[1];
-  pos[2] = z[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[2];
-  //pos[2] = 0.0;
-
-  for (int iMeas = nMeas-2;iMeas >= 0;iMeas--){
-    x[iMeas] = track.nodes()[iMeas]->measurement().vector()[0];
-    y[iMeas] = track.nodes()[iMeas]->measurement().vector()[1];
-    z[iMeas] = track.nodes()[iMeas]->measurement().position()[2];
-
-    // get the b-field from the previous step
-    EVector B = _geom.getBField(pos);
-    pos[0] = x[iMeas];  pos[1] = y[iMeas];   pos[2] = z[iMeas];
-    cout<<"mag B: "<<B[0]<<" "<<B[1]<<" "<<B[2]<<endl;
-    if(crossprod(Z,B).norm() ==0 )
-      {
-	u[iMeas] = 0;
-      }
-    else
-      {
-	u[iMeas] = dot(pos, crossprod(Z,B))/crossprod(Z,B).norm();
-      }
-    cout<<pos[0]<<" "<<pos[1]<<" "<<pos[2]<<endl;
-    cout<<"values: z: "<<z[iMeas]<<" u: "<<u[iMeas]<<endl;
-  }
-
-  TGraph *gr = new TGraph((const int)minindex, z, u);
-  
-  TF1 *fun = new TF1("parfit2","[0]+[1]*x+[2]*x*x",-3,3);
-  fun->SetParameters(0.,0.001,0.001);
-
-  fitcatcher = gr->Fit("parfit2", "QN");
-
-  //cout<<"Parameters: "<<fun->GetParameter(1)<<" "<<fun->GetParameter(2)<<endl;
-
-  // Positive particle -> Positive parameters -> Qtilde +
-  // Negative Particle -> Negative parameters -> Qtilde -
-
-  double qtilde = 0.3*pow(1+fun->GetParameter(1),3./2.)/
-  (2*fun->GetParameter(2));
-  int meansign = (int)(qtilde/fabs(qtilde));
-  //delete fun;
-  //return qtilde;
-  //int meansign = sumdq/fabs(sumdq);
-
-  // Handle low qtilde.
-  if(fabs(meansign) > 1)
-    {
-      meansign = 0;
-    }
-  
-  return meansign;
-}
-
-
-
-
-
-
 
 
 

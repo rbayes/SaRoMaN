@@ -7,6 +7,8 @@
 #include <mind/MINDfitman.h>
 #include <mind/cluster.h>
 
+#include <mind/super_fit.h>
+
 #include <recpack/RecPackManager.h>
 #include <recpack/RayTool.h>
 #include <recpack/KalmanFitter.h>
@@ -24,7 +26,7 @@
 ///
 #include <mind/plane_info.h>
 
-class event_classif{
+class event_classif : public super_fit{
   
 public:
   
@@ -69,8 +71,8 @@ public:
   //R
   double correctEdep(double edep, double X, double Y, double Z);
 
-  double RangeMomentum(double length,double nodeZ);
-  double MomentumFromDeflection(const Trajectory& traj, int firsthit = 0);
+  //double RangeMomentum(double length,double nodeZ);
+  //double MomentumFromCurvature(const Trajectory& traj, int firsthit = 0);
   
 protected:
   
@@ -92,7 +94,7 @@ protected:
 		       Trajectory& muontraj, vector<cluster*>& hads);
 
   // Calculate the charge of a track using scattering angles.
-  double CalculateCharge(Trajectory& track);
+  //double CalculateCharge(Trajectory& track);
   //double CalculateCharge2(Trajectory& track);
 
 

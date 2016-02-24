@@ -66,6 +66,8 @@ void fitter::Initialize() {
   ///initialize classifier
   get_classifier().Initialize( _store, _level, _geom.get_Fe_prop(), &_geom);
 
+  _supergeom = _geom;
+
   _m.message("+++ End of init function ++++",bhep::VERBOSE);
 }
 
@@ -977,7 +979,7 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
     pos0[1] = ypos[ipoint-firsthit];
     pos0[2] = zpos[ipoint-firsthit];
     EVector B0 = _geom.getBField(pos0);
-    std::cout<<"B0 in fitter::ComputeMomFromRange: "<<B0[0]<<" "<<B0[1]<<" "<<B0[2]<<std::endl;
+    //std::cout<<"B0 in fitter::ComputeMomFromRange: "<<B0[0]<<" "<<B0[1]<<" "<<B0[2]<<" at z: "<<pos0[2]<<std::endl;
     B.push_back(B0);
     Bmean += B0.norm();
     upos[ipoint-firsthit] = // sqrt(pos0[0]*pos0[0] + pos0[1]*pos0[1]);
@@ -1057,26 +1059,33 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   // Need to get the start Z-pos of the last Scintilator module.
   double zMax = 1600; //mm
   std::cout<<"pathLength: "<<pathlength<<std::endl;
-  double p = 0;
   double final_Zpos=traj.node(nplanes -1).measurement().position()[2];
+  //double final_Zpos=traj.nodes()[0]->measurement().position()[2];
   std::cout<<"Final_Zpos"<<final_Zpos<<endl;
+
+  double p;
+
+  double meansign = 1;
+
+  meansign = CalculateCharge(traj);
 
   if(final_Zpos > zMax)
     {//Track went through the detector
-      cout<<"Went through the detector"<<endl;
-      // p=MomentumFromDeflection(traj,firsthit);
+      cout<<"Went through the detector fitter"<<endl;
+      p=MomentumFromCurvature(traj);
     }
-  //  p =MomentumFromDeflection(traj,firsthit);
+  else
+    {
+      p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
+      //meansign = CalculateCharge(traj);
+    }
 
-  p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
+  std::cout<<"P value in ComputeMomFromRange fitter: "<<p<<std::endl;
 
-  std::cout<<"P value in ComputeMomFromRange: "<<p<<std::endl;
-
-  double meansign = 1;
-  if(sumDR != 0) {
+  //if(sumDR != 0) {
     //std::cout<<"sumDR = "<<sumDR<<std::endl;
-    meansign = sumDR/fabs(sumDR);
-  }
+    //meansign = sumDR/fabs(sumDR);
+  //}
   
   ///double planesep  = fabs(zpos[1] - zpos[0]);
   // Assume that the magnetic field does not change very much over 1 metre
@@ -1138,149 +1147,6 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   // _m.message("_initialqP ="<<_initialqP,bhep::VERBOSE);
   
 }
-/***************************************************************************************/
-double fitter::MomentumFromDeflection(const Trajectory& traj, int firsthit){
-  /***************************************************************************************/
-
-  // Calculate the momentum from the deflection angle between hits.
-  // The momentum is proportional to the magnetic field * change in angle.
-  // Take an 
-  // Must start of with an angle, use the first 2 hits for this.
-
-  // Emperical factor between momentum and angle
-
-  double fac = 1;//6/1.235 * 1e9;
-
-  EVector Z = EVector(3,0); Z[2] = 1;
-
-  double sumRelP =0;
-
-  double num_tracks = traj.size() -3 - firsthit;
-    
-  for (int ipoint=firsthit;ipoint <=num_tracks;ipoint++)
-    {
-      
-      EVector pos0 = traj.node(ipoint).measurement().position();
-      EVector pos1 = traj.node(ipoint + 1).measurement().position();
-      EVector pos2 = traj.node(ipoint + 2).measurement().position();
-      
-      //cout<<"pos0: "<<pos0[0]<<" "<<pos0[1]<<" "<<pos0[2]<<endl;
-      //cout<<"pos1: "<<pos1[0]<<" "<<pos1[1]<<" "<<pos1[2]<<endl;
-      //cout<<"pos2: "<<pos2[0]<<" "<<pos2[1]<<" "<<pos2[2]<<endl;
-
-      EVector B0 = _geom.getBField(pos0);
-      EVector B1 = _geom.getBField(pos1);
-
-      if(dot(B0,B1) <= 0)
-	{
-	  //sumRelP = 0;
-	  num_tracks = ipoint -firsthit;
-	  break;
-	}
-      
-      EVector dPos0 = pos1-pos0;
-      EVector dPos1 = pos2-pos1;
-      //cout<<"dPos0: "<<dPos0[0]<<" "<<dPos0[1]<<" "<<dPos0[2]<<endl;
-      //cout<<"dPos1: "<<dPos1[0]<<" "<<dPos1[1]<<" "<<dPos1[2]<<endl;
-      
-      // dot(dPos,crossprod(Z, B0))/crossprod(Z, B0).norm();
-
-      // Get the angle.
-      // Opposite side
-      double dPos0T = dot(dPos0,crossprod(Z, B0))/crossprod(Z, B0).norm();
-      double theta0 = atan(dPos0T/dot(dPos0,Z));
-      
-      //double theta0 =  acos(dot(dPos0,Z)/sqrt(dot(dPos0,dPos0)));
-      //cout<<"theta 0: "<< theta0<<endl;
-      
-      //cout<<"theta 0: "<< theta0<<" "<<theta0c<<" "<<pos1[2]<<" "<<pos0[2]<<" "<<B0[0]<<endl;
-      double dPos1T = dot(dPos1,crossprod(Z, B1))/crossprod(Z, B1).norm();
-      double theta1 = atan(dPos1T/dot(dPos1,Z));
-      //double theta1 =  acos(dot(dPos1,Z)/sqrt(dot(dPos1,dPos1)));
-      //cout<<"theta 1: "<< theta1<<endl;
-
-      double dTheta = theta1 -theta0;
-      double relP = sqrt(dot(B1,B1)) / dTheta;
-
-      sumRelP += relP;
-      
-      //cout<<"dtheta: "<<dTheta<<endl;
-    }
-  
-  //cout<<"sumRelP/num: "<<sumRelP/(traj.size()-3)<<endl;
-
-  double p = fac*sumRelP/(num_tracks);
-
-  cout<<"momentum guess from deflection: "<<p<<endl;
-
-  if(p<100){
-  _momentum_guess_vec.push_back(p);
-  }
-
-  return p;
-}
-
-
-
-
-/***************************************************************************************/
-double fitter::MomentumFromCurvature(const Trajectory& traj, double length){
-  /***************************************************************************************/
-
-
-  return 0;
-}
-
-/***************************************************************************************/
-double fitter::RangeMomentum(double length,double nodeZ){
-  /***************************************************************************************/
-  // Get momentum depending on length. Did it go through each submodule? Get specific wFe
-  // for each submodule.
-  std::map<dict::Key,vector<double> > moduleDataMap = _geom.getModuleDataMap();
-  double p = 0;
-
-  for (std::map<dict::Key,vector<double> >::iterator it=moduleDataMap.begin();
-       it!=moduleDataMap.end(); ++it)
-    {
-      double module_pos = it->second[0];
-      double module_half_size = it->second[1];
-      double wFe = it->second[2];
-
-      //std::cout<<"Fitter "<<module_pos<<" "<<module_half_size<<" "
-      //     <<wFe<<" "<<nodeZ<<" "<<length<<std::endl;
-
-      std::cout<<"Fitter "<<nodeZ<<" "<<length<<" "<<wFe<<" "<<module_pos<<std::endl;
-
-      //Sanity checking not outside range forward 
-      if(!((module_pos-module_half_size)<(nodeZ+length)))
-	{ 
-	  continue;
-	  //std::cout<<"Fitter not in range"<<std::endl;
-	  
-	}
-
-      // Through the whole module
-      else if((nodeZ + length) > (module_pos + module_half_size))
-	{
-	   p += 2*module_half_size * wFe;
-	   std::cout<<"p+="<<2*module_half_size * wFe<<std::endl;
-	   std::cout<<"Fitter through"<<std::endl;
-	}
-      // Stop in the module
-      else if((nodeZ + length) < (module_pos + module_half_size))
-	{
-	  p+=((length + nodeZ) - (module_pos - module_half_size))*wFe;
-	  //p+=(module_half_size + module_pos -(length+nodeZ))*wFe;
-	  std::cout<<"p+="<<((length + nodeZ) - (module_pos - module_half_size))*wFe<<std::endl;
-	  std::cout<<"Fitter stop"<<std::endl;
-	}	 
-    }
-
-  //std::cout<<"In Map p "<<p<<std::endl;
-
-  return p;
-
-}
 
 //*****************************************************************************
 void fitter::ReadParam(){
@@ -1318,5 +1184,3 @@ void fitter::ReadParam(){
   _lowFit2 = _store.fetch_dstore("low_fit_cut2");
       
 }
-
-

@@ -16,6 +16,8 @@
 #include <mind/event_classif.h>
 #include <mind/hit_clusterer.h>
 
+//#include <mind/super_fit.h>
+
 #include <bhep/event.h>
 #include <bhep/gstore.h>
 
@@ -25,7 +27,7 @@
 
 using namespace Recpack;
 
-class fitter{
+class fitter : public super_fit{
   
 public:
   
@@ -99,9 +101,9 @@ protected:
   //void ComputeMomFromParabola(const Trajectory& traj, int nplanes, int firsthit, EVector& V);
   void ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsthit, EVector& V);
 
-  double RangeMomentum(double length,double nodeZ);
-  double MomentumFromCurvature(const Trajectory& traj, double length);
-  double MomentumFromDeflection(const Trajectory& traj, int firsthit);
+  //double RangeMomentum(double length,double nodeZ);
+  //double MomentumFromCurvature(const Trajectory& traj, int firsthit = 0);
+  double MomentumFromDeflection(const Trajectory& traj, int firsthit = 0);//not used! For low pt.
 
   //seed error
   void ApplyCovarianceFactor(double factor, EMatrix& C0);
