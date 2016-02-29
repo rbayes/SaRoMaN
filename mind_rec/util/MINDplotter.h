@@ -174,7 +174,7 @@ private:
   bool _cand[10][2500];
   bool _node[10][2500];
   bool _had[10][2500];
-  double _pChi[3];
+  double _pChi[10][3];
   //TString _intName;
   int _truInt;
  
