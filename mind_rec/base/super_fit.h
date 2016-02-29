@@ -34,7 +34,7 @@ class super_fit{
 
   MINDsetup _supergeom;
   double RangeMomentum(double length,double nodeZ);
-  double MomentumFromCurvature(const Trajectory& traj, int startPoint = 0);
+  double MomentumFromCurvature(const Trajectory& traj, int startPoint,double minP);
   double MomentumFromCurvature2(const Trajectory& traj);
   double CalculateCharge(const Trajectory& track);
 

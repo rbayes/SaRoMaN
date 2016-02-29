@@ -881,15 +881,12 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
 
   double p;
 
+  p = RangeMomentum(pathlength,firstNodeZ);
+
   if(final_Zpos > zMax)
     {//Track went through the detector
       cout<<"Went through the detector event_classif"<<endl;
-      p=MomentumFromCurvature(track);
-    }
-
-  else
-    {
-      p = RangeMomentum(pathlength,firstNodeZ);
+      p=MomentumFromCurvature(track,0,p);
     }
 
   int meansign = CalculateCharge(track);

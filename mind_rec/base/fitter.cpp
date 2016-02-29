@@ -1068,16 +1068,12 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   double meansign = 1;
 
   meansign = CalculateCharge(traj);
+ p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
 
   if(final_Zpos > zMax)
     {//Track went through the detector
       cout<<"Went through the detector fitter"<<endl;
-      p=MomentumFromCurvature(traj);
-    }
-  else
-    {
-      p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
-      //meansign = CalculateCharge(traj);
+      p=MomentumFromCurvature(traj,0,p);
     }
 
   std::cout<<"P value in ComputeMomFromRange fitter: "<<p<<std::endl;

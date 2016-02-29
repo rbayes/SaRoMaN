@@ -295,14 +295,14 @@ double super_fit::MomentumFromCurvature2(const Trajectory& traj){
 }
 
 /***************************************************************************************/
-double super_fit::MomentumFromCurvature(const Trajectory& traj, int startPoint){
+double super_fit::MomentumFromCurvature(const Trajectory& traj, int startPoint,double minP){
   /***************************************************************************************/
 
   // Unsure which hit is first.
 
   bool startLow = false;
 
-  if(traj.nodes()[0]->measurement().vector()[2] < traj.nodes()[traj.size()-1]->measurement().vector()[2])
+  if(traj.nodes()[startPoint]->measurement().vector()[2] < traj.nodes()[traj.size()-1]->measurement().vector()[2])
     {
       startLow = true;
     }
@@ -312,27 +312,29 @@ double super_fit::MomentumFromCurvature(const Trajectory& traj, int startPoint){
 
   int start = startPoint;
   int point = traj.size()-3;
-  /*
-  int final = traj.size()-1;
 
-  //new test using the geometry
-  if(startLow)
+
+
+  double scalar = dot(_supergeom.getRawBField(traj.nodes()[start]->measurement().vector()),
+		     _supergeom.getRawBField(traj.nodes()[point+2]->measurement().vector()));
+
+
+  cout<<"Scalar WOOT 0"<<endl;
+
+  while(scalar < 0)
     {
-      k1 = (traj.nodes()[3]->measurement().vector()[1]-traj.nodes()[2]->measurement().vector()[1])/
-	(traj.nodes()[3]->measurement().vector()[2]-traj.nodes()[2]->measurement().vector()[2]);
-
-      k2 = (traj.nodes()[final]->measurement().vector()[1]-traj.nodes()[final-1]->measurement().vector()[1])/
-	    (traj.nodes()[final]->measurement().vector()[2]-traj.nodes()[final-1]->measurement().vector()[2]);
+      if(startLow)
+	{
+	  point--;
+	}
+      else
+	{
+	  start++;
+	}
+      scalar = dot(_supergeom.getRawBField(traj.nodes()[start]->measurement().vector()),
+		     _supergeom.getRawBField(traj.nodes()[point+2]->measurement().vector()));
     }
-  else
-    {
-      k1 = (traj.nodes()[final-3]->measurement().vector()[1]-traj.nodes()[final-2]->measurement().vector()[1])/
-	(traj.nodes()[final-3]->measurement().vector()[2]-traj.nodes()[final-2]->measurement().vector()[2]);
 
-      k2 = (traj.nodes()[0]->measurement().vector()[1]-traj.nodes()[1]->measurement().vector()[1])/
-	    (traj.nodes()[0]->measurement().vector()[2]-traj.nodes()[1]->measurement().vector()[2]);
-    }
-  */
 
   double k1 = 0;
 
@@ -413,29 +415,29 @@ double super_fit::MomentumFromCurvature(const Trajectory& traj, int startPoint){
 
   cout<<"Momentum highPt final super"<<finalP<<endl;
 
-  if(finalP<1400)
+  if(finalP<minP)
     {
       // Try to recursivly find a better value.
       if((start +1)< point)
 	{
-	  finalP =  MomentumFromCurvature(traj,start+1);
+	  finalP =  MomentumFromCurvature(traj,start+1,minP);
 	}
       else
 	{
-	  finalP = 1400;
+	  finalP = minP;
 	}
     }
 
-  if(finalP > 8000)
+  if(finalP > 14000)
     {
       // Try to recursivly find a better value.
       if((start +1)< point)
 	{
-	  finalP =  MomentumFromCurvature(traj,start+1);
+	  finalP =  MomentumFromCurvature(traj,start+1,minP);
 	}
       else
 	{
-	  finalP = 8000;
+	  finalP = 14000;
 	}
     }
   
@@ -448,13 +450,17 @@ double super_fit::MomentumFromCurvature(const Trajectory& traj, int startPoint){
   return finalP;
 }
 
-
 //***********************************************************************
 double super_fit::CalculateCharge(const Trajectory& track) {
   //***********************************************************************
 
   int fitcatcher;
   int nMeas = track.size();
+
+  // Run this with different track starts! Will make really bad guesses when we change field.
+  // Either from start or from the end.
+
+  //Try both start from back, only 4 hits when pt to large?
 
   //if (nMeas > 4) nMeas = 4;
 
@@ -505,6 +511,7 @@ double super_fit::CalculateCharge(const Trajectory& track) {
     cout<<"values: z: "<<z[iMeas]<<" u: "<<u[iMeas]<<endl;
   }
 
+
   TGraph *gr = new TGraph((const int)minindex, z, u);
   
   TF1 *fun = new TF1("parfit2","[0]+[1]*x+[2]*x*x",-3,3);
@@ -531,10 +538,36 @@ double super_fit::CalculateCharge(const Trajectory& track) {
   //int meansign = sumdq/fabs(sumdq);
 
   // Handle low qtilde.
+  /*
   if(fabs(meansign) > 1)
     {
       meansign = 0;
     }
+  */
   
+  /*
+  double diff = 0;
+
+  if(track.nodes()[nMeas-1]->measurement().position()[2] > track.nodes()[0]->measurement().position()[2])
+    {
+      diff = track.nodes()[nMeas-1]->measurement().position()[1] - track.nodes()[0]->measurement().position()[1];
+      prevB = _supergeom.getRawBField(track.nodes()[0]->measurement().vector());
+    }
+  else
+    {
+      diff = track.nodes()[0]->measurement().position()[1] - track.nodes()[nMeas-1]->measurement().position()[1];
+      prevB = _supergeom.getRawBField(track.nodes()[nMeas-1]->measurement().vector());
+    }
+  
+
+  meansign = (int) (diff/fabs(diff)* dot(pos, crossprod(Z,prevB))/crossprod(Z,prevB).norm()) ;
+  */
+
+  if(meansign == 0)
+    {
+      cout<<"Charge 0"<<endl;
+      meansign = 1;
+    }
+
   return meansign;
 }
