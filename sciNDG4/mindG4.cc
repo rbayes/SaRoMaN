@@ -148,7 +148,11 @@ int main(int argc, char** argv)
       {
 	UI->ApplyCommand
 	  ("/process/inactivate "+MindConfigService::Instance().Job().GetSParam("UI_inactivate"));
-	cout<<"HERE: "<<MindConfigService::Instance().Job().GetSParam("UI_inactivate")<<endl;
+      }
+    if(MindConfigService::Instance().Job().PeekSParam("UI_inactivate2"))
+      {
+	UI->ApplyCommand
+	  ("/process/inactivate "+MindConfigService::Instance().Job().GetSParam("UI_inactivate2"));
       }
 
     //UI->ApplyCommand("/process/inactivate muMsc"); // Turn of muon multiple scattering
