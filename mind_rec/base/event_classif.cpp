@@ -875,15 +875,22 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
 
   // Need to get the start Z-pos of the last Scintilator module.
   double zMax = 1600; //mm
+  
+  zMax = _geom.getZMax()-_geom.get_Fe_prop();
+  cout<<"zMax: "<<zMax<<endl;
+
+  zMax = 1000;
   std::cout<<"pathLength: "<<pathlength<<std::endl;
   double final_Zpos=track.nodes()[0]->measurement().position()[2];
   std::cout<<"Final_Zpos"<<final_Zpos<<endl;
+  cout<<track.size()<<endl;
 
   double p;
 
   p = RangeMomentum(pathlength,firstNodeZ);
 
-  if(final_Zpos > zMax)
+  //if(final_Zpos > zMax)
+  if(track.size() > 16) //tot 18 plates.
     {//Track went through the detector
       cout<<"Went through the detector event_classif"<<endl;
       p=MomentumFromCurvature(track,0,p);

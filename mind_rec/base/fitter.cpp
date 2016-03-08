@@ -1058,6 +1058,14 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
 
   // Need to get the start Z-pos of the last Scintilator module.
   double zMax = 1600; //mm
+  
+  zMax = _geom.getZMax()-_geom.get_Fe_prop();
+  cout<<"zMax: "<<zMax<<endl;  
+  cout<< _geom.get_Fe_prop()<<endl;
+  cout<<traj.size()<<endl;
+
+
+  zMax = 1000;
   std::cout<<"pathLength: "<<pathlength<<std::endl;
   double final_Zpos=traj.node(nplanes -1).measurement().position()[2];
   //double final_Zpos=traj.nodes()[0]->measurement().position()[2];
@@ -1068,9 +1076,10 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   double meansign = 1;
 
   meansign = CalculateCharge(traj);
- p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
+  p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
 
-  if(final_Zpos > zMax)
+  //if(final_Zpos > zMax)
+  if(traj.size() > 16) //tot 18 plates.
     {//Track went through the detector
       cout<<"Went through the detector fitter"<<endl;
       p=MomentumFromCurvature(traj,0,p);

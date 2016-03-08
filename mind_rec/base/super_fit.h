@@ -33,9 +33,13 @@ class super_fit{
   virtual ~super_fit();
 
   MINDsetup _supergeom;
+
+  // Calculates momenta using a simple range calculation.
   double RangeMomentum(double length,double nodeZ);
+  // Calculates momenta from the curvature of the track, should be used for momenta greater
+  // than can be calculated from RangeMomentum
   double MomentumFromCurvature(const Trajectory& traj, int startPoint,double minP);
-  double MomentumFromCurvature2(const Trajectory& traj);
+  // Calculate the charge by using a quadratic fit.
   double CalculateCharge(const Trajectory& track);
 
 };
