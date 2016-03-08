@@ -54,21 +54,24 @@ class saroman:
         self.out_base  = os.path.join(self.home, 'out')
         #self.out_base  = os.path.join(self.home, 'batch')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        self.third_party_support = os.path.join(self.home, 'third_party') 
-        self.xml_file_path = os.path.join(self.exec_base,'MIND.gdml')
+        self.third_party_support = os.path.join(self.home, '../../third_party') 
+        #self.xml_file_path = os.path.join(self.exec_base,'MIND.gdml')
+        self.xml_file_path = os.path.join(self.exec_base,'MIND_l2.gdml')
         self.parsed_file_path  = os.path.join(self.exec_base,'parsedGdml.log')
 
         #General flags
         self.need_third_party_install = False
         self.need_own_install = False
-        self.generate_field_map = True # If false remember to change self.field_map_name to point to your field map!
+        self.generate_field_map = False # If false remember to change self.field_map_name to point to your field map!
         self.parse_gdml = True
         self.visual = False
 
         #Should be implemented as input values#
         self.train_sample = 0
         self.part = 'mu-'#'14'
-        self.pid = -14
+        self.pid = 13
+        self.part = 'mu+'#'14'
+        self.pid = -13
         
         #self.seed = 5000 * random.random()
         self.seed = 1000
@@ -114,7 +117,7 @@ class saroman:
         self.MIND_min_eng_at_plane = 0#0.000016 #MeV
         self.MIND_module_length = (self.MIND_thickness_active*self.MIND_active_layers +
                                    self.MIND_thickness_passive+self.MIND_thickness_bracing +
-                                   self.MIND_thickness_air)
+                                   self.MIND_thickness_air_mm)
 
         self.MIND_module_de_dx = (self.MIND_thickness_active*self.MIND_active_layers*self.MIND_active_de_dx +
                                   self.MIND_thickness_passive*self.MIND_passive_de_dx +
@@ -129,7 +132,8 @@ class saroman:
         #self.CreateFieldMap = True
         self.field_map_generator = field_map_generator(self.Bfield,self.MIND_ydim+self.MIND_ear_ydim,
             self.MIND_xdim+self.MIND_ear_xdim, self.MIND_npanels)
-        self.field_map_name = 'field_map_test.res'
+        #self.field_map_name = 'field_map_test.res'
+        self.field_map_name = 'CenterPlate.table'
         self.field_map_folder = self.out_base
         self.field_map_full_name =os.path.join(self.field_map_folder,self.field_map_name)
 
@@ -147,8 +151,8 @@ class saroman:
 
         #Config file variables not generalized
         #Particle kinetic energy will be sample between these two values (in GeV)
-        self.part_eng_min = 1.200
-        self.part_eng_max = 1.200
+        self.part_eng_min = 2.000 #1.000
+        self.part_eng_max = 2.000 #1.400
 
         
         self.config_digi_seed = 107311191
@@ -161,7 +165,7 @@ class saroman:
         self.config_rec_min_iso_prop = 0.8
         self.config_rec_min_check_nodes = 3
         self.config_rec_max_seed_hits = 20
-        self.config_rec_min_seed_hits = 7
+        self.config_rec_min_seed_hits = 4
         self.config_rec_pat_rec = 1 # Do Pattern recognition (0=false, 1=true)
         self.config_rec_fac_refit = 10000
         self.config_rec_refit = 1 # fit data twice (0=false, 1=true)
@@ -187,11 +191,11 @@ class saroman:
         self.config_rec_max_outliners = 5
         self.config_rec_chi2fit_max = 50
         # verbosities for recpack services
-        self.config_rec_vfit = 0
-        self.config_rec_vmat = 0
-        self.config_rec_vnav = 0
-        self.config_rec_vmod = 0
-        self.config_rec_vsim = 0
+        self.config_rec_vfit = 0#0#3
+        self.config_rec_vmat = 0#0
+        self.config_rec_vnav = 0#0
+        self.config_rec_vmod = 0#0
+        self.config_rec_vsim = 0#0
         self.config_rec_model = 'particle/helix'
         self.config_rec_kfitter = 'kalman'
         self.config_rec_gen_seed = 373940592
@@ -313,13 +317,19 @@ class saroman:
 
         else:
             try:
-                opts, args = getopt.getopt(argv,"CIOBV")
+                opts, args = getopt.getopt(argv,"CIOBVNP")
                 #print args[0]
             except getopt.GetoptError:
                 print 'saronman.py -C to clean, -I to install, -O to build own and -V to run Geant visually.'
                 print 'To run when setups is ok have no flags'
                 sys.exit(2)
             for opt, arg in opts:
+                if opt == '-P':
+                    self.part = 'mu+'#'14'
+                    self.Run_saroman()
+                if opt == '-N':
+                    self.part = 'mu-'#'14'
+                    self.Run_saroman()
                 if opt == '-C':
                     self.Set_environment()
                     self.Clean_up_own()
