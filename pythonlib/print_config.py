@@ -67,6 +67,7 @@ JOB output_dst    S %(out_base)s/G4_out/nd_%(part)s%(inttype)s/nd_%(part)s%(intt
 JOB number_events I %(Nevts)s
 
 #JOB UI_inactivate S muMinusCaptureAtRest
+#JOB UI_inactivate2 S muDecay
 
 JOB random_seed I 13243%(seed)s
 
