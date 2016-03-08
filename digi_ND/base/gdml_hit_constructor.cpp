@@ -75,7 +75,11 @@ void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
   
   //copy hits so they can be sorted in z.
   std::vector<bhep::hit*> sortedHits = hits;
+  cout<<"hits size: "<<sortedHits.size()<<endl;
   sort( sortedHits.begin(), sortedHits.end(), forwardSort() );
+
+  cout<<"first z: "<<sortedHits[0]->x()[2]<<endl;
+  cout<<"last z: "<<sortedHits[sortedHits.size()-1]->x()[2]<<endl;
 
   clustering(sortedHits);
 
@@ -103,9 +107,9 @@ void gdml_hit_constructor::clustering(const std::vector<bhep::hit*>& zSortedHits
       rawHitsTH1F->Fill((*hitIt)->x()[2]);
       
       if(hitIt + 1 != zSortedHits.end()){ nextZ = (*(hitIt + 1))->ddata( "barPosZ" );}
-      else {nextZ = currZ + 3./2. * _activeLength;}
+      else {nextZ = currZ + 3./4. * _activeLength;}
 
-      if(fabs(currZ-nextZ) < 3./2. * _activeLength)
+      if(fabs(currZ-nextZ) < 3./4. * _activeLength)
 	{
 	  moduleHits.push_back((*hitIt));
 	}
