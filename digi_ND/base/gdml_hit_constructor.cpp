@@ -137,7 +137,10 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
   std::vector<bhep::hit*> X, Y;
   double z = 0;
   
-  
+  cout<<"x"<<"\t"<<"y"<<"\t"<<"z"
+      <<"\t"<<"IsYBar"<<"\t"<<"barNum"
+      <<"\t"<<"barPosZ"<<"\t"<<"barPosT"
+      <<"\t"<<"time"<<"\t"<<"mother name"<<endl;
   for(int inCounter = 0; inCounter < hits.size(); inCounter++)
     {
       cout<<hits[inCounter]->x()[0]<<"\t"
@@ -147,6 +150,8 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
 	  <<hits[inCounter]->idata( "barNumber" )<<"\t"
 	  <<hits[inCounter]->ddata( "barPosZ" )<<"\t"
 	  <<hits[inCounter]->ddata( "barPosT" )<<"\t"
+	  <<hits[inCounter]->ddata( "time" )<<"\t"
+	  <<hits[inCounter]->mother_particle().name()<<"\t"
 	  <<endl;
 
       z+=hits[inCounter]->ddata( "barPosZ" );
