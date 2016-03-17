@@ -74,7 +74,7 @@ double super_fit::MomentumFromCurvature(const Trajectory& traj, int startPoint,d
   double scalar = dot(_supergeom.getRawBField(traj.nodes()[start]->measurement().vector()),
 		     _supergeom.getRawBField(traj.nodes()[point+2]->measurement().vector()));
 
-  while(scalar < 0)
+  while(scalar < 0 && start <= point && 0 <=point)
     {
       if(startLow)
 	{
@@ -113,7 +113,11 @@ double super_fit::MomentumFromCurvature(const Trajectory& traj, int startPoint,d
       point--;
     }
 
-  double m1 = traj.nodes()[1]->measurement().vector()[1] - k1* (traj.nodes()[1]->measurement().vector()[2]);  
+  cout<<"start: "<<start<<endl;
+  cout<<"point: "<<point<<endl;
+  cout<<"size: "<<traj.size()<<endl;
+
+  double m1 = traj.nodes()[start+1]->measurement().vector()[1] - k1* (traj.nodes()[start+1]->measurement().vector()[2]);  
   double m2 = traj.nodes()[point+1]->measurement().vector()[1] - k2* (traj.nodes()[point+1]->measurement().vector()[2]);
     
   // Find their orthogonal lines.
@@ -121,7 +125,7 @@ double super_fit::MomentumFromCurvature(const Trajectory& traj, int startPoint,d
   double k3 = -1/k1;
   double k4 = -1/k2;
 
-  double m3 = traj.nodes()[1]->measurement().vector()[1] - k3* (traj.nodes()[1]->measurement().vector()[2]); 
+  double m3 = traj.nodes()[start+1]->measurement().vector()[1] - k3* (traj.nodes()[start+1]->measurement().vector()[2]); 
   double m4 = traj.nodes()[point+1]->measurement().vector()[1] - k4* (traj.nodes()[point+1]->measurement().vector()[2]); 
 
   // Find intersection
