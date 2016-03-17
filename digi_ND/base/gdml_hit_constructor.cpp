@@ -135,12 +135,16 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
     Results in _voxel being filled.
   */  
   std::vector<bhep::hit*> X, Y;
+
+  std::vector<bhep::hit*> filteredHits;
+
   double z = 0;
   
   cout<<"x"<<"\t"<<"y"<<"\t"<<"z"
       <<"\t"<<"IsYBar"<<"\t"<<"barNum"
       <<"\t"<<"barPosZ"<<"\t"<<"barPosT"
-      <<"\t"<<"time"<<"\t"<<"mother name"<<endl;
+      <<"\t"<<"time"<<"\t"<<"EnergyDep"
+      <<"\t"<<"mother name"<<endl;
   for(int inCounter = 0; inCounter < hits.size(); inCounter++)
     {
       cout<<hits[inCounter]->x()[0]<<"\t"
@@ -151,8 +155,16 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
 	  <<hits[inCounter]->ddata( "barPosZ" )<<"\t"
 	  <<hits[inCounter]->ddata( "barPosT" )<<"\t"
 	  <<hits[inCounter]->ddata( "time" )<<"\t"
+	  <<hits[inCounter]->ddata( "EnergyDep" )<<"\t"
 	  <<hits[inCounter]->mother_particle().name()<<"\t"
 	  <<endl;
+
+      if(hits[inCounter]->ddata( "time" ) > 0.1 || hits[inCounter]->ddata( "EnergyDep" )< 0.1)
+      {
+        cout<<"Removing hit from: "<<hits[inCounter]->mother_particle().name()<<endl;
+        continue;
+      }
+      filteredHits.push_back(hits[inCounter]);
 
       z+=hits[inCounter]->ddata( "barPosZ" );
       
@@ -160,7 +172,7 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
       else {Y.push_back(hits[inCounter]);}
     }
   
-  z= z/hits.size();
+  z= z/filteredHits.size();
   int vox_x = -1;
   int vox_y = -1;
   
@@ -185,11 +197,11 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
 
   //for the whole vector.
 
-  for(int cnt = 0; cnt<hits.size();cnt++)
+  for(int cnt = 0; cnt<filteredHits.size();cnt++)
     { 
       if ( vox_num >= 0){
-	_voxels[z].insert( pair<int,bhep::hit*>(vox_num,hits[cnt]) );
-	clusteredHitsTH1F->Fill(hits[cnt]->x()[2]);
+	_voxels[z].insert( pair<int,bhep::hit*>(vox_num,filteredHits[cnt]) );
+	clusteredHitsTH1F->Fill(filteredHits[cnt]->x()[2]);
       }
     }
     
