@@ -306,17 +306,56 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   _m.message("+++ FitTrajectory function ++++",bhep::VERBOSE);
 
   // Trajectory traj1 = _traj;
-  _traj2 = _traj;
+  //_traj2 = _traj;
 
   bool ok = true;
   bool ok0, ok_quality;
   bool ok1 = false;
 
+  // Experimenting with removing hits in a different magnetic field region.
+  //_traj.nodes().erase(_traj.nodes().begin(),_traj.nodes().begin()+4);
+
+  cout<<"Removing nodes"<<endl;
+  cout<<"_traj.size(): "<<_traj.size()<<endl;
+  /*
+  for(int i = _traj.size()-1; i>=0; i--)
+    {
+      if(_geom.getBField(_traj.node(i).measurement().position())[0] > 0)
+	{
+	  cout<<"Removing node: "<<i<<endl;
+	  _traj.nodes().erase(_traj.nodes().begin()+i) ;
+	}
+    }
+  */
+  //cout<<"Removing nodes done"<<endl;
+
+   
+
+   //if(_traj.size()>=16){
+   //  _traj.nodes().erase(_traj.nodes().end()-1,_traj.nodes().end());
+   //}
+   _traj.nodes().erase(_traj.nodes().end()-3,_traj.nodes().end());
+   _traj.nodes().erase(_traj.nodes().begin(),_traj.nodes().begin()+1);
+
+   cout<<"_traj.size(): "<<_traj.size()<<endl;
+   cout<<"Removing nodes done"<<endl;
+
+   _traj2 = _traj;
+
+  //  _traj.nodes()[0]->reset();
+  //_traj.nodes()[1]->reset();
+  //_traj.nodes()[2]->reset();
+  //_traj.nodes()[3]->reset();
+
   /// fit the trajectory                
-  ok0 = man().fitting_svc().fit(seedState0, _traj);
+  //ok0 = man().fitting_svc().fit(seedState0, _traj);
+  ok0 = man().fitting_svc().fit(seedState0, _traj, "particle/helix");
+  //ok0 = man().fitting_svc().fit(seedState0, _traj, "kalman");
   
   // Check the quality if the traj is fitted
   if(ok0) ok_quality = CheckQuality(_traj); 
+
+  cout<<"bad quality"<<endl;
   
   ///refit the trajectory only when the quality is not good
   if (_refit && ok0 && !ok_quality){    
@@ -329,9 +368,14 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   _fitCheck =0;
   vector<Node*>::iterator nDIt;
   for (nDIt = _traj.nodes().begin();nDIt!=_traj.nodes().end();nDIt++)
+    {
+      cout<<"_traj.nodes Fitted: "<<(*nDIt)->status("fitted")<<endl;
     if ( (*nDIt)->status("fitted") )
       _fitCheck++;
-  //  cout<<"fitCheck="<<fitCheck<<" for trajectory size "<<_traj.size()<<endl;
+
+    }
+  
+  cout<<"fitCheck="<<_fitCheck<<" for trajectory size "<<_traj.size()<<endl;
   
   ///check for reseeding 
   double low_fit_cut;
@@ -368,16 +412,20 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   if(ok) _m.message("***inside FitTrajectory, ok=", bhep::VERBOSE);
   _fitCheck = 0;
   for (nDIt = _traj.nodes().begin();nDIt!=_traj.nodes().end();nDIt++)
+    {
+      cout<<"_traj.nodes Fitted reseed: "<<(*nDIt)->status("fitted")<<endl;
     if ( (*nDIt)->status("fitted") )
       _fitCheck++;
+
+    }
   
-  //cout<<"fitCheck="<<_fitCheck<<" for trajectory size "<<_traj.size()<<endl;
+  cout<<"fitCheck="<<_fitCheck<<" for trajectory size in refit "<<_traj.size()<<endl;
   
   ///length of the traj
   if(_traj.status(RP::fitted) && _fitCheck > 0){
 	
     ok = man().matching_svc().compute_length(_traj, _length);///
-    //std::cout<<"_traj length = "<<_length<<std::endl;
+    std::cout<<"_traj length = "<<_length<<std::endl;
   }
 
   //std::cout<<"Final trajectory =" << _traj<<std::endl;
@@ -724,7 +772,7 @@ bool fitter::CreateMeasurements(const bhep::particle& p) {
 
   //string detect = _store.fetch_sstore("detect");
   const vector<bhep::hit*> hits = p.hits( _detect ); 
-  // std::cout<<"Hits size = "<<hits.size()<<std::endl;
+  std::cout<<"Hits size creat meas= "<<hits.size()<<std::endl;
   //Cluster or directly make measurements.
   if ( _doClust && hits.size() != 0 ){
     // Make clusters
@@ -876,9 +924,9 @@ void fitter::ComputeSeed(const Trajectory& traj, State& seedState, int firsthit)
   EMatrix C(6,6,0), C2(1,1,0);
     
   // take the position from the first hit
-  v[0] = traj.nodes()[firsthit]->measurement().position()[0];
-  v[1] = traj.nodes()[firsthit]->measurement().position()[1];
-  v[2] = traj.nodes()[firsthit]->measurement().position()[2];   
+  v[0] = traj.nodes()[firsthit+1]->measurement().position()[0];
+  v[1] = traj.nodes()[firsthit+1]->measurement().position()[1];
+  v[2] = traj.nodes()[firsthit+1]->measurement().position()[2];   
 
   // Estime the momentum from range
   ComputeMomFromRange( traj, (int)traj.size(), firsthit, v);

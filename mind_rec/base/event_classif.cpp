@@ -670,11 +670,34 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
   State patternSeed;
   
   ok = get_patternRec_seed( patternSeed, muontraj, hits);
+
+  cout<<"Seed before muon_extract: "<<patternSeed<<endl;
+
   if(!ok)  _m.message(" get_patternRec_seed not ok",bhep::DETAILED); 
   
   if ( ok )
     ok = perform_muon_extraction( patternSeed, hits, muontraj, hads);
   if(!ok) _m.message("perform_muon_extraction not ok",bhep::DETAILED);
+
+  // Fixing the seed
+  EVector V(6,0);
+  EMatrix M(6,6,0);
+  V[0] = muontraj.nodes()[0]->measurement().vector()[0];
+  V[1] = muontraj.nodes()[0]->measurement().vector()[1];
+  V[2] = muontraj.nodes()[0]->measurement().position()[2];
+  double dqtot = fit_parabola( V, muontraj);
+
+  V[0] = muontraj.nodes()[3]->measurement().vector()[0];
+  V[1] = muontraj.nodes()[3]->measurement().vector()[1];
+  V[2] = muontraj.nodes()[3]->measurement().position()[2];
+
+
+  M[0][0] = M[1][1] = 15.*cm*cm;
+  M[2][2] = EGeo::zero_cov()/2;
+  M[3][3] = M[4][4] = 1.5;
+  M[5][5] = pow(V[5],2)*4;
+  patternSeed.set_hv(HyperVector(V,M,RP::slopes_curv_z));
+
 
   ///assign the seed state
   if ( ok )
@@ -750,11 +773,14 @@ bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj,
 
   //Sense
   V2[0] = 1;
+
+  cout<<"z pos in patternRec_seed: "<<V[2]<<endl;
   
   //Seedstate fit properties
   seed.set_name(RP::particle_helix);
   seed.set_name(RP::representation,RP::slopes_curv_z); 
-  seed.set_hv(RP::sense,HyperVector(V2,M2,RP::x));
+  //seed.set_hv(RP::sense,HyperVector(V2,M2,RP::x));
+  seed.set_hv(RP::sense,HyperVector(V2,M2,RP::slopes_curv_z));
   seed.set_hv(HyperVector(V,M,RP::slopes_curv_z));
   
   // std::cout<<seed.hv().representation()<<std::endl;

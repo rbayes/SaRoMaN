@@ -185,6 +185,7 @@ double super_fit::CalculateCharge(const Trajectory& track) {
 
   int fitcatcher;
   int nMeas = track.size();
+  bool removeHits = false;
 
   // Run this with different track starts! Will make really bad guesses when we change field.
   // Either from start or from the end.
@@ -192,6 +193,9 @@ double super_fit::CalculateCharge(const Trajectory& track) {
   //Try both start from back, only 4 hits when pt to large?
 
   //if (nMeas > 4) nMeas = 4;
+
+  if(nMeas > 16)
+    removeHits = true;
 
   // If we pass through the detector, remove the last 2? Plane hits.
 
@@ -203,14 +207,31 @@ double super_fit::CalculateCharge(const Trajectory& track) {
   double minR = 99999.999, pdR = 0.0, sumdq=0;
 
   double firstNodeZ = track.nodes()[nMeas-1]->measurement().position()[2];
+
+  int start = nMeas-2;
+  int end = 0;
+
+  if(removeHits)
+    {
+      double firstNodeZ = track.nodes()[nMeas-3]->measurement().position()[2];
+      pos[0] = x[nMeas-3] = track.nodes()[nMeas-3]->measurement().vector()[0];
+      pos[1] = y[nMeas-3] = track.nodes()[nMeas-3]->measurement().vector()[1];
+      pos[2] = z[nMeas-3] = track.nodes()[nMeas-3]->measurement().vector()[2];
+      start = nMeas-4;
+      end = 2;
+    }
+  else
+    {
+      pos[0] = x[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[0];
+      pos[1] = y[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[1];
+      pos[2] = z[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[2];
+    }
   
-  pos[0] = x[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[0];
-  pos[1] = y[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[1];
-  pos[2] = z[nMeas-1] = track.nodes()[nMeas-1]->measurement().vector()[2];
+
 
   EVector prevB(3,0);
 
-  for (int iMeas = nMeas-2;iMeas >= 0;iMeas--){
+  for (int iMeas = start;iMeas >= end;iMeas--){
     x[iMeas] = track.nodes()[iMeas]->measurement().vector()[0];
     y[iMeas] = track.nodes()[iMeas]->measurement().vector()[1];
     z[iMeas] = track.nodes()[iMeas]->measurement().position()[2];
