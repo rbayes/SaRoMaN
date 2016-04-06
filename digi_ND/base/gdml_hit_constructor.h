@@ -57,8 +57,18 @@ class gdml_hit_constructor
   void reset();
 
   //clusteres the hits in xy to get the better resolution expected by the overlaying bars
-  void clustering(const std::vector<bhep::hit*>& zSortedHits);
+  void clustering(const std::vector<bhep::hit*>& sortedHits);
+  void clustering2(const std::vector<bhep::hit*>& sortedHits);
   void clusteringXY(const std::vector<bhep::hit*> hits, int key);
+
+  void ClusteringHits(const std::vector<bhep::hit*> hits, int key);
+  void ClusteringHits2(const std::vector<bhep::hit*> hits, int key);
+  std::vector<bhep::hit*> FilteringBadHits(const std::vector<bhep::hit*> hits);
+
+  std::vector<std::vector<bhep::hit*> > NextCluster(std::vector<bhep::hit*> hits,double tolerance, string data);
+  //void NextCluster(std::vector<bhep::hit*> hits,double tolerance, string data,std::vector<std::vector<bhep::hit*> > hitsVector);
+
+  bool CorrectHit(const std::vector<bhep::hit*> hits);
 
   int calculate_vox_no(std::vector<bhep::hit*> hits);
 
@@ -101,10 +111,37 @@ class gdml_hit_constructor
   
 };
 
-class forwardSort{
+class forwardSortX{
+ public:
+  bool operator()(const bhep::hit* p1, const bhep::hit* p2){
+    if (p2->x()[0] > p1->x()[0]) return true;
+    return false;
+  }
+
+};
+
+class forwardSortY{
+ public:
+  bool operator()(const bhep::hit* p1, const bhep::hit* p2){
+    if (p2->x()[1] > p1->x()[1]) return true;
+    return false;
+  }
+
+};
+
+class forwardSortZ{
  public:
   bool operator()(const bhep::hit* p1, const bhep::hit* p2){
     if (p2->x()[2] > p1->x()[2]) return true;
+    return false;
+  }
+
+};
+
+class timeSort{
+ public:
+  bool operator()(bhep::hit* p1, bhep::hit* p2){
+    if (p2->ddata( "time" ) > p1->ddata( "time" )) return true;
     return false;
   }
 

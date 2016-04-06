@@ -76,12 +76,18 @@ void gdml_hit_constructor::execute(const std::vector<bhep::hit*>& hits,
   //copy hits so they can be sorted in z.
   std::vector<bhep::hit*> sortedHits = hits;
   cout<<"hits size: "<<sortedHits.size()<<endl;
-  sort( sortedHits.begin(), sortedHits.end(), forwardSort() );
+
+  //sort( sortedHits.begin(), sortedHits.end(), forwardSortX() );
+  //sort( sortedHits.begin(), sortedHits.end(), forwardSortY() );
+  sort( sortedHits.begin(), sortedHits.end(), forwardSortZ() );
 
   cout<<"first z: "<<sortedHits[0]->x()[2]<<endl;
   cout<<"last z: "<<sortedHits[sortedHits.size()-1]->x()[2]<<endl;
 
+
+
   clustering(sortedHits);
+  //clustering2(sortedHits);
 
   //Make rec_hits from vox.
   construct_hits( rec_hit );
@@ -97,7 +103,7 @@ void gdml_hit_constructor::clustering(const std::vector<bhep::hit*>& zSortedHits
   std::vector<bhep::hit*>::const_iterator hitIt;
   std::vector<bhep::hit*> moduleHits;
   std::vector<std::vector<bhep::hit*> > moduleHitsVector;
-  std::vector<std::vector<double> > clustered_hits;
+  //std::vector<std::vector<double> > clustered_hits;
 
   // Fill vectors with hits in the same module (xyxy),sorted by barPosZ.
   for (hitIt = zSortedHits.begin();hitIt != zSortedHits.end();hitIt++)
@@ -116,16 +122,541 @@ void gdml_hit_constructor::clustering(const std::vector<bhep::hit*>& zSortedHits
       else//Next is to far away
 	{
 	  moduleHits.push_back((*hitIt));
+
 	  moduleHitsVector.push_back(moduleHits);
-	  moduleHits.clear();
+	  moduleHits.clear();	  
 	}    
     }
+
+  //moduleHitsVector per z
+
+
+  // Retretrive the different hits (if different hits in x or y)
+
   // Do the actually clustering
   for(int counter = 0; counter < moduleHitsVector.size(); counter++)
     {
-      if(moduleHitsVector[counter].size() != 0){clusteringXY(moduleHitsVector[counter], counter);}
+      
+      cout<<"x"<<"\t"<<"y"<<"\t"<<"z"
+	  <<"\t"<<"IsYBar"<<"\t"<<"barNum"
+	  <<"\t"<<"barPosZ"<<"\t"<<"barPosT"
+	  <<"\t"<<"time"<<"\t"<<"EnergyDep"
+	  <<"\t"<<"mother name"<<endl;
+      for(int inCounter = 0; inCounter < moduleHitsVector[counter].size(); inCounter++)
+	{
+	  cout<<moduleHitsVector[counter][inCounter]->x()[0]<<"\t"
+	      <<moduleHitsVector[counter][inCounter]->x()[1]<<"\t"
+	      <<moduleHitsVector[counter][inCounter]->x()[2]<<"\t"
+	      <<moduleHitsVector[counter][inCounter]->idata( "IsYBar" )<<"\t"
+	      <<moduleHitsVector[counter][inCounter]->idata( "barNumber" )<<"\t"
+	      <<moduleHitsVector[counter][inCounter]->ddata( "barPosZ" )<<"\t"
+	      <<moduleHitsVector[counter][inCounter]->ddata( "barPosT" )<<"\t"
+	      <<moduleHitsVector[counter][inCounter]->ddata( "time" )<<"\t"
+	      <<moduleHitsVector[counter][inCounter]->ddata( "EnergyDep" )<<"\t"
+	      <<moduleHitsVector[counter][inCounter]->mother_particle().name()<<"\t"
+	      <<endl;
+	}
+      
+
+
+
+      //ClusteringHits(moduleHitsVector[counter], counter);
+      ClusteringHits2(moduleHitsVector[counter], counter);
+      //if(moduleHitsVector[counter].size() != 0){clusteringXY(moduleHitsVector[counter], counter);}
     }
 }
+
+void gdml_hit_constructor::clustering2(const std::vector<bhep::hit*>& sortedHits)
+{
+  /*
+    Cluster the real hits (bar positions from hits) to produce hit positions.
+    Also utilize the bar overlap to be able to give an even better position.
+    Main jobs is done by calling clusteringXY.
+  */  
+
+  std::vector<bhep::hit*> zSortedHits = FilteringBadHits(sortedHits); 
+
+
+  std::vector<bhep::hit*>::const_iterator hitIt;
+  std::vector<bhep::hit*> zPlaneHits;
+  std::vector<std::vector<bhep::hit*> > zPlaneHitsVector;
+  //std::vector<std::vector<double> > clustered_hits;
+
+
+
+  // Fill vectors with hits in the same module (xyxy),sorted by barPosZ.
+  for (hitIt = zSortedHits.begin();hitIt != zSortedHits.end();hitIt++)
+    {
+      double currZ = (*hitIt)->ddata( "barPosZ" );
+      double nextZ;
+      rawHitsTH1F->Fill((*hitIt)->x()[2]);
+      
+      if(hitIt + 1 != zSortedHits.end()){ nextZ = (*(hitIt + 1))->ddata( "barPosZ" );}
+      else {nextZ = currZ + 3./4. * _activeLength;}
+
+      if(fabs(currZ-nextZ) < 3./4. * _activeLength)
+	{
+	  zPlaneHits.push_back((*hitIt));
+	}
+      else//Next is to far away
+	{
+	  zPlaneHits.push_back((*hitIt));
+
+	  sort( zPlaneHits.begin(), zPlaneHits.end(), forwardSortY() );
+
+	  zPlaneHitsVector.push_back(zPlaneHits);
+	  zPlaneHits.clear();	  
+	}    
+    }
+  /*
+  for(int counter = 0; counter < zPlaneHitsVector.size(); counter++)
+    {
+      
+      cout<<"x"<<"\t"<<"y"<<"\t"<<"z"
+	  <<"\t"<<"IsYBar"<<"\t"<<"barNum"
+	  <<"\t"<<"barPosZ"<<"\t"<<"barPosT"
+	  <<"\t"<<"time"<<"\t"<<"EnergyDep"
+	  <<"\t"<<"mother name"<<endl;
+      for(int inCounter = 0; inCounter < zPlaneHitsVector[counter].size(); inCounter++)
+	{
+	  cout<<zPlaneHitsVector[counter][inCounter]->x()[0]<<"\t"
+	      <<zPlaneHitsVector[counter][inCounter]->x()[1]<<"\t"
+	      <<zPlaneHitsVector[counter][inCounter]->x()[2]<<"\t"
+	      <<zPlaneHitsVector[counter][inCounter]->idata( "IsYBar" )<<"\t"
+	      <<zPlaneHitsVector[counter][inCounter]->idata( "barNumber" )<<"\t"
+	      <<zPlaneHitsVector[counter][inCounter]->ddata( "barPosZ" )<<"\t"
+	      <<zPlaneHitsVector[counter][inCounter]->ddata( "barPosT" )<<"\t"
+	      <<zPlaneHitsVector[counter][inCounter]->ddata( "time" )<<"\t"
+	      <<zPlaneHitsVector[counter][inCounter]->ddata( "EnergyDep" )<<"\t"
+	      <<zPlaneHitsVector[counter][inCounter]->mother_particle().name()<<"\t"
+	      <<endl;
+    }
+      
+    }
+  */
+
+
+  // Sort hits by in the same y +- 15 sorted by y.
+
+  double tolerance = 15;
+
+  std::vector<bhep::hit*> yPlaneHits;
+  std::vector<std::vector<bhep::hit*> > yPlaneHitsVector;
+  std::vector<std::vector<std::vector<bhep::hit*> > > zyPlaneHitsVector;
+  std::vector<bhep::hit*>::const_iterator hitIt2;
+
+  for(int i=0; i<zPlaneHitsVector.size();i++)
+    {
+      for (hitIt2 = zPlaneHitsVector[i].begin();hitIt2 != zPlaneHitsVector[i].end();hitIt2++)
+	{
+	  double currY = (*hitIt2)->x()[1];
+	  double nextY;
+	  
+	  if(hitIt2 + 1 != zPlaneHitsVector[i].end()){nextY = (*(hitIt2 + 1))->x()[1];}
+	  else {nextY = currY + 2*tolerance;}
+	 
+	  if(fabs(currY-nextY) < tolerance){yPlaneHits.push_back((*hitIt2));}
+	  else//Next is to far away
+	    {
+	      yPlaneHits.push_back((*hitIt2));
+	      sort( yPlaneHits.begin(), yPlaneHits.end(), forwardSortX() );
+	      yPlaneHitsVector.push_back(yPlaneHits);
+	      yPlaneHits.clear(); 
+	    }    
+	}
+      zyPlaneHitsVector.push_back(yPlaneHitsVector);
+      yPlaneHitsVector.clear();    
+    }
+
+  cout<<"after y sorting"<<endl;
+  cout<<"zyPlaneHitsVector.size() "<<zyPlaneHitsVector.size()<<endl;
+    
+  // Sort hits by in the same y +- 15 sorted by y.
+
+  tolerance = 15;
+
+  std::vector<bhep::hit*> xPlaneHits;
+  std::vector<std::vector<bhep::hit*> > xPlaneHitsVector;
+  std::vector<std::vector<std::vector<bhep::hit*> > > yxPlaneHitsVector;
+  std::vector<std::vector<std::vector<std::vector<bhep::hit*> > > > zyxPlaneHitsVector;
+  //std::vector<bhep::hit*>::const_iterator hitIt3;
+
+  for(int i=0; i<zyPlaneHitsVector.size();i++)
+    {
+      for(int j=0; j<zyPlaneHitsVector[i].size();j++)
+	{
+	  for (hitIt2 = zyPlaneHitsVector[i][j].begin();hitIt2 != zyPlaneHitsVector[i][j].end();hitIt2++)
+	    {
+	      double currX = (*hitIt2)->x()[0];
+	      double nextX;
+	      
+	      if(hitIt2 + 1 != zyPlaneHitsVector[i][j].end()){nextX = (*(hitIt2 + 1))->x()[0];}
+	      else {nextX = currX + 2*tolerance;}
+	      
+	      if(fabs(currX-nextX) < tolerance){xPlaneHits.push_back((*hitIt2));}
+	      else//Next is to far away
+		{
+		  xPlaneHits.push_back((*hitIt2));
+		  xPlaneHitsVector.push_back(xPlaneHits);
+		  xPlaneHits.clear(); 
+		}    
+	    }
+	  yxPlaneHitsVector.push_back(xPlaneHitsVector);
+	  xPlaneHitsVector.clear();    
+	}
+      zyxPlaneHitsVector.push_back(yxPlaneHitsVector);
+      yxPlaneHitsVector.clear();
+    }
+
+  for(int counter = 0; counter < zyxPlaneHitsVector.size(); counter++)
+    {
+      //cout<<"zyxPlaneHitsVector[counter].size() "<<zyxPlaneHitsVector[counter].size()<<endl;
+      //cout<<"x"<<"\t"<<"y"<<"\t"<<"z"<<endl;
+      for(int inCounter = 0; inCounter < zyxPlaneHitsVector[counter].size(); inCounter++)
+	{
+	  //cout<<"zyxPlaneHitsVector[counter][inCounter].size() "<<zyxPlaneHitsVector[counter][inCounter].size()<<endl;
+	  for(int inInCounter = 0; inInCounter < zyxPlaneHitsVector[counter][inCounter].size(); inInCounter++)
+	    {
+	      
+	      cout<<"zyxPlaneHitsVector[counter][inCounter][inInCounter].size() "<<zyxPlaneHitsVector[counter][inCounter][inInCounter].size()<<endl;
+	      //cout<<"x"<<"\t"<<"y"<<"\t"<<"z"<<endl;
+	      cout<<"x"<<"\t"<<"y"<<"\t"<<"z"
+		  <<"\t"<<"IsYBar"<<"\t"<<"barNum"
+		  <<"\t"<<"barPosZ"<<"\t"<<"barPosT"
+		  <<"\t"<<"time"<<"\t"<<"EnergyDep"
+		  <<"\t"<<"mother name"<<endl;
+	      for(int inInInCounter = 0; inInInCounter < zyxPlaneHitsVector[counter][inCounter][inInCounter].size(); inInInCounter++)
+		{
+		  cout<<((zyxPlaneHitsVector[counter])[inCounter])[inInCounter][inInInCounter]->x()[0]<<"\t"
+		      <<((zyxPlaneHitsVector[counter])[inCounter])[inInCounter][inInInCounter]->x()[1]<<"\t"
+		      <<((zyxPlaneHitsVector[counter])[inCounter])[inInCounter][inInInCounter]->x()[2]<<"\t"
+		      <<((zyxPlaneHitsVector[counter])[inCounter])[inInCounter][inInInCounter]->idata( "IsYBar" )<<"\t"
+		      <<((zyxPlaneHitsVector[counter])[inCounter])[inInCounter][inInInCounter]->idata( "barNumber" )<<"\t"
+		      <<((zyxPlaneHitsVector[counter])[inCounter])[inInCounter][inInInCounter]->ddata( "barPosZ" )<<"\t"
+		      <<((zyxPlaneHitsVector[counter])[inCounter])[inInCounter][inInInCounter]->ddata( "barPosT" )<<"\t"
+		      <<((zyxPlaneHitsVector[counter])[inCounter])[inInCounter][inInInCounter]->ddata( "time" )<<"\t"
+		      <<((zyxPlaneHitsVector[counter])[inCounter])[inInCounter][inInInCounter]->ddata( "EnergyDep" )<<"\t"
+		      <<((zyxPlaneHitsVector[counter])[inCounter])[inInCounter][inInInCounter]->mother_particle().name()<<"\t"
+		      <<endl;
+
+		}
+	      
+	      //ClusteringHits(zyxPlaneHitsVector[counter][inCounter][inInCounter], inInCounter);
+
+      
+	      //if(zyxPlaneHitsVector[counter][inCounter][inInCounter].size() != 0 &&
+	      // CorrectHit(zyxPlaneHitsVector[counter][inCounter][inInCounter]))
+	      if(zyxPlaneHitsVector[counter][inCounter][inInCounter].size() != 0)
+		{ClusteringHits(zyxPlaneHitsVector[counter][inCounter][inInCounter], inInCounter);}
+	      //{clusteringXY(zyxPlaneHitsVector[counter][inCounter][inInCounter], inInCounter);}
+	    }
+	  
+	}
+    }
+  
+}
+
+
+
+
+
+
+std::vector<bhep::hit*> gdml_hit_constructor::FilteringBadHits(const std::vector<bhep::hit*> hits)
+{
+
+  std::vector<bhep::hit*> filteredHits;
+
+  for(int counter = 0; counter < hits.size(); counter++)
+    {
+      //if(hits[counter]->ddata( "time" ) > 0.1 || hits[counter]->ddata( "EnergyDep" )< 0.1)
+      if(hits[counter]->ddata( "EnergyDep" )< 0.1)
+      {
+        //cout<<"Removing hit from: "<<hits[inCounter]->mother_particle().name()<<endl;
+        continue;
+      }
+      else
+	{
+	  filteredHits.push_back(hits[counter]);
+	}
+
+    }
+
+  return filteredHits;
+}
+
+void gdml_hit_constructor::ClusteringHits(const std::vector<bhep::hit*> hits, int key)
+{
+  std::vector<bhep::hit*> filteredHits;
+
+  //filteredHits = FilteringBadHits(hits);
+
+  filteredHits = hits;
+
+  //sort by time.
+  sort( filteredHits.begin(), filteredHits.end(), timeSort());
+
+  /*
+  cout<<"x"<<"\t"<<"y"<<"\t"<<"z"
+      <<"\t"<<"IsYBar"<<"\t"<<"barNum"
+      <<"\t"<<"barPosZ"<<"\t"<<"barPosT"
+      <<"\t"<<"time"<<"\t"<<"EnergyDep"
+      <<"\t"<<"mother name"<<endl;
+  for(int inCounter = 0; inCounter < filteredHits.size(); inCounter++)
+    {
+       cout<<filteredHits[inCounter]->x()[0]<<"\t"
+	  <<filteredHits[inCounter]->x()[1]<<"\t"
+	  <<filteredHits[inCounter]->x()[2]<<"\t"
+	  <<filteredHits[inCounter]->idata( "IsYBar" )<<"\t"
+	  <<filteredHits[inCounter]->idata( "barNumber" )<<"\t"
+	  <<filteredHits[inCounter]->ddata( "barPosZ" )<<"\t"
+	  <<filteredHits[inCounter]->ddata( "barPosT" )<<"\t"
+	  <<filteredHits[inCounter]->ddata( "time" )<<"\t"
+	  <<filteredHits[inCounter]->ddata( "EnergyDep" )<<"\t"
+	  <<filteredHits[inCounter]->mother_particle().name()<<"\t"
+	  <<endl;
+    }
+  */
+    
+
+  // Fill vectors with hits in the same time.
+  double tolerance = 1; // 1 ns
+
+  std::vector<bhep::hit*> timeHits;
+  std::vector<std::vector<bhep::hit*> > timeHitsVector;
+
+  std::vector<bhep::hit*>::const_iterator hitIt;
+
+  for (hitIt = filteredHits.begin();hitIt != filteredHits.end();hitIt++)
+    {
+      double currT = (*hitIt)->ddata( "time" );
+      double nextT;
+      
+      if(hitIt + 1 != filteredHits.end()){ nextT = (*(hitIt + 1))->ddata( "time" );}
+      else {nextT = currT + 2*tolerance;}
+
+      if(fabs(currT-nextT) < tolerance)
+	{
+	  timeHits.push_back((*hitIt));
+	}
+      else//Next is to far away
+	{
+	  timeHits.push_back((*hitIt));
+
+	  if(CorrectHit(timeHits))
+	    {
+	      timeHitsVector.push_back(timeHits);
+	    }
+	  
+	  timeHits.clear(); 
+	}    
+    }
+  
+  // cout<<"Hits size: "<<timeHitsVector.size()<<endl;
+
+  cout<<"x"<<"\t"<<"y"<<"\t"<<"z"
+      <<"\t"<<"IsYBar"<<"\t"<<"barNum"
+      <<"\t"<<"barPosZ"<<"\t"<<"barPosT"
+      <<"\t"<<"time"<<"\t"<<"mother name"<<endl;
+  
+  for(int counter = 0; counter < timeHitsVector.size(); counter++)
+    {
+      
+      for(int inCounter = 0; inCounter < timeHitsVector[counter].size(); inCounter++)
+	{
+	  cout<<timeHitsVector[counter][inCounter]->x()[0]<<"\t"
+	      <<timeHitsVector[counter][inCounter]->x()[1]<<"\t"
+	      <<timeHitsVector[counter][inCounter]->x()[2]<<"\t"
+	      <<timeHitsVector[counter][inCounter]->idata( "IsYBar" )<<"\t"
+	      <<timeHitsVector[counter][inCounter]->idata( "barNumber" )<<"\t"
+	      <<timeHitsVector[counter][inCounter]->ddata( "barPosZ" )<<"\t"
+	      <<timeHitsVector[counter][inCounter]->ddata( "barPosT" )<<"\t"
+	      <<timeHitsVector[counter][inCounter]->ddata( "time" )<<"\t"
+	      <<timeHitsVector[counter][inCounter]->mother_particle().name()<<"\t"
+	      <<endl;
+	}
+      
+      
+      if(timeHitsVector[counter].size() != 0){clusteringXY(timeHitsVector[counter], counter);}
+    }
+  
+}
+
+void gdml_hit_constructor::ClusteringHits2(const std::vector<bhep::hit*> hits, int key)
+{
+  std::vector<bhep::hit*> filteredHits;
+
+  filteredHits = FilteringBadHits(hits);
+  //filteredHits = hits;
+
+  //sort by time.
+  sort( filteredHits.begin(), filteredHits.end(), timeSort());
+
+  // Fill vectors with hits in the same time.
+  double tolerance = 1; // 1 ns
+
+  std::vector<bhep::hit*> timeHits;
+  std::vector<std::vector<bhep::hit*> > timeHitsVector;
+
+  std::vector<bhep::hit*>::const_iterator hitIt;
+
+  for (hitIt = filteredHits.begin();hitIt != filteredHits.end();hitIt++)
+    {
+      double currT = (*hitIt)->ddata( "time" );
+      double nextT;
+      
+      if(hitIt + 1 != filteredHits.end()){ nextT = (*(hitIt + 1))->ddata( "time" );}
+      else {nextT = currT + 2*tolerance;}
+
+      if(fabs(currT-nextT) < tolerance)
+	{
+	  timeHits.push_back((*hitIt));
+	}
+      else//Next is to far away
+	{
+	  timeHits.push_back((*hitIt));
+
+	  // if(CorrectHit(timeHits))
+	  //{
+	  timeHitsVector.push_back(timeHits);
+	  //}
+	  
+	  timeHits.clear(); 
+	}    
+    }
+
+  // Now we have a vector with hits in the same z-plane, close in time. 
+  // From this, create hits and "ghosthits" if more than 1 x or y hit exists.
+
+  std::vector<bhep::hit*> X, Y;
+  std::vector<std::vector<bhep::hit*> > xHitsVector, yHitsVector;
+  
+  // Sort out the x and y bar hits.
+  for(int counter = 0; counter < timeHitsVector.size(); counter++)
+    {
+      for(int inCounter = 0; inCounter < timeHitsVector[counter].size(); inCounter++)
+	{
+	  if( timeHitsVector[counter][inCounter]->idata( "IsYBar" ) == 0){X.push_back(timeHitsVector[counter][inCounter]);}
+	  else {Y.push_back(timeHitsVector[counter][inCounter]);}
+	}
+      xHitsVector = NextCluster(X, 2, "barNumber");//, xHitsVector);
+      yHitsVector = NextCluster(Y, 2, "barNumber");//, yHitsVector);
+
+      std::vector<std::vector<bhep::hit*> > totHitsVector;
+      std::vector<bhep::hit*> totHits;
+      
+      //combine all x with all y.
+      
+      for(int i=0;i<xHitsVector.size();i++)
+	{
+	  for(int j=0;j<yHitsVector.size();j++)
+	    {
+	      totHits = xHitsVector[i];
+	      totHits.insert(totHits.end(),yHitsVector[j].begin(),yHitsVector[j].end());
+	      totHitsVector.push_back(totHits);
+	      totHits.clear();
+	    }
+	}
+
+      for(int counter=0; counter<totHitsVector.size();counter++)
+	{
+	  cout<<"x"<<"\t"<<"y"<<"\t"<<"z"
+	      <<"\t"<<"IsYBar"<<"\t"<<"barNum"
+	      <<"\t"<<"barPosZ"<<"\t"<<"barPosT"
+	      <<"\t"<<"time"<<"\t"<<"mother name"<<endl;
+	  cout<<"totHitsVector[counter].size() "<<totHitsVector[counter].size()<<endl;
+	  for(int inCounter=0;inCounter<totHitsVector[counter].size();inCounter++)
+	    {
+	  cout<<totHitsVector[counter][inCounter]->x()[0]<<"\t"
+	      <<totHitsVector[counter][inCounter]->x()[1]<<"\t"
+	      <<totHitsVector[counter][inCounter]->x()[2]<<"\t"
+	      <<totHitsVector[counter][inCounter]->idata( "IsYBar" )<<"\t"
+	      <<totHitsVector[counter][inCounter]->idata( "barNumber" )<<"\t"
+	      <<totHitsVector[counter][inCounter]->ddata( "barPosZ" )<<"\t"
+	      <<totHitsVector[counter][inCounter]->ddata( "barPosT" )<<"\t"
+	      <<totHitsVector[counter][inCounter]->ddata( "time" )<<"\t"
+	      <<totHitsVector[counter][inCounter]->mother_particle().name()<<"\t"
+	      <<endl;
+	    }
+
+
+	  if(totHitsVector[counter].size() != 0 && CorrectHit(totHitsVector[counter]))
+	    {clusteringXY(totHitsVector[counter], counter);}
+	}
+      
+    }
+
+}
+//void gdml_hit_constructor::NextCluster(std::vector<bhep::hit*> inHits,
+std::vector<std::vector<bhep::hit*> > gdml_hit_constructor::NextCluster(std::vector<bhep::hit*> inHits,
+									double tolerance, 
+									string data)
+//std::vector<std::vector<bhep::hit*> > hitsVector)
+{
+  std::vector<bhep::hit*>::const_iterator hitIt;
+  std::vector<bhep::hit*> hits;
+  std::vector<std::vector<bhep::hit*> > hitsVector;
+
+  for (hitIt = inHits.begin();hitIt != inHits.end();hitIt++)
+    {
+      //cout<<"In for"<<endl;
+      double curr = (*hitIt)->idata( "barNumber" );
+      double next;
+      
+      if(hitIt + 1 != inHits.end()){ next = (*(hitIt + 1))->idata( "barNumber" );}
+      else {next = curr + 2*tolerance;}
+      
+      if(fabs(curr-next) < tolerance){hits.push_back((*hitIt));}
+      else//Next is to far away
+	{
+	  hits.push_back((*hitIt));
+	  hitsVector.push_back(hits);
+	  //cout<<"Filled"<<endl;
+	  hits.clear(); 
+	}    
+    } 
+
+  return hitsVector;
+} 
+
+
+
+bool  gdml_hit_constructor::CorrectHit(const std::vector<bhep::hit*> hits)
+{
+  /*
+    Ensure that the vector containes atleast one x and one y bar hit.
+  */
+
+  int x = 0;
+  int y = 0;
+  bool correct = false;
+
+  for(int counter = 0; counter < hits.size(); counter++)
+    {
+      if(hits[counter]->idata( "IsYBar" ) ==0)
+	{
+	  x++;
+	}
+      else
+	{
+	  y++;
+	}
+    }
+
+  if(x > 0 && y >0)
+    {
+      correct = true;
+    }
+  else
+    {
+      cout<<"Incorrect hit"<<endl;
+      cout<<x<<endl;
+      cout<<y<<endl;
+      cout<<hits.size()<<endl;
+    }
+  
+  return correct;
+}
+
 
 void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int key)
 {
@@ -139,14 +670,17 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
   std::vector<bhep::hit*> filteredHits;
 
   double z = 0;
-  
+  /*
   cout<<"x"<<"\t"<<"y"<<"\t"<<"z"
       <<"\t"<<"IsYBar"<<"\t"<<"barNum"
       <<"\t"<<"barPosZ"<<"\t"<<"barPosT"
       <<"\t"<<"time"<<"\t"<<"EnergyDep"
       <<"\t"<<"mother name"<<endl;
+  */
+  
   for(int inCounter = 0; inCounter < hits.size(); inCounter++)
     {
+      /*
       cout<<hits[inCounter]->x()[0]<<"\t"
 	  <<hits[inCounter]->x()[1]<<"\t"
 	  <<hits[inCounter]->x()[2]<<"\t"
@@ -158,12 +692,15 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
 	  <<hits[inCounter]->ddata( "EnergyDep" )<<"\t"
 	  <<hits[inCounter]->mother_particle().name()<<"\t"
 	  <<endl;
-
+      */
+      
+      /*
       if(hits[inCounter]->ddata( "time" ) > 0.1 || hits[inCounter]->ddata( "EnergyDep" )< 0.1)
       {
         cout<<"Removing hit from: "<<hits[inCounter]->mother_particle().name()<<endl;
         continue;
       }
+      */
       filteredHits.push_back(hits[inCounter]);
 
       z+=hits[inCounter]->ddata( "barPosZ" );
@@ -175,6 +712,8 @@ void gdml_hit_constructor::clusteringXY(const std::vector<bhep::hit*> hits, int 
   z= z/filteredHits.size();
   int vox_x = -1;
   int vox_y = -1;
+
+  //cout<<"More than 4? "<<X.size()<<" "<<Y.size()<<endl;
   
   if(X.size() != 0)
     {
@@ -306,11 +845,35 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   vhit->add_property( "voxel", vox );
 
 
+  
   // Pushback all the relevant informatiomn to the voxels. 
   // Also calculate the average position of the hits in each voxel.
   std::multimap<int,bhep::hit*>::const_iterator hIt;
+
+
+  /*
+  cout<<"x"<<"\t"<<"y"<<"\t"<<"z"
+      <<"\t"<<"IsYBar"<<"\t"<<"barNum"
+      <<"\t"<<"barPosZ"<<"\t"<<"barPosT"
+      <<"\t"<<"time"<<"\t"<<"EnergyDep"
+      <<"\t"<<"mother name"<<endl;
+  */
   for (hIt = map1.equal_range(vox).first;hIt != map1.equal_range(vox).second;hIt++)
-    {
+    {  
+      /*
+      cout<<(*hIt).second->x()[0]<<"\t"
+	  <<(*hIt).second->x()[1]<<"\t"
+	  <<(*hIt).second->x()[2]<<"\t"
+	  <<(*hIt).second->idata( "IsYBar" )<<"\t"
+	  <<(*hIt).second->idata( "barNumber" )<<"\t"
+	  <<(*hIt).second->ddata( "barPosZ" )<<"\t"
+	  <<(*hIt).second->ddata( "barPosT" )<<"\t"
+	  <<(*hIt).second->ddata( "time" )<<"\t"
+	  <<(*hIt).second->ddata( "EnergyDep" )<<"\t"
+	  <<(*hIt).second->mother_particle().name()<<"\t"
+	  <<endl;
+      */
+
       if((*hIt).second->idata( "IsYBar" ) == 0)
 	{
 	  barPosX.push_back((*hIt).second->ddata( "barPosT" ));

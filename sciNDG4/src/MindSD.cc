@@ -41,7 +41,12 @@ G4bool MindSD::ProcessHits(G4Step* step, G4TouchableHistory*)
 {
   
   G4double edep = step->GetTotalEnergyDeposit();
-  G4double time = step->GetDeltaTime();
+  //G4double time = step->GetDeltaTime();
+  //G4double time = step->GetPostStepPoint()->GetGlobalTime();
+  //G4double time = step->GetPostStepPoint()->GetLocalTime();
+  //G4double time = step->GetPostStepPoint()->GetProperTime();
+  //G4double time = step->GetTrack()->GetProperTime(); 
+  G4double time = step->GetTrack()->GetGlobalTime();
   if (edep == 0.) return false;
   MindHit* hit = new MindHit();
   hit->SetTrackID(step->GetTrack()->GetTrackID());
