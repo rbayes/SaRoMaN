@@ -158,6 +158,9 @@ private:
   std::vector<double> _EMeas;
   std::vector<double> _MuProp;
 
+  std::vector<string> _MotherMeas;
+  std::vector<double> _MotherProp;
+
   double _Theta1;
   double _Theta2;
   double _Theta3;

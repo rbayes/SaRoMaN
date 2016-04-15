@@ -233,9 +233,9 @@ bool fitter::Execute(bhep::particle& part,int evNo){
 	  }
 	}
 	
-	cout<<"Fitted: "<<_fitted<<endl;
-	cout<<"Fitcheck: "<<_fitCheck<<endl;
-	cout<<"initialqP: "<<_initialqP<<endl;
+	cout<<"End of fitter.cpp Fitted: "<<_fitted<<endl;
+	cout<<"End of fitter.cpp Fitcheck: "<<_fitCheck<<endl;
+	cout<<"End of fitter.cpp initialqP: "<<_initialqP<<endl;
 	
 	///assign quality for each trajectory
 	_traj.set_quality("failType",_failType);
@@ -318,29 +318,28 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   cout<<"Removing nodes"<<endl;
   cout<<"_traj.size(): "<<_traj.size()<<endl;
   /*
-  for(int i = _traj.size()-1; i>=0; i--)
+    for(int i = _traj.size()-1; i>=0; i--)
     {
-      if(_geom.getBField(_traj.node(i).measurement().position())[0] > 0)
-	{
-	  cout<<"Removing node: "<<i<<endl;
-	  _traj.nodes().erase(_traj.nodes().begin()+i) ;
-	}
+    if(_geom.getBField(_traj.node(i).measurement().position())[0] > 0)
+    {
+    cout<<"Removing node: "<<i<<endl;
+    _traj.nodes().erase(_traj.nodes().begin()+i) ;
+    }
     }
   */
   //cout<<"Removing nodes done"<<endl;
-
-   
-
-   //if(_traj.size()>=16){
-   //  _traj.nodes().erase(_traj.nodes().end()-1,_traj.nodes().end());
-   //}
-   _traj.nodes().erase(_traj.nodes().end()-3,_traj.nodes().end());
-   _traj.nodes().erase(_traj.nodes().begin(),_traj.nodes().begin()+1);
-
-   cout<<"_traj.size(): "<<_traj.size()<<endl;
-   cout<<"Removing nodes done"<<endl;
-
-   _traj2 = _traj;
+  
+  //if(_traj.size()>=16){
+  //  _traj.nodes().erase(_traj.nodes().end()-1,_traj.nodes().end());
+  //}
+  
+  _traj.nodes().erase(_traj.nodes().end()-3,_traj.nodes().end());
+  _traj.nodes().erase(_traj.nodes().begin(),_traj.nodes().begin()+1);
+  
+  cout<<"_traj.size(): "<<_traj.size()<<endl;
+  cout<<"Removing nodes done"<<endl;
+  
+  _traj2 = _traj;
 
   //  _traj.nodes()[0]->reset();
   //_traj.nodes()[1]->reset();
@@ -355,7 +354,10 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   // Check the quality if the traj is fitted
   if(ok0) ok_quality = CheckQuality(_traj); 
 
-  cout<<"bad quality"<<endl;
+  if(!ok_quality)
+    {
+      cout<<"bad quality"<<endl;
+    }
   
   ///refit the trajectory only when the quality is not good
   if (_refit && ok0 && !ok_quality){    
@@ -1114,6 +1116,8 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
 
 
   zMax = 1000;
+
+
   std::cout<<"pathLength: "<<pathlength<<std::endl;
   double final_Zpos=traj.node(nplanes -1).measurement().position()[2];
   //double final_Zpos=traj.nodes()[0]->measurement().position()[2];
@@ -1126,8 +1130,8 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
   meansign = CalculateCharge(traj);
   p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
 
-  //if(final_Zpos > zMax)
-  if(traj.size() > 16) //tot 18 plates.
+  if(final_Zpos > zMax)
+    //if(traj.size() > 16) //tot 18 plates.
     {//Track went through the detector
       cout<<"Went through the detector fitter"<<endl;
       p=MomentumFromCurvature(traj,0,p);

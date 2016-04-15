@@ -120,6 +120,15 @@ bool event_classif::Execute(const vector<cluster*>& hits,
   std::vector<cluster*> hits2 = hits;
   cout<<"Num hits: "<<hits2.size()<<endl;
 
+  cout<<"x\ty\tz\ttime"<<endl;
+  for(int i=0;i<hits2.size();i++)
+    {
+      
+      cout<<hits2[i]->position()[0]<<"\t"<<hits2[i]->position()[1]<<"\t"
+	  <<hits2[i]->position()[2]<<"\t"<<hits2[i]->get_time()<<endl;
+    
+    }
+
   ///start looking for trajectories
   bool ok;
   //while (hits2.size() > 5 && (int)vtrajs.size() <= _maxNtraj) {  
@@ -401,6 +410,8 @@ bool event_classif::get_plane_occupancy(vector<cluster*>& hits){
   
   ///total no of planes
   _nplanes = (int)_planes.size();
+
+  cout<<"number of planes: "<<_nplanes<<endl;
   
 
   /// Mean occupancy
@@ -626,7 +637,19 @@ if not found then  excluded_hits = 0; _exclPlanes = 0; i.e, vertGuess =0*/
       if ( (int)muontraj.size() < _min_seed_hits ) {
 	_intType = 5;
 	if (!_isTASD)
-	  ok = invoke_cell_auto( hits, muontraj, hads);
+	  {
+	    cout<<"before cell_auto "<<muontraj.size()<<endl;
+	    ok = invoke_cell_auto( hits, muontraj, hads);
+	    cout<<"after cell_auto "<<muontraj.size()<<endl;
+	    if(ok)
+	      {
+		//if((int)muontraj.size() > 9){ok = muon_extraction( hits, muontraj, hads);} 
+		//else if((int)muontraj.size() >= 4){ok = LowMomentumExtraction( hits, muontraj, hads);}
+		//else ok = false;
+		ok = muon_extraction( hits, muontraj, hads);
+	      }
+	    
+	  }
 	else ok = false;
 	if ( !ok ) _failType = 4;
 	
@@ -676,7 +699,22 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
   if(!ok)  _m.message(" get_patternRec_seed not ok",bhep::DETAILED); 
   
   if ( ok )
+    {
+    cout<<"before perform_muon_extraction: "<<muontraj.size()<<endl;
+  for(int i=0;i<muontraj.size();i++)
+    {
+      cout<<"z: "<<muontraj.nodes()[i]->measurement().position()[2]<<endl;
+    }
+
     ok = perform_muon_extraction( patternSeed, hits, muontraj, hads);
+    cout<<"after perform_muon_extraction: "<<muontraj.size()<<endl;
+
+  for(int i=0;i<muontraj.size();i++)
+    {
+      cout<<"z: "<<muontraj.nodes()[i]->measurement().position()[2]<<endl;
+    }
+
+    }
   if(!ok) _m.message("perform_muon_extraction not ok",bhep::DETAILED);
 
   // Fixing the seed
@@ -915,8 +953,8 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
 
   p = RangeMomentum(pathlength,firstNodeZ);
 
-  //if(final_Zpos > zMax)
-  if(track.size() > 16) //tot 18 plates.
+  if(final_Zpos > zMax)
+    //if(track.size() > 16) //tot 18 plates.
     {//Track went through the detector
       cout<<"Went through the detector event_classif"<<endl;
       p=MomentumFromCurvature(track,0,p);
@@ -995,12 +1033,16 @@ bool event_classif::perform_muon_extraction(const State& seed, vector<cluster*>&
   bool ok;
   long ChiMin;
   int nConsecHole = 0;
+
+  cout<<"size0:"<<muontraj.size()<<endl;
  
    
   /// start adding mulp. occupancy planes hits from the LAST PLANE of "free section" muontraj
   
   int plane_start = _nplanes -  muontraj.size() -1;
   for (int pl = plane_start; pl>=0; pl--){
+
+    cout<<"size1:"<<muontraj.size()<<endl;
     
     _m.message("plane no=",pl,"  & hits = ",_planes[pl]->GetNHits()," & intType = ",_intType, bhep::DETAILED);
     
@@ -1023,6 +1065,8 @@ bool event_classif::perform_muon_extraction(const State& seed, vector<cluster*>&
       if ( !ok ) Chi2[ht] = 9999999;
       
     }
+
+    cout<<"size2:"<<muontraj.size()<<endl;
     
     
     /// Return hit index having min chi2
@@ -1068,23 +1112,28 @@ bool event_classif::perform_muon_extraction(const State& seed, vector<cluster*>&
 	    
       }
     }
+
+    cout<<"size3:"<<muontraj.size()<<endl;
     
   }//plane
   
-  
+  cout<<"size01:"<<muontraj.size()<<endl;  
+
   if ( nConsecHole > _max_consec_missed_planes ) {
+    cout<<"size02:"<<muontraj.size()<<endl;  
     if ( _endProj ) check_forwards( seed, hits, muontraj );
     if ( muontraj.size() < _min_plane_prop*(double)(_nplanes-_badplanes) ){
       _failType = 6;
       return false;
     } else {
+      cout<<"size03:"<<muontraj.size()<<endl;  
       sort_hits( hits, muontraj, hads );
       return true;
     }
   }
- 
+  cout<<"size04:"<<muontraj.size()<<endl;  
   if ( _endProj ) check_forwards( seed, hits, muontraj );
-  
+
   _m.message("At the end of muon_extraction size in traj =",muontraj.size(), bhep::VERBOSE);
   return true;
 }
@@ -1106,6 +1155,7 @@ void event_classif::check_forwards(const State& seed, vector<cluster*>& hits,
 
   _m.message("********Inside event_classif::check_forwards ", bhep::DETAILED);
  
+  cout<<"size0:"<<muontraj.size()<<endl;  
 
   bool ok;
   int counter = 0;
@@ -1120,6 +1170,9 @@ void event_classif::check_forwards(const State& seed, vector<cluster*>& hits,
   //----------------------------------------------------
   for(int pl = _endLongPlane + 1; pl< _nplanes; pl++ ){
     
+    cout<<"pl: "<<pl<<endl;  
+    cout<<"_nplanes: "<<_nplanes<<endl;  
+
     if(_planes[pl]->GetNHits()!=2) break;
     
     
@@ -1130,16 +1183,19 @@ void event_classif::check_forwards(const State& seed, vector<cluster*>& hits,
     ChiMin = TMath::LocMin( 2, chi2);
       
     if ( ChiMin == 0 ){
-     
+      cout<<"size1:"<<muontraj.size()<<endl;  
       ok = man().fitting_svc().filter(*(_planes[pl]->GetHits()[(_planes[pl]->GetNHits()) -2]), seed, muontraj);
-      
+      cout<<"size2:"<<muontraj.size()<<endl;  
+
       if ( !ok ) (_planes[pl]->GetHits()[_planes[pl]->GetNHits()-2])->set_name(skipped,hit_in);
       else (_planes[pl]->GetHits()[(_planes[pl]->GetNHits()) -2])->set_name(candHit, hit_in);
       
       (_planes[pl]->GetHits()[(_planes[pl]->GetNHits()) -1])->set_name(skipped,hit_in);
 
     } else {
+      cout<<"size3:"<<muontraj.size()<<endl;  
       ok = man().fitting_svc().filter(*(_planes[pl]->GetHits()[(_planes[pl]->GetNHits()) -1]), seed, muontraj);
+      cout<<"size4:"<<muontraj.size()<<endl;  
       
       if ( !ok ) (_planes[pl]->GetHits()[(_planes[pl]->GetNHits()) -1])->set_name(skipped,hit_in);
       else (_planes[pl]->GetHits()[(_planes[pl]->GetNHits()) -1])->set_name(candHit, hit_in);

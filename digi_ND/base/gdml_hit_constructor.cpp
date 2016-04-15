@@ -368,7 +368,7 @@ std::vector<bhep::hit*> gdml_hit_constructor::FilteringBadHits(const std::vector
 
   for(int counter = 0; counter < hits.size(); counter++)
     {
-      //if(hits[counter]->ddata( "time" ) > 0.1 || hits[counter]->ddata( "EnergyDep" )< 0.1)
+      //if(hits[counter]->ddata( "time" ) > 13.0 || hits[counter]->ddata( "EnergyDep" )< 0.1)
       if(hits[counter]->ddata( "EnergyDep" )< 0.1)
       {
         //cout<<"Removing hit from: "<<hits[inCounter]->mother_particle().name()<<endl;
@@ -840,6 +840,8 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   double barX;
   double barY;
 
+  vstring mother_particle;
+
   bhep::hit* vhit = new bhep::hit( "tracking" );
 
   vhit->add_property( "voxel", vox );
@@ -884,7 +886,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 	  barPosY.push_back((*hIt).second->ddata( "barPosT" ));
 	  sumBarPosY+=(*hIt).second->ddata( "barPosT" );
 	}
-
+      mother_particle.push_back((*hIt).second->mother_particle().name());
       X.push_back( (*hIt).second->x()[0] );
       Y.push_back( (*hIt).second->x()[1] );
       Z.push_back( (*hIt).second->x()[2] );
@@ -961,6 +963,7 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
       totEng = xE + yE;
       proptime += dt;
       //cout<<"whit properties added"<<endl;
+      vhit->add_property( "mother_particle", mother_particle );
       
       vhit->add_property( "TotalEng", totEng );
       vhit->add_property( "XEng", xE );

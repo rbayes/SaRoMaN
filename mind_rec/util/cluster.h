@@ -11,6 +11,7 @@
 #define _CLUSTER__
 
 #include <bhep/hit.h>
+#include <bhep/gstore.h>
 
 #include <recpack/Measurement.h>
 
@@ -33,6 +34,9 @@ class cluster: public Measurement
   int get_VoxY(){ return _nVoxV[1]; }
   double get_mu_prop(){ return _muProp / (double)_nhit; }
   std::vector<bhep::hit*> get_hits(){ return _voxes; }
+  double get_time(){return _time;}
+
+  bhep::vstring get_mother_particle(){return _mother_particle;}
 
   //Setters.
   void set_VoxX(int n){ _nVoxV[0] = n; }
@@ -53,6 +57,9 @@ class cluster: public Measurement
   double _muProp;
 
   double _time;
+
+  bhep::vstring _mother_particle;
+
 };
 
 #endif
