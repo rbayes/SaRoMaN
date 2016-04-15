@@ -175,6 +175,7 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
   _YMeas.clear();
   _ZMeas.clear();
   _EMeas.clear();
+  _MuProp.clear();
 
   _XHadPos.clear();
   _YHadPos.clear();
@@ -569,6 +570,7 @@ void MINDplotter::define_tree_branches() {
   statTree->Branch("raw_Ymeas", &_YMeas, 32000,0);
   statTree->Branch("raw_Zmeas", &_ZMeas,32000,0);
   statTree->Branch("raw_EngMeas", &_EMeas,32000,0);
+  statTree->Branch("raw_MotherProp", &_MuProp, 32000, 0);
 
   //statTree->Branch("theta0", &_Theta0,32000,0);
   statTree->Branch("raw_theta1", &_Theta1,32000,0);
@@ -1342,7 +1344,7 @@ void MINDplotter::hitBreakUp(fitter& Fit) {
 		     Fit.GetMeas(ih)->position()[1], 
 						      Fit.GetMeas(ih)->position()[2]));
   
-
+    _MuProp.push_back(Fit.GetMeas(ih)->get_mu_prop());
 
   }
   //// First Angles  
