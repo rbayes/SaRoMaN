@@ -27,6 +27,9 @@ void cluster::add_hit(bhep::hit* dep)
 
   _time = dep->ddata( "HitTime" );
 
+  _mother_particle = dep->vsdata("mother_particle");
+
+
   set_hv("energy", HyperVector(_eng,0));
   set_hv("MuonProp", HyperVector(_muProp/_nhit,0));
   set_hv("hittime", HyperVector(_time,0));

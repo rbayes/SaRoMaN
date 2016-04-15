@@ -211,6 +211,8 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
   int longesttraj;
   bool allfit=true;
 
+  cout<<"In MINDplotter.cpp _clu="<<_clu<<endl;
+
   ///true particle informations
   if ( _clu )
     ok1 = extract_true_particle2(evt);
@@ -296,7 +298,9 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
       _intType[i] = (int)(trajs[i]->quality("intType")) ;
     else _intType[i] = 7;
     
-  
+
+    _rangqP[0][i] = 1./trajs[i]->quality("initialqP"); //Error probing.  
+
     ///for fitting success
     if (success) {
       State ste;       
@@ -334,7 +338,7 @@ void MINDplotter::Execute(fitter& Fit, const bhep::event& evt) {
       
       ///range of q/p calculation ?
 
-      _rangqP[0][i] = 1./trajs[i]->quality("initialqP");
+      _rangqP[0][i] = 1./trajs[i]->quality("initialqP"); //Original
       // _rangqP[1][i] = Fit.get_classifier().RangeMomentum(trajs[i]->length());
       // _rangqP[1][i] = _rangqP[0][i] - _qP[0][i];
       // _rangqP[2][i] = _qP[1][i] - _rangqP[0][i];
@@ -569,6 +573,9 @@ void MINDplotter::define_tree_branches() {
   statTree->Branch("raw_Ymeas", &_YMeas, 32000,0);
   statTree->Branch("raw_Zmeas", &_ZMeas,32000,0);
   statTree->Branch("raw_EngMeas", &_EMeas,32000,0);
+
+  statTree->Branch("raw_MotherMeas", &_MotherMeas,32000,0);
+  statTree->Branch("raw_MotherProp", &_MotherProp,32000,0);
 
   //statTree->Branch("theta0", &_Theta0,32000,0);
   statTree->Branch("raw_theta1", &_Theta1,32000,0);
@@ -947,13 +954,22 @@ bool MINDplotter::extract_true_particle2(const bhep::event& evt) {
 
   ///loop over the true particles to extract info
   int count = 0, trackNo=0, had_count=0;
+
+  cout<<"Pospart.size()="<<(int)Pospart.size()<<endl;
+
   for (int iParts=(int)Pospart.size()-1;iParts >= 0;iParts--){
     count=0;
+
+    cout<<"in hadron="<<Pospart[iParts]->p()<<"  pdg="<<Pospart[iParts]->pdg()<<endl;
+    //cout<<"ID="<<Pospart[iParts]->fetch_sproperty("G4TrackID")<<" parentID="<<Pospart[iParts]->find_dproperty("G4ParentID")<<endl;
+	
    
     if ( Pospart[iParts]->fetch_sproperty("CreatorProcess") == "none" &&
 	 Pospart[iParts]->find_sproperty("PrimaryLepton") ){
       _m.message("For primary lepton, mom =",Pospart[iParts]->p(),"  pdg=",Pospart[iParts]->pdg(), bhep::VERBOSE);
      
+      cout<<"For primary lepton, mom ="<<Pospart[iParts]->p()<<"  pdg="<<Pospart[iParts]->pdg()<<endl;
+
       _truPart = Pospart[iParts];
 	
       count++;
@@ -972,7 +988,8 @@ bool MINDplotter::extract_true_particle2(const bhep::event& evt) {
 	  _m.message("For hadron=",Pospart[iParts]->p(),"  pdg=",Pospart[iParts]->pdg()," trackNo=",trackNo, bhep::VERBOSE);
 	}
 	add_to_hads( *Pospart[iParts] );///
-	//cout<<"in hadron="<<Pospart[iParts]->p()<<"  pdg="<<Pospart[iParts]->pdg()<<endl;//" ID="<<Pospart[iParts]->fetch_sproperty("G4TrackID")<<" parentID="<<Pospart[iParts]->find_dproperty("G4ParentID")<<endl;
+	cout<<"in hadron="<<Pospart[iParts]->p()<<"  pdg="<<Pospart[iParts]->pdg()<<endl;
+	cout<<"ID="<<Pospart[iParts]->fetch_sproperty("G4TrackID")<<" parentID="<<Pospart[iParts]->find_dproperty("G4ParentID")<<endl;
 	
       }
 
@@ -1331,6 +1348,23 @@ void MINDplotter::hitBreakUp(fitter& Fit) {
     
     //total no of hadrons
     if ( meas[ih]->names().has_key(hadHit) ) _hitHad++;
+
+    vector<string> mother_particle = Fit.GetMeas(ih)->get_mother_particle();
+
+    double mu = 0.0;
+    cout<<"Mother_particle"<<endl;
+    for(int i=0;i<mother_particle.size();i++)
+      {
+	cout<<mother_particle[i]<<endl;
+	_MotherMeas.push_back(mother_particle[i]);
+
+	if(mother_particle[i] == "mu+" || mother_particle[i] == "mu-") mu++; 
+	
+      }
+
+    _MotherProp.push_back(mu/mother_particle.size());
+    
+
 
     _XMeas.push_back(Fit.GetMeas(ih)->position()[0]);
     _YMeas.push_back(Fit.GetMeas(ih)->position()[1]);
