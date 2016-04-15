@@ -156,6 +156,7 @@ private:
   std::vector<double> _YMeas;
   std::vector<double> _ZMeas;
   std::vector<double> _EMeas;
+  std::vector<double> _MuProp;
 
   double _Theta1;
   double _Theta2;
