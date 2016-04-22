@@ -716,7 +716,7 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
 
     }
   if(!ok) _m.message("perform_muon_extraction not ok",bhep::DETAILED);
-
+  /*
   // Fixing the seed
   EVector V(6,0);
   EMatrix M(6,6,0);
@@ -736,7 +736,7 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
   M[5][5] = pow(V[5],2)*4;
   patternSeed.set_hv(HyperVector(V,M,RP::slopes_curv_z));
 
-
+  */
   ///assign the seed state
   if ( ok )
     _seedState = patternSeed;

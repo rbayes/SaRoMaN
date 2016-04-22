@@ -54,9 +54,9 @@ class saroman:
         self.out_base  = os.path.join(self.home, 'out')
         #self.out_base  = os.path.join(self.home, 'batch')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
-        self.third_party_support = os.path.join(self.home, '../../third_party') 
+        self.third_party_support = os.path.join(self.home, 'third_party') 
         #self.xml_file_path = os.path.join(self.exec_base,'MIND.gdml')
-        self.xml_file_path = os.path.join(self.exec_base,'MIND_l2.gdml')
+        self.xml_file_path = os.path.join(self.exec_base,'MIND_v3.gdml')
         self.parsed_file_path  = os.path.join(self.exec_base,'parsedGdml.log')
 
         #General flags
@@ -68,8 +68,8 @@ class saroman:
 
         #Should be implemented as input values#
         self.train_sample = 0
-        self.part = 'mu-'#'14'
-        self.pid = 13
+        # self.part = 'mu-'#'14'
+        # self.pid = 13
         self.part = 'mu+'#'14'
         self.pid = -13
         
@@ -130,9 +130,9 @@ class saroman:
 
         #Setup for field_map_generator.py
         #self.CreateFieldMap = True
-        self.field_map_generator = field_map_generator(self.Bfield,self.MIND_ydim+self.MIND_ear_ydim,
-            self.MIND_xdim+self.MIND_ear_xdim, self.MIND_npanels)
-        #self.field_map_name = 'field_map_test.res'
+        #self.field_map_generator = field_map_generator(self.Bfield,self.MIND_ydim+self.MIND_ear_ydim,
+        #    self.MIND_xdim+self.MIND_ear_xdim, self.MIND_npanels)
+        # self.field_map_name = 'field_map_test.res'
         self.field_map_name = 'CenterPlate.table'
         self.field_map_folder = self.out_base
         self.field_map_full_name =os.path.join(self.field_map_folder,self.field_map_name)
@@ -151,8 +151,8 @@ class saroman:
 
         #Config file variables not generalized
         #Particle kinetic energy will be sample between these two values (in GeV)
-        self.part_eng_min = 2.000 #1.000
-        self.part_eng_max = 2.000 #1.400
+        self.part_eng_min = 1.000 #1.000
+        self.part_eng_max = 1.000 #1.400
 
         
         self.config_digi_seed = 107311191
@@ -311,8 +311,9 @@ class saroman:
         Handles commandline flags, CIOV are implemented,
         if there are no flags the code is run depending on how the variables are setup in __init__
         '''
-        self.Set_environment()
+        # self.Set_environment()
         if argv==[]:
+            self.Set_environment()
             self.Run_saroman()
 
         else:
@@ -325,9 +326,11 @@ class saroman:
                 sys.exit(2)
             for opt, arg in opts:
                 if opt == '-P':
+                    self.Set_environment()
                     self.part = 'mu+'#'14'
                     self.Run_saroman()
                 if opt == '-N':
+                    self.Set_environment()
                     self.part = 'mu-'#'14'
                     self.Run_saroman()
                 if opt == '-C':
@@ -344,9 +347,11 @@ class saroman:
                     #self.Clean_up_own()
                     self.Config_and_build_own()
                 if opt== '-V':
+                    self.Set_environment()
                     self.visual = True
                     self.Run_saroman()
                 if opt== '-B':
+                    self.Set_environment()
                     self.Run_saroman_check()
                     iter =  args[0]
                     self.out_base  += '/batch'+iter

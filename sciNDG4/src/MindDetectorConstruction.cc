@@ -175,6 +175,19 @@ void MindDetectorConstruction::SetAuxInformation(G4String basename,
 	  myvol->SetSensitiveDetector(mydet);
 	}
       }
+      else if((*vit).type.contains("Color")){
+	if((*vit).value.contains("Red"))
+	  myvol->SetVisAttributes(new G4VisAttributes(G4Color(1, 0, 0)));
+
+	else if((*vit).value.contains("Orange"))
+	  myvol->SetVisAttributes(new G4VisAttributes(G4Color(1, 0.65, 0)));
+
+	else if((*vit).value.contains("Blue"))
+	  myvol->SetVisAttributes(new G4VisAttributes(G4Color(0.2, 0.2, 1)));
+
+	else if((*vit).value.contains("Brown"))
+	  myvol->SetVisAttributes(new G4VisAttributes(G4Color(0.61, 0.4, 0.12)));
+      }
       else if ((*vit).type.contains("Invisible")) {
 	myvol->SetVisAttributes(new G4VisAttributes(false));
       }

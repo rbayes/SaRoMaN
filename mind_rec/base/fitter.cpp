@@ -333,8 +333,8 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   //  _traj.nodes().erase(_traj.nodes().end()-1,_traj.nodes().end());
   //}
   
-  _traj.nodes().erase(_traj.nodes().end()-3,_traj.nodes().end());
-  _traj.nodes().erase(_traj.nodes().begin(),_traj.nodes().begin()+1);
+  //_traj.nodes().erase(_traj.nodes().end()-3,_traj.nodes().end());
+  //_traj.nodes().erase(_traj.nodes().begin(),_traj.nodes().begin()+1);
   
   cout<<"_traj.size(): "<<_traj.size()<<endl;
   cout<<"Removing nodes done"<<endl;

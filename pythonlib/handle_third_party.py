@@ -60,7 +60,8 @@ class handle_third_party:
 		#Pythia6
 		print 'Installing Pythia6...'
 		self.Check_make_dir(self.third_party_support + '/pythia')
-		command = ['wget','http://home.fnal.gov/~rhatcher/build_pythia6.sh']
+		# command = ['wget','http://home.fnal.gov/~rhatcher/build_pythia6.sh']
+		command = ['cp',self.exec_base+'/scripts/build_pythia6.sh',self.third_party_support]
 		subprocess.call(command,cwd = self.third_party_support,stdout=self.FNULL)
 		self.Shell_source_no_environ(self.third_party_support +'/build_pythia6.sh',self.third_party_support + '/pythia')
 		
@@ -72,7 +73,7 @@ class handle_third_party:
 		subprocess.call(command, cwd = self.third_party_support,stdout=self.FNULL)
 		command = ['git','checkout','-b','v5-34-34','v5-34-34']
 		subprocess.call(command, cwd = self.third_party_support + '/root',stdout=self.FNULL)
-		command = self.third_party_support+'/root/configure linuxx8664gcc --enable-pythia6 --with-pythia6-libdir='+self.third_party_support+'/pythia/v6_428/lib --enable-python'
+		command = self.third_party_support+'/root/configure linuxx8664gcc --enable-pythia6 --with-pythia6-libdir='+self.third_party_support+'/pythia/v6_428/lib --enable-python --enable-gdml'
 		subprocess.call('bash %s'%command, shell=True, cwd = self.third_party_support+'/root',stdout=self.FNULL)
 		subprocess.call('make', shell=True, cwd = self.third_party_support+'/root',stdout=self.FNULL)
 		
@@ -108,8 +109,8 @@ class handle_third_party:
 		self.Check_make_dir(self.third_party_support + '/build')
 		self.Check_make_dir(self.third_party_support + '/install')
 
-		# Bash 28 xerces-c-3.1.2               
-		self.Mice_script_install_emulator('xerces-c-3.1.2','xerces-c-3.1.2.tar.gz','http://apache.mirror.anlx.net//xerces/c/3/sources/xerces-c-3.1.2.tar.gz')
+		# Bash 28 xerces-c-3.1.3               
+		self.Mice_script_install_emulator('xerces-c-3.1.3','xerces-c-3.1.3.tar.gz','http://apache.mirror.anlx.net//xerces/c/3/sources/xerces-c-3.1.3.tar.gz')
 		# Bash 29 expat-2.1.0   
 		self.Mice_script_install_emulator('expat-2.1.0','expat-2.1.0.tar.gz','http://downloads.sourceforge.net/expat/expat-2.1.0.tar.gz')
 
