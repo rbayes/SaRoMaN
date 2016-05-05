@@ -47,10 +47,9 @@ class eventPlotter:
                 self.mode = 0
                 print opt, arg
         if self.infile == "":
-            print "No input file provided."
-            print "rootPlotter.py -F input file"
-            print "               -O output file"
-            print "               -e event to view the indicated event"
+            print "rootPlotter.py --infile="
+            print "               --outfile="
+            print "               --e= event to view the indicated event"
             print "               -f to scan failed events"
             print "               -s to scan all events"
             sys.exit()

@@ -298,6 +298,15 @@ void MINDsetup::addProperties(){
   _generalBFieldMap = MINDfieldMapReader(Bmap,1.0);
   _gsetup.set_volume_property("mother","X0",X0AIR);
  
+  // Add the 
+  bhep::vdouble field = _pstore.fetch_vstore("mag_field");
+  double earth = 5e-5;
+  BField = EVector(3,0);
+  BField[0] = tesla * earth; 
+  BField[1] = 0.0; // field[1] * tesla * earth;
+  BField[2] = 0.0; //field[2] * tesla * earth;
+  _gsetup.set_volume_property_to_sons("mother",RP::BField,BField);
+
   /*
 
   Fill the detector subvolumes with the correct properties by iterating over each part, finding
