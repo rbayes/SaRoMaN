@@ -115,58 +115,42 @@ bool event_classif::Execute(const vector<cluster*>& hits,
   
   ///reset variable for each event
   reset();
-  
   ///copy hits
   std::vector<cluster*> hits2 = hits;
   cout<<"Num hits: "<<hits2.size()<<endl;
-
   cout<<"x\ty\tz\ttime"<<endl;
   for(int i=0;i<hits2.size();i++)
     {
-      
       cout<<hits2[i]->position()[0]<<"\t"<<hits2[i]->position()[1]<<"\t"
 	  <<hits2[i]->position()[2]<<"\t"<<hits2[i]->get_time()<<endl;
-    
     }
-
   ///start looking for trajectories
   bool ok;
   //while (hits2.size() > 5 && (int)vtrajs.size() <= _maxNtraj) {  
-  while (hits2.size() >= 4 && (int)vtrajs.size() <= _maxNtraj) {  
-    
+  while (hits2.size() >= 4 && (int)vtrajs.size() <= _maxNtraj) { 
+    cout<<"hits2.size()="<<hits2.size()<<endl;
     ///create trajectory     
     Trajectory* traj = new Trajectory();
-    
     //reset each trajectory informations    
     reset_traj_info();
-    
-    ///sort hits in increasing Z positions
+    //sort hits in increasing Z positions
     sort( hits2.begin(), hits2.end(), sortHitsByZ() );
-
     //muontraj.set_quality("lowPt",0);
     //traj->set_quality("lowPt",0);
-
-
     cout<<"hits2: "<< hits2[0]->position()[2]<<endl;;
     cout<<"hits2: "<< hits2[hits2.size()-1]->position()[2]<<endl;
     cout<<"hits2: "<<hits2.size()<<endl;
-
     ///calculate the number of planes containing single hit and arrange the z-position, energy of the hits in increasing z 
     //Occupancy.
     ok = get_plane_occupancy( hits2 );
-
     ///called if liklihood output has to generate
     if ( _outLike )
       output_liklihood_info( hits2 );
-
     /// CA and PR both
     ok = chargeCurrent_analysis(hits2, *traj, hads);
-
     cout<<"ChargeCurrent ok: "<<ok<<endl;
     // ok = muon_extraction_through_PatterRec(hits2, *traj, hads);
-
     _m.message("nmeas in traj=",traj->size(),"  and hadrons left=",hads.size()," failType=",_failType, bhep::VERBOSE);
-    
     ///if CA and free section KF filtering not fails   
     //if(_failType != 4 && _failType != 5 && traj->nmeas()>=5 )  {
     if(ok) 
@@ -174,9 +158,7 @@ bool event_classif::Execute(const vector<cluster*>& hits,
 	///for liklhood
 	if (_outLike)
 	  traj_like( hits2 );
-	
 	if ( _outLike ) out_like();
-	
 	//fill the vector of trajectories
 	vtrajs.push_back(traj);
 	///set information of trajectory
@@ -188,24 +170,20 @@ bool event_classif::Execute(const vector<cluster*>& hits,
 	///if hadrons > 5 then loop
 	if((int)hads.size() >= _min_hits || (int)vtrajs.size() > _maxNtraj) hits2 = hads;
 	else break;
-	
 	///clear hadron container
 	hads.clear();
       }
     else {
       hads=hits2;
       _m.message("hadron left =",hads.size(), bhep::VERBOSE);
-      
       hits2.clear();
       delete traj;
       break;
     }
   }
   _m.message("eventclass::PR, size = ", _vPR_seed.size()," vtraj size =",vtrajs.size(), bhep::VERBOSE);
-  
   //sort the trajectories (not working because length =0 ??)
   if(vtrajs.size()>1)  sort( vtrajs.begin(), vtrajs.end(), sortTrajByLength());
-
   return ok;
 }
 
@@ -343,34 +321,26 @@ bool event_classif::get_plane_occupancy(vector<cluster*>& hits){
     ///create plane info
     plane_info* plane = new plane_info(planeIndex, testZ, _infoStore);
     plane->AddHit(hits[imeas]);
-    cout<<"testZ: "<<testZ<<endl;
+    //cout<<"testZ: "<<testZ<<endl;
     
     ///calculate the z position which is the current z for hits 1 -> total no of hits in the cluster 
     for (size_t i = hits_used;i <nHits;i++) {
       curZ = hits[i]->position()[2];
-
-      cout<<"curZ: "<<curZ<<" testZ: "<<testZ<<" _tolerance: "<<_tolerance<<endl;
-   
+      //cout<<"curZ: "<<curZ<<" testZ: "<<testZ<<" _tolerance: "<<_tolerance<<endl;
       if (curZ <= testZ + _tolerance) {
 	
 	// add the hit to the same plane
 	plane->AddHit(hits[i]);
-	cout<<"Added hit"<<endl;
-	
+	//cout<<"Added hit"<<endl;
 	testZ = hits[i]->position()[2];
 	hits_used++;
       } else break;
       
     }
-    
-   
     _m.message(" get plane info =",plane->GetZ()," Occ=",plane->GetNHits()," PlaneNo=",plane->GetPlaneNo(), bhep::VERBOSE);
-    
-    cout<<"get plane info = "<<plane->GetZ()<<" Occ= "<<plane->GetNHits()<<" PlaneNo= "<<plane->GetPlaneNo()<<endl;
+    //cout<<"get plane info = "<<plane->GetZ()<<" Occ= "<<plane->GetNHits()<<" PlaneNo= "<<plane->GetPlaneNo()<<endl;
     ///fill the plane_info vector
     _planes.push_back(plane);
-    
-   
     ///increase the plane index
     planeIndex++;
     
@@ -415,7 +385,7 @@ bool event_classif::get_plane_occupancy(vector<cluster*>& hits){
   
 
   /// Mean occupancy
-  if ( _nplanes == 0 ) return false;
+  if ( _nplanes == 0 ) ok=false;
   _meanOcc /= (double)_nplanes;
   
   ///if no of single-hits in the longest part is > 5 and free part is 50% of the hitsperplane then 
@@ -593,7 +563,8 @@ if not found then  excluded_hits = 0; _exclPlanes = 0; i.e, vertGuess =0*/
   for(int pl=_planes.size()-1; pl >= 0; pl-- ){
     cout<<"Planes z: "<<_planes[pl]->GetZ()<<endl;
     
-    if(_planes[pl]->GetNHits()!=1) break;
+    //if(_planes[pl]->GetNHits()!=1) break;
+    if(_planes[pl]->GetNHits()!=1) continue;
     
     RecObject* ro = dynamic_cast<RecObject*>(&(*(_planes[pl]->GetHits()[0])));
     muontraj.add_node(Node(*ro));
@@ -706,7 +677,7 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
       cout<<"z: "<<muontraj.nodes()[i]->measurement().position()[2]<<endl;
     }
 
-    ok = perform_muon_extraction( patternSeed, hits, muontraj, hads);
+    ok = perform_muon_extraction2( patternSeed, hits, muontraj, hads);
     cout<<"after perform_muon_extraction: "<<muontraj.size()<<endl;
 
   for(int i=0;i<muontraj.size();i++)
@@ -716,6 +687,9 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
 
     }
   if(!ok) _m.message("perform_muon_extraction not ok",bhep::DETAILED);
+  
+  ok = get_patternRec_seed( patternSeed, muontraj, hits);
+
   /*
   // Fixing the seed
   EVector V(6,0);
@@ -951,14 +925,18 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
 
   double p;
 
-  p = RangeMomentum(pathlength,firstNodeZ);
+  //p = RangeMomentum(pathlength,firstNodeZ);
 
+  p=MomentumFromCurvature(track,0,p);
+
+  /*
   if(final_Zpos > zMax)
     //if(track.size() > 16) //tot 18 plates.
     {//Track went through the detector
       cout<<"Went through the detector event_classif"<<endl;
       p=MomentumFromCurvature(track,0,p);
     }
+  */
 
   int meansign = CalculateCharge(track);
 
@@ -1139,10 +1117,98 @@ bool event_classif::perform_muon_extraction(const State& seed, vector<cluster*>&
 }
 
 
-
-
-
-
+//***********************************************************************
+bool event_classif::perform_muon_extraction2(const State& seed, vector<cluster*>& hits,
+					    Trajectory& muontraj, vector<cluster*>& hads) {
+  //***********************************************************************
+  //Loop through multiple occupancy planes finding the best match to the muon
+  //traj and filtering it into the trajectory.
+  _m.message("I am  event_classif::perform_muon_extraction2 ", bhep::DETAILED); 
+  bool ok;
+  long ChiMin;
+  int nConsecHole = 0;
+  cout<<"size0:"<<muontraj.size()<<endl;
+  /// start adding mulp. occupancy planes hits from the LAST PLANE of "free section" muontraj
+  //int plane_start = _nplanes -  muontraj.size() -1;
+  int plane_start = _nplanes - 1;
+  for (int pl = plane_start; pl>=0; pl--){
+    cout<<"size1:"<<muontraj.size()<<endl;
+    _m.message("plane no=",pl,"  & hits = ",_planes[pl]->GetNHits()," & intType = ",_intType, bhep::DETAILED);
+    /// if hit corresponds to vertex position
+    if (_planes[pl]->GetZ() < hits[_vertGuess]->position()[2]){
+      cout<<"broken"<<endl;
+      break;
+    }
+    if (_planes[pl]->GetNHits()==1){
+      cout<<"continued"<<endl;
+      continue;
+    }
+    double Chi2[(const int)(_planes[pl]->GetNHits())] ;
+    ///loop over hits on a plane
+    for (int ht=0; ht<_planes[pl]->GetNHits(); ht++){
+      // _m.message("meas ==> ",(_planes[pl]->GetHits()[ht]->vector()),bhep::VERBOSE); 
+      try {
+	ok = man().matching_svc().match_trajectory_measurement(muontraj,
+							       *(_planes[pl]->GetHits()[ht]), Chi2[ht]);
+      } catch (const char* msg){
+	ok = false;
+	std::cout<<msg<<std::endl;
+      }
+      // _m.message("meas.dim() = ",(_planes[pl]->GetHits()[ht])->dim(),bhep::VERBOSE);
+      if ( !ok ) Chi2[ht] = 9999999;
+    }
+    cout<<"size2:"<<muontraj.size()<<endl;
+    /// Return hit index having min chi2
+    ChiMin = TMath::LocMin((const int)(_planes[pl]->GetNHits()), Chi2);
+    ///The hit corresponds to min Chi2 will be added to the Trajectory & assigns as muon candidate, else considered as Hadron
+    for (int iht = 0; iht < _planes[pl]->GetNHits();iht++){
+      if (iht==(int)ChiMin) {
+	ok = man().fitting_svc().filter(*(_planes[pl]->GetHits()[iht]), seed, muontraj);
+	_m.message("plane No =",_planes[pl]->GetPlaneNo()," & the hit with Z=",
+		   _planes[pl]->GetHits()[iht]->position()[2], bhep::DETAILED);
+	///assign as muon candidate	    
+	if ( ok ) {
+	  const dict::Key candHit = "inMu";
+	  const dict::Key hit_in = "True";
+	  (_planes[pl]->GetHits()[iht])->set_name(candHit, hit_in);
+	  //pattern recognition chi2 
+	  if ((_planes[pl]->GetHits()[iht] )->get_mu_prop() > 0.8 )
+	    _recChi.back()[0] = TMath::Max(Chi2[iht], _recChi.back()[0]);
+	  else
+	    _recChi.back()[1] = TMath::Min(Chi2[iht], _recChi.back()[1]);
+	  
+	  if ( nConsecHole > _recChi.back()[2] )
+	    _recChi.back()[2] = nConsecHole;
+	  nConsecHole = 0;
+	} else nConsecHole++;
+      } else {
+	///assign as hadron
+	    const dict::Key hadHit = "inhad";
+	    const dict::Key had_in = "True";
+	    (_planes[pl]->GetHits()[iht])->set_name(hadHit, had_in);
+	    hads.push_back(_planes[pl]->GetHits()[iht]);    
+      }
+    }
+    cout<<"size3:"<<muontraj.size()<<endl;
+  }//plane
+  cout<<"size01:"<<muontraj.size()<<endl;  
+  if ( nConsecHole > _max_consec_missed_planes ) {
+    cout<<"size02:"<<muontraj.size()<<endl;  
+    if ( _endProj ) check_forwards( seed, hits, muontraj );
+    if ( muontraj.size() < _min_plane_prop*(double)(_nplanes-_badplanes) ){
+      _failType = 6;
+      return false;
+    } else {
+      cout<<"size03:"<<muontraj.size()<<endl;  
+      sort_hits( hits, muontraj, hads );
+      return true;
+    }
+  }
+  cout<<"size04:"<<muontraj.size()<<endl;  
+  if ( _endProj ) check_forwards( seed, hits, muontraj );
+  _m.message("At the end of muon_extraction size in traj =",muontraj.size(), bhep::VERBOSE);
+  return true;
+}
 
 //***********************************************************************
 void event_classif::check_forwards(const State& seed, vector<cluster*>& hits,

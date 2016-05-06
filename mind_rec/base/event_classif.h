@@ -104,6 +104,8 @@ protected:
   bool perform_kalman_fit(State& seed, Trajectory& track);
   bool perform_muon_extraction(const State& seed, vector<cluster*>& hits,
 			       Trajectory& muontraj, vector<cluster*>& hads);
+  bool perform_muon_extraction2(const State& seed, vector<cluster*>& hits,
+			       Trajectory& muontraj, vector<cluster*>& hads);
   void check_forwards(const State& seed, vector<cluster*>& hits,
 		      Trajectory& muontraj);
 
