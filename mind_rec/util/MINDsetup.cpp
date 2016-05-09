@@ -289,6 +289,9 @@ void MINDsetup::addProperties(){
   _zaxis = EVector(3,0);
   _zaxis[2]=1;
 
+  _negzaxis = EVector(3,0);
+ _negzaxis[2]=-1;
+
   string current_string;
   dict::Key vol_name;
 
@@ -297,6 +300,8 @@ void MINDsetup::addProperties(){
   //_generalBFieldMap = MINDfieldMapReader(Bmap,_fieldScale);
   _generalBFieldMap = MINDfieldMapReader(Bmap,1.0);
   _gsetup.set_volume_property("mother","X0",X0AIR);
+
+  //_gsetup.set_volume_property("mother","BField",EVector(3,0));
  
   // Add the 
   bhep::vdouble field = _pstore.fetch_vstore("mag_field");
@@ -307,14 +312,25 @@ void MINDsetup::addProperties(){
   BField[2] = 0.0; //field[2] * tesla * earth;
   _gsetup.set_volume_property_to_sons("mother",RP::BField,BField);
 
-  /*
+  zeroMap = new DeDxMap(0);
+
+  _gsetup.set_volume_property_to_sons("mother",RP::de_dx_map,*zeroMap);
+
+  _gsetup.set_volume_property_to_sons("mother","X0",X0AIR);
+
+  if(StepSize){
+    _gsetup.set_volume_property_to_sons("mother","StepSize",StepSize);
+    
+    _gsetup.set_volume_property_to_sons("mother",RP::SurfNormal,_zaxis);
+
+  }  
+
+
+/*
 
   Fill the detector subvolumes with the correct properties by iterating over each part, finding
   the ammount of iron and scintilator and the total size of the module.
   */
-
-  
-
 
   for(map<string, std::vector<double> >::const_iterator it = _gdml_pos_map.begin();
       it != _gdml_pos_map.end(); ++it)

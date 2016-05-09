@@ -124,6 +124,11 @@ protected:
   vector<MINDfieldMapReader*> BFieldMapVec;
   MINDfieldMapReader _generalBFieldMap;
 
+  DeDxMap* zeroMap;
+
+
+
+
   //-------------------------------------------------------------//
   
   //------------------- PROPERTIES OF MATERIALS -----------------//
@@ -144,6 +149,7 @@ protected:
   std::string Bmap;
   
   EVector _zaxis;
+  EVector _negzaxis;
   
   //-------------------------------------------------------------//
   
