@@ -89,6 +89,8 @@ bool fitter::Execute(bhep::particle& part,int evNo){
   ///create clusters or fill measurement vector
   ok = CreateMeasurements(part);
   
+  cout<<"What is patternRec: "<<_patternRec<<endl;
+
   ///if pattern recognition 
   if (_patternRec) {
     if ((int)_meas.size() < _min_seed_hits) {
@@ -117,24 +119,41 @@ bool fitter::Execute(bhep::particle& part,int evNo){
     
     /// execute event classification
     get_classifier().Execute( _meas, _trajs, _hadmeas);
+
+    for(int i=0;i<_trajs.size();i++)
+      {
+	cout<<"after class trajs[i]->size() "<<_trajs[i]->size()<<endl;
+	cout<<"lowpt "<<_trajs[i]->quality("lowPt")<<endl;
+      }
     
     ///sort the hadrons
     sort( _hadmeas.begin(), _hadmeas.end(), reverseSorter() );
     
     ///PR seeds for all the trajectories from classifier
     _vPR_seed = get_classifier().get_patRec_seed_vector();
+
+    //cout<<"Printing _vPR_seed"<<endl;
+    //cout<<_vPR_seed[0]<<endl;
+
     
   }
+
+  //return true;
+
   /// for non PR track need to set tracks infos separately
   /*else if(ok) _trajs.push_back(_traj);*/
   double maxlength = -99999;
   double maxPlanes = -99999;
 
   /// loop over trajectories 
-  for (unsigned int i=0; i< _trajs.size(); i++){ 
+  for (unsigned int i=0; i<_trajs.size(); i++){ 
  
     _m.message("inside traj loop::if classifier ok, traj no =",i,"*********",bhep::DETAILED); 
     
+    cout<<"traj no="<<i<<endl;
+    cout<<"lowPt="<<_trajs[i]->quality("lowPt")<<endl;
+    cout<<"trajs[i] size="<<_trajs[i]->size()<<endl;
+
     // If the track is fitted
     //if(_trajs[i]->nodes()[0]->status("fitted"))
     // if(_trajs[i]->quality("fitted"))
@@ -155,6 +174,7 @@ bool fitter::Execute(bhep::particle& part,int evNo){
 
 	_traj = *(_trajs[i]);
 
+	//_traj.set_quality("lastIso", (int) _traj.size());
 	_traj.set_quality("fitcheck", _fitCheck);
 	_traj.set_quality("fitted",_fitted);
 	_traj.set_quality("lowPt",1);
@@ -177,6 +197,7 @@ bool fitter::Execute(bhep::particle& part,int evNo){
 	
 	/// Get the trajectory
 	_traj = *(_trajs[i]);
+	//_traj.set_quality("lastIso", (int) _traj.size());
 	_m.message("fitter::vector_PR size = ", _vPR_seed.size()," & trajno=",i,"  nmeas =",_traj.size(),bhep::DETAILED);
 	
 	//get traj informations
@@ -210,10 +231,14 @@ bool fitter::Execute(bhep::particle& part,int evNo){
 	}
 	
 	///fit the trajectory 
-	if (ok) {
+	if (ok && _vPR_seed.size() > 0) {
 	  /// seed for Fit 
 	  ComputeSeed(_traj,seedState);
 	  
+	  _m.message("- traj node0=",*(_traj.nodes()[0]),bhep::DETAILED);
+
+	  _m.message("- traj size=",_traj.nodes().size(),bhep::DETAILED);
+
 	  /// if (ok)cout<<"if classifier3="<<endl; 
 	  _fitted = FitTrajectory(seedState,i);
 	  
@@ -232,11 +257,21 @@ bool fitter::Execute(bhep::particle& part,int evNo){
 	    _muonindex[1] = i;
 	  }
 	}
-	
+
 	cout<<"End of fitter.cpp Fitted: "<<_fitted<<endl;
 	cout<<"End of fitter.cpp Fitcheck: "<<_fitCheck<<endl;
 	cout<<"End of fitter.cpp initialqP: "<<_initialqP<<endl;
-	
+
+    for(int i=0;i<_trajs.size();i++)
+      {
+	cout<<"end trajs[i]->size() "<<_trajs[i]->size()<<endl;
+	cout<<"lowpt "<<_trajs[i]->quality("lowPt")<<endl;
+      }
+
+	//cout<<"End of fitter.cpp momentum: "<<_traj.state().hv().vector()[5]<<endl;
+	if(_fitted && _fitCheck){
+	  cout<<"End of fitter.cpp momentum: "<<1.0/_traj.node(_traj.first_fitted_node()).state().hv().vector()[5]<<endl;
+	}
 	///assign quality for each trajectory
 	_traj.set_quality("failType",_failType);
 	_traj.set_quality("intType",_intType);
@@ -258,6 +293,13 @@ bool fitter::Execute(bhep::particle& part,int evNo){
 	//std::cout<<"*********************************************\n"<<std::endl;
       } // End loop over trajectories.
     
+
+    for(int i=0;i<_trajs.size();i++)
+      {
+	cout<<"final trajs[i]->size() "<<_trajs[i]->size()<<endl;
+	cout<<"lowpt "<<_trajs[i]->quality("lowPt")<<endl;
+      }
+  }
     /// for hadron shower
     if((int)_trajs.size() != 0)
       for(int j=0; j<=(int)_trajs.size(); j++)
@@ -265,7 +307,16 @@ bool fitter::Execute(bhep::particle& part,int evNo){
     else 
       rec_had_edep(0);
     // rec_had_energy();
-  }  
+
+
+    for(int i=0;i<_trajs.size();i++)
+      {
+	cout<<"after rec_had_edep trajs[i]->size() "<<_trajs[i]->size()<<endl;
+	cout<<"lowpt "<<_trajs[i]->quality("lowPt")<<endl;
+      }
+
+
+    //}  
   
   std::cout<<"Final trajectory =" << _traj<<std::endl;
   
@@ -315,8 +366,8 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   // Experimenting with removing hits in a different magnetic field region.
   //_traj.nodes().erase(_traj.nodes().begin(),_traj.nodes().begin()+4);
 
-  cout<<"Removing nodes"<<endl;
-  cout<<"_traj.size(): "<<_traj.size()<<endl;
+  //cout<<"Removing nodes"<<endl;
+  //cout<<"_traj.size(): "<<_traj.size()<<endl;
   /*
     for(int i = _traj.size()-1; i>=0; i--)
     {
@@ -336,9 +387,11 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   //_traj.nodes().erase(_traj.nodes().end()-3,_traj.nodes().end());
   //_traj.nodes().erase(_traj.nodes().begin(),_traj.nodes().begin()+1);
   
-  cout<<"_traj.size(): "<<_traj.size()<<endl;
-  cout<<"Removing nodes done"<<endl;
+  //cout<<"_traj.size(): "<<_traj.size()<<endl;
+  //cout<<"Removing nodes done"<<endl;
   
+  //_traj.sort_nodes(RP::z, 1);
+
   _traj2 = _traj;
 
   //  _traj.nodes()[0]->reset();
@@ -427,8 +480,23 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   if(_traj.status(RP::fitted) && _fitCheck > 0){
 	
     ok = man().matching_svc().compute_length(_traj, _length);///
+    //man().matching_svc().compute_length(_traj, _length);
     std::cout<<"_traj length = "<<_length<<std::endl;
   }
+
+  cout<<"Traj nodes size= "<<_traj.nodes().size()<<endl;
+
+  cout<<"nodes"<<endl;
+
+  for(int i=0;i<_traj.nodes().size();i++)
+    {
+      //cout<<*(_traj.nodes()[i])<<endl;
+      cout<<_traj.nodes()[i]->measurement().position()[2]<<endl;
+      cout<<_traj.nodes()[i]->status("fitted")<<endl;
+    }
+
+  cout<<"Done"<<endl;
+
 
   //std::cout<<"Final trajectory =" << _traj<<std::endl;
   // traj.set_status("fitted", ok);
@@ -445,8 +513,16 @@ bool fitter::ReseedTrajectory(const int trajno){
   bool ok, ok1;
   _reseed_called = true;
   
+  //State backSeed;  
+
+  //State backSeed = get_classifier().get_patRec_seed();
+
   State backSeed = _vPR_seed[_pr_count];
   
+  cout<<"Printing backSeed"<<endl;
+  cout<<backSeed<<endl;
+
+
   //Want to re-seed with diagonal matrix.
   HyperVector HV1 = backSeed.hv();//.keepDiagonalMatrix();
   HV1.keepDiagonalMatrix();
@@ -454,6 +530,11 @@ bool fitter::ReseedTrajectory(const int trajno){
     
   ///sort nodes in reverse order
   _traj2.sort_nodes(RP::z, -1);
+
+  //ComputeSeed(_traj2,backSeed);
+
+  //(void) get_classifier().get_patternRec_seed(backSeed,_traj2);
+
 
   // a copy of the track
   // Trajectory traj1 = traj;
@@ -474,6 +555,7 @@ bool fitter::ReseedTrajectory(const int trajno){
       ComputeSeedRefit(_traj2,seedState1);
       try {
 	ok1 = man().fitting_svc().fit(seedState1,_traj3);
+	//ok1 = man().fitting_svc().fit(backSeed,_traj3);
       } catch (const char* msg ) {
 	ok1 = false;
       }
@@ -486,7 +568,10 @@ bool fitter::ReseedTrajectory(const int trajno){
   }
 
   // sort nodes back
+
+  if(ok1){
   _traj2.sort_nodes(RP::z, 1);
+  }
 
   // _traj2 = traj;
   ///increase the count to set backseed from PR vector
@@ -926,9 +1011,14 @@ void fitter::ComputeSeed(const Trajectory& traj, State& seedState, int firsthit)
   EMatrix C(6,6,0), C2(1,1,0);
     
   // take the position from the first hit
+  /*
   v[0] = traj.nodes()[firsthit+1]->measurement().position()[0];
   v[1] = traj.nodes()[firsthit+1]->measurement().position()[1];
   v[2] = traj.nodes()[firsthit+1]->measurement().position()[2];   
+  */
+  v[0] = traj.nodes()[firsthit]->measurement().position()[0];
+  v[1] = traj.nodes()[firsthit]->measurement().position()[1];
+  v[2] = traj.nodes()[firsthit]->measurement().position()[2];   
 
   // Estime the momentum from range
   ComputeMomFromRange( traj, (int)traj.size(), firsthit, v);

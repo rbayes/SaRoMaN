@@ -58,6 +58,7 @@ public:
   std::map<dict::Key,vector<double> > _moduleDataMap;
 
   Volume* mother;
+  Volume* detector;
   Volume* det;
   vector<Volume*> detVector;
   Volume* vdet;
@@ -137,7 +138,9 @@ protected:
   double de_dx;
   double _wFe;
 
-  vector<double> X0EffVec;
+  double X0Eff;
+
+  vector<double*> X0EffVec;
 
   //for de/dx map
   double de_dx_scint;
@@ -162,6 +165,7 @@ protected:
   EMatrix cov;
   double resx,resy,resz;
   double StepSize;
+  double minStepSize;
 
 
 

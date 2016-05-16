@@ -54,9 +54,6 @@ public:
   int get_planes(){ return _nplanes; }
   int get_free_planes(){ return _freeplanes; }
   double get_xtent(){ return _Xtent; }
-  
-
- 
  
 //Getters.    
   // Trajectory& get_best_traj(){ return best_traj; }
@@ -74,6 +71,8 @@ public:
   //double RangeMomentum(double length,double nodeZ);
   //double MomentumFromCurvature(const Trajectory& traj, int firsthit = 0);
   
+ bool get_patternRec_seed(State& seed, Trajectory& muontraj);
+
 protected:
   
   void readParam();
@@ -98,7 +97,7 @@ protected:
   //double CalculateCharge2(Trajectory& track);
 
 
-  bool get_patternRec_seed(State& seed, Trajectory& muontraj, vector<cluster*>& hits);
+  //bool get_patternRec_seed(State& seed, Trajectory& muontraj, vector<cluster*>& hits);
   double fit_parabola(EVector& vec, Trajectory& track);
   void set_de_dx(double mom);
   bool perform_kalman_fit(State& seed, Trajectory& track);

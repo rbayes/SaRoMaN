@@ -112,7 +112,10 @@ void MINDsetup::createGeom(){
 			    MOTHER_earw,MOTHER_earh);
 
   else if(OctGeom==3)
-    mother = new Box(pos, zaxis, xaxis, MOTHER_z/2., MOTHER_x/2, MOTHER_y/2);
+    {
+      mother = new Box(pos, zaxis, xaxis, MOTHER_z/2., MOTHER_x/2, MOTHER_y/2);
+      detector = new Box(pos, zaxis, xaxis, MOTHER_z/2., MOTHER_x/2, MOTHER_y/2);
+    }
  
   else
     mother = new Tube(pos, zaxis,MOTHER_z/2, MOTHER_x/2); 
@@ -122,6 +125,8 @@ void MINDsetup::createGeom(){
   // add mother volume
   
   _gsetup.set_mother(mother);
+
+  //_gsetup.add_volume("mother","detector",detector);
    
   _msetup.message("Mother added to setup",bhep::VERBOSE);
 
@@ -300,6 +305,7 @@ void MINDsetup::addProperties(){
   //_generalBFieldMap = MINDfieldMapReader(Bmap,_fieldScale);
   _generalBFieldMap = MINDfieldMapReader(Bmap,1.0);
   _gsetup.set_volume_property("mother","X0",X0AIR);
+  //_gsetup.set_volume_property("detector","X0",X0AIR);
 
   //_gsetup.set_volume_property("mother","BField",EVector(3,0));
  
@@ -310,13 +316,19 @@ void MINDsetup::addProperties(){
   BField[0] = tesla * earth; 
   BField[1] = 0.0; // field[1] * tesla * earth;
   BField[2] = 0.0; //field[2] * tesla * earth;
-  _gsetup.set_volume_property_to_sons("mother",RP::BField,BField);
+  //_gsetup.set_volume_property_to_sons("mother",RP::BField,BField);
+
+  _gsetup.set_volume_property("mother",RP::BField,BField);
+  //_gsetup.set_volume_property("detector",RP::BField,BField);
 
   zeroMap = new DeDxMap(0);
 
-  _gsetup.set_volume_property_to_sons("mother",RP::de_dx_map,*zeroMap);
+  _gsetup.set_volume_property("mother",RP::de_dx_map,*zeroMap);
+  //_gsetup.set_volume_property("detector",RP::de_dx_map,*zeroMap);
+  
+  //_gsetup.set_volume_property_to_sons("mother",RP::de_dx_map,*zeroMap);
 
-  _gsetup.set_volume_property_to_sons("mother","X0",X0AIR);
+  // _gsetup.set_volume_property_to_sons("mother","X0",X0AIR);
 
   if(StepSize){
     _gsetup.set_volume_property_to_sons("mother","StepSize",StepSize);
@@ -331,6 +343,8 @@ void MINDsetup::addProperties(){
   Fill the detector subvolumes with the correct properties by iterating over each part, finding
   the ammount of iron and scintilator and the total size of the module.
   */
+
+  int i = 0;
 
   for(map<string, std::vector<double> >::const_iterator it = _gdml_pos_map.begin();
       it != _gdml_pos_map.end(); ++it)
@@ -367,6 +381,7 @@ void MINDsetup::addProperties(){
 		  numFe *=3;
 		  numScint *=3;
 		}
+	      //_gsetup.set_volume_property(vol_name,"StepSize",minStepSize);
 	      break;
 	    }
 	  else
@@ -403,13 +418,13 @@ void MINDsetup::addProperties(){
 	  double wSc = numScint *SCINT_z / length;
 	  double wFe = numFe * IRON_z / length;
 	  
-	  double X0Eff = X0Fe * wFe + X0Sc * wSc;
+	  X0Eff = X0Fe * wFe + X0Sc * wSc;
 
 	  _wFe = wFe;
 
 	  //double X0Eff = 1./(wFe/X0Fe + wSc/X01);
 	  //double X0Eff = 1./(wFe/X0Fe + wSc/X0Sc);
-	  X0EffVec.push_back(X0Eff);
+	  X0EffVec.push_back(new double(X0Eff));
 
 	  //double length = numScint * AIR_z +numScint * SCINT_z + numFe * IRON_z;
 	  //double length = it_int->second[2]; // Simply taken from the solid reference.
@@ -418,6 +433,8 @@ void MINDsetup::addProperties(){
 
 	  _moduleDataMap[vol_name].push_back(de_dx);
 
+	  std::cout<<"Local de_dx is "<<de_dx<<std::endl;
+
 	  std::cout<<"modulelength "<<length<<" numFe "<<numFe<<" numScint "<<numScint<<std::endl;
 	  std::cout<<"iron_z "<<IRON_z<<" scint_z "<<SCINT_z<<std::endl;
 
@@ -425,6 +442,12 @@ void MINDsetup::addProperties(){
 	  //fieldScale *= IRON_z *numFe;
 
 	  _detector_Bscale_avr += fieldScale *length;
+	  /*
+	  if (fieldScale == 0)
+	    {
+	      fieldScale = 5e-5 * tesla;
+	    }
+	  */
 	  
 	  std::cout<<"Local Field Scaling is "<<fieldScale<<std::endl;
 	  //BFieldMap = MINDfieldMapReader(Bmap,fieldScale);
@@ -442,8 +465,15 @@ void MINDsetup::addProperties(){
 
 	  //_gsetup.set_volume_property(vol_name,RP::de_dx_map,*_de_dx_map);
 	  _gsetup.set_volume_property(vol_name,RP::de_dx_map,*de_dx_map_vec.back());
+	  //_gsetup.set_volume_property(vol_name,"X0",X0AIR);
+	  _gsetup.set_volume_property(vol_name,"X0",*X0EffVec.back());
+
+	  //_gsetup.set_volume_property(vol_name,"X0",X0EffVec[i]);
+	  cout<<vol_name<<" X0="<<*X0EffVec[i]<<endl;
+	  i++;
+
 	  //_gsetup.set_volume_property(vol_name,"X0",X0Eff);
-	  _gsetup.set_volume_property(vol_name,"X0",X0EffVec.back());
+
 	  //_gsetup.set_volume_property_to_sons("mother",RP::BFieldMap,BFieldMap);
 	  //_gsetup.set_volume_property(vol_name,RP::BFieldMap,BFieldMap);
 	  _gsetup.set_volume_property(vol_name,RP::BFieldMap,*BFieldMapVec.back());
@@ -634,9 +664,11 @@ void MINDsetup::readParam(){
     
     if(_pstore.find_dstore("StepSize")){
       StepSize = _pstore.fetch_dstore("StepSize") * cm;
+      minStepSize = StepSize/10.0;
     }
     else{
       StepSize = 0.;
+      minStepSize = 0;
     }
 
 

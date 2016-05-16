@@ -134,6 +134,12 @@ void MINDfitman::config_navigator()
     .set_verbosity(l1);
   
   _man.navigation_svc().navigator(_model).set_max_number_steps(100);
+
+  _man.navigation_svc().navigator(_model).set_allow_extrap_outside_volume(true);
+
+  //_man.navigation_svc().navigator(_model).set_max_prop_distance_outside_finalvolume(150);
+
+
 }
 
 void MINDfitman::config_model()

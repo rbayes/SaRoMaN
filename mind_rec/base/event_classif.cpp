@@ -183,7 +183,8 @@ bool event_classif::Execute(const vector<cluster*>& hits,
   }
   _m.message("eventclass::PR, size = ", _vPR_seed.size()," vtraj size =",vtrajs.size(), bhep::VERBOSE);
   //sort the trajectories (not working because length =0 ??)
-  if(vtrajs.size()>1)  sort( vtrajs.begin(), vtrajs.end(), sortTrajByLength());
+  if(vtrajs.size()>0)  sort( vtrajs.begin(), vtrajs.end(), sortTrajByLength());
+  cout<<"Done with execute in event_classif"<<endl;
   return ok;
 }
 
@@ -493,7 +494,7 @@ void event_classif::assess_event(vector<cluster*>& hits)
    
 
     /// if occpancy of the end planes are larger than 2 (minBlobOcc)  
-    if ( endMeanOcc > _minBlobOcc ){
+    //bug if ( endMeanOcc > _minBlobOcc ){
       
       
       /// if 20% of planes are skipped OR no of free planes >=10
@@ -512,12 +513,12 @@ void event_classif::assess_event(vector<cluster*>& hits)
 	
 	_badplanes = (int)skipSize;
       } else _longestSingle = 0; //Brute force way to reject.
-    } else {
+      //bug} else {
       
-      _endProj = true;
+      //bug_endProj = true;
       
-      _planeEnd = *_planes[_endLongPlane];
-    }
+      //bug_planeEnd = *_planes[_endLongPlane];
+    //bug}
     
   }
   _m.message("planeEnd info :: end planeNo=",_planeEnd.GetPlaneNo(), bhep::VERBOSE);
@@ -614,10 +615,10 @@ if not found then  excluded_hits = 0; _exclPlanes = 0; i.e, vertGuess =0*/
 	    cout<<"after cell_auto "<<muontraj.size()<<endl;
 	    if(ok)
 	      {
-		//if((int)muontraj.size() > 9){ok = muon_extraction( hits, muontraj, hads);} 
+		if((int)muontraj.size() > 9){ok = muon_extraction( hits, muontraj, hads);} 
 		//else if((int)muontraj.size() >= 4){ok = LowMomentumExtraction( hits, muontraj, hads);}
-		//else ok = false;
-		ok = muon_extraction( hits, muontraj, hads);
+		else ok = false; // Combine muon_extraction with lowmomentum to handle mult. occ.
+		//ok = muon_extraction( hits, muontraj, hads);
 	      }
 	    
 	  }
@@ -629,7 +630,13 @@ if not found then  excluded_hits = 0; _exclPlanes = 0; i.e, vertGuess =0*/
       } 
       else {
 	if ( _badplanes !=0 ) _intType = 3;
-	ok = muon_extraction( hits, muontraj, hads);
+
+	if((int)muontraj.size() > 9)
+	  ok = muon_extraction( hits, muontraj, hads);
+	else
+	  ok= false; 
+	// Combine muon_extraction with lowmomentum to handle mult. occ.
+	
 	
       }
       
@@ -663,7 +670,7 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
   
   State patternSeed;
   
-  ok = get_patternRec_seed( patternSeed, muontraj, hits);
+  ok = get_patternRec_seed( patternSeed, muontraj);//, hits);
 
   cout<<"Seed before muon_extract: "<<patternSeed<<endl;
 
@@ -688,7 +695,7 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
     }
   if(!ok) _m.message("perform_muon_extraction not ok",bhep::DETAILED);
   
-  ok = get_patternRec_seed( patternSeed, muontraj, hits);
+  ok = get_patternRec_seed( patternSeed, muontraj);//, hits);
 
   /*
   // Fixing the seed
@@ -717,6 +724,10 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
   
   if(ok) _m.message(" event_class: traj nmeas=",muontraj.size()," intType =",_intType,"  && PR seed is=",_seedState,bhep::DETAILED);
 
+  cout<<"_seedState"<<endl;
+  cout<<_seedState<<endl;
+
+
 
   /// to get all the PR seed for reseed_traj inside fitter
   
@@ -727,15 +738,28 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
 }
 
 //***********************************************************************
-bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj,
-					vector<cluster*>& hits) {
+//bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj,
+//					vector<cluster*>& hits) {
+bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj){
   //***********************************************************************
   //std::cout<<"++++ event_classif::get_patternRec_seed +++++++++++++"<<std::endl;
 
+  //muontraj.sort_nodes(RP::z, 1 );
   
   EVector V(6,0); EVector V2(1,0);
   EMatrix M(6,6,0); EMatrix M2(1,1,0);
   
+
+  // Create and fill the state vector 
+  //EVector v(6,0); 
+  //v[0]= 0; // x position of the state 
+  //v[1]= 0; // y position 
+  //v[2]= 0; // z position 
+  //v[3]= 0; // x slope (dx/dz) 
+  //v[4]= 0; // y slope (dy/dz) 
+  //v[5]= 1; // q/p (charge over momentum) 
+
+
   ///x,y,z values of the 1st node
   V[0] = muontraj.nodes()[0]->measurement().vector()[0];
   V[1] = muontraj.nodes()[0]->measurement().vector()[1];
@@ -782,6 +806,14 @@ bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj,
   M[2][2] = EGeo::zero_cov()/2;
   M[3][3] = M[4][4] = 1.5;
   M[5][5] = pow(V[5],2)*4;
+
+  // Create and fill the state matrix 
+  //EMatrix C(6,6,0); 
+  //C[0][0] = C[1][1] = 1; // square of the position error 
+  //C[2][2] = 0 ; // no error in z since this is the running coordinate 
+  //C[3][3] = C[4][4] = 0.1; // square of the slope error 
+  //C[5][5] = 0.1; // square of 1/p error 
+
 
   //Sense
   V2[0] = 1;
@@ -925,9 +957,11 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
 
   double p;
 
-  //p = RangeMomentum(pathlength,firstNodeZ);
+  p = RangeMomentum(pathlength,firstNodeZ);
 
-  p=MomentumFromCurvature(track,0,p);
+  p=fabs(MomentumFromCurvature(track,0,p)-p);
+
+  //p=MomentumFromCurvature(track,0,p);
 
   /*
   if(final_Zpos > zMax)
@@ -947,7 +981,19 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
 
   //double p = RangeMomentum(pathlength,firstNodeZ);
 
+  EVector B = _supergeom.getRawBField(track.nodes()[0]->measurement().vector());
+  cout<<B[0]<<" "<<B[1]<<" "<<B[2]<<endl;
+
+  vec[3] = 0;
+  vec[4] = (track.nodes()[0]->measurement().vector()[1] -track.nodes()[1]->measurement().vector()[1])/
+    (track.nodes()[0]->measurement().vector()[2] -track.nodes()[1]->measurement().vector()[2]);
+    
+
+  //0.29;//p/(B[0]); 10^7 too big.
   vec[5] = meansign/p;
+  //vec[5] = -1.0/p;
+
+  cout<<"vec[4]="<<vec[4]<<endl;
 
   //delete gr1;
   //delete gr2;
@@ -985,7 +1031,7 @@ bool event_classif::perform_kalman_fit(State& seed, Trajectory& track) {
  
   ///print first state here, which is the 1st measurement in the trajectory
   if (ok)
-    seed = track.state(track.first_fitted_node());
+  seed = track.state(track.last_fitted_node());
 
   ///if ok then perform_muon_extraction, if not ok failtype=5
   return ok;
@@ -1573,7 +1619,7 @@ bool event_classif::reject_high(vector<Trajectory*>& trajs,
     
     temp_traj.sort_nodes(RP::z, -1 );
     
-    ok1 = get_patternRec_seed( temp_seed, temp_traj, dummy_hits);
+    ok1 = get_patternRec_seed( temp_seed, temp_traj);//, dummy_hits);
     temp_traj.set_quality( traj_index, traj_no );
     
     if ( ok1 && temp_traj.quality() < _chi2_max ){
