@@ -160,6 +160,10 @@ protected:
   bool _patternRec; //Pattern recognition algorithm required?
   
   int _fitCheck;
+
+  int _forwardFitCheck;
+  int _reseedFitCheck;
+
   int _min_seed_hits; //Minimum isolated hits required for Prec seed.
   double _min_iso_prop;
 

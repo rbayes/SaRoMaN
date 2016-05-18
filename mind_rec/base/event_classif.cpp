@@ -669,6 +669,10 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
     }
   
   State patternSeed;
+
+  //muontraj.sort_nodes(RP::z, 1 );
+
+  muontraj.sort_nodes(RP::z, -1 );
   
   ok = get_patternRec_seed( patternSeed, muontraj);//, hits);
 
@@ -695,6 +699,10 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
     }
   if(!ok) _m.message("perform_muon_extraction not ok",bhep::DETAILED);
   
+  muontraj.sort_nodes(RP::z, -1 );
+
+  //muontraj.sort_nodes(RP::z, 1 );
+
   ok = get_patternRec_seed( patternSeed, muontraj);//, hits);
 
   /*
@@ -706,9 +714,9 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
   V[2] = muontraj.nodes()[0]->measurement().position()[2];
   double dqtot = fit_parabola( V, muontraj);
 
-  V[0] = muontraj.nodes()[3]->measurement().vector()[0];
-  V[1] = muontraj.nodes()[3]->measurement().vector()[1];
-  V[2] = muontraj.nodes()[3]->measurement().position()[2];
+  //V[0] = muontraj.nodes()[3]->measurement().vector()[0];
+  //V[1] = muontraj.nodes()[3]->measurement().vector()[1];
+  //V[2] = muontraj.nodes()[3]->measurement().position()[2];
 
 
   M[0][0] = M[1][1] = 15.*cm*cm;
@@ -717,7 +725,9 @@ bool event_classif::muon_extraction(vector<cluster*>& hits,
   M[5][5] = pow(V[5],2)*4;
   patternSeed.set_hv(HyperVector(V,M,RP::slopes_curv_z));
 
+  ok = perform_kalman_fit( patternSeed, muontraj);
   */
+  
   ///assign the seed state
   if ( ok )
     _seedState = patternSeed;
@@ -750,6 +760,9 @@ bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj){
   EMatrix M(6,6,0); EMatrix M2(1,1,0);
   
 
+  EVector newV(7,0);
+  EMatrix newM(7,7,0);
+
   // Create and fill the state vector 
   //EVector v(6,0); 
   //v[0]= 0; // x position of the state 
@@ -765,9 +778,20 @@ bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj){
   V[1] = muontraj.nodes()[0]->measurement().vector()[1];
   V[2] = muontraj.nodes()[0]->measurement().position()[2];
 
+  newV[0] = muontraj.nodes()[0]->measurement().vector()[0];
+  newV[1] = muontraj.nodes()[0]->measurement().vector()[1];
+  newV[2] = muontraj.nodes()[0]->measurement().position()[2];
+
+  newV[3] = (muontraj.nodes()[1]->measurement().vector()[0] -muontraj.nodes()[0]->measurement().vector()[0]);
+  newV[4] = (muontraj.nodes()[1]->measurement().vector()[1] -muontraj.nodes()[0]->measurement().vector()[1]);
+ newV[5] = (muontraj.nodes()[1]->measurement().vector()[2] -muontraj.nodes()[0]->measurement().vector()[2]);
+
+
   //direction
   double dqtot = fit_parabola( V, muontraj);
-  
+
+  newV[6] = V[5];
+
   //Momentum. Estimate from empirical extent function.
   ///if cluster contains hits then _Xtent is the diff in z b/w 0th and last hit in cluster 
   ///if not, then _Xtent is the diff in z b/w 1st and one before last node (? not last node)
@@ -805,7 +829,14 @@ bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj){
   M[0][0] = M[1][1] = 15.*cm*cm;
   M[2][2] = EGeo::zero_cov()/2;
   M[3][3] = M[4][4] = 1.5;
+  //M[3][3] = M[4][4] = 1;
   M[5][5] = pow(V[5],2)*4;
+
+
+  newM[0][0] = newM[1][1] = 15.*cm*cm;
+  newM[2][2] = EGeo::zero_cov()/2;
+  newM[3][3] = newM[4][4] = newM[5][5] = 1.5;
+  newM[6][6] = pow(newV[6],2)*4;
 
   // Create and fill the state matrix 
   //EMatrix C(6,6,0); 
@@ -818,14 +849,24 @@ bool event_classif::get_patternRec_seed(State& seed, Trajectory& muontraj){
   //Sense
   V2[0] = 1;
 
+  //V2[0] = (muontraj.nodes()[1]->measurement().vector()[2] -muontraj.nodes()[0]->measurement().vector()[2]);
+
   cout<<"z pos in patternRec_seed: "<<V[2]<<endl;
   
   //Seedstate fit properties
   seed.set_name(RP::particle_helix);
+  
   seed.set_name(RP::representation,RP::slopes_curv_z); 
-  //seed.set_hv(RP::sense,HyperVector(V2,M2,RP::x));
-  seed.set_hv(RP::sense,HyperVector(V2,M2,RP::slopes_curv_z));
+  //seed.set_name(RP::representation,RP::default_rep); 
+
+  seed.set_hv(RP::sense,HyperVector(V2,M2,RP::z));
+
+  //seed.set_hv(RP::sense, HyperVector(1)); 
+
+  //seed.set_hv(RP::sense,HyperVector(V2,M2,RP::slopes_curv_z));
+  
   seed.set_hv(HyperVector(V,M,RP::slopes_curv_z));
+  //seed.set_hv(HyperVector(newV,newM,RP::default_rep));
   
   // std::cout<<seed.hv().representation()<<std::endl;
 
@@ -959,7 +1000,7 @@ double event_classif::fit_parabola(EVector& vec, Trajectory& track) {
 
   p = RangeMomentum(pathlength,firstNodeZ);
 
-  p=fabs(MomentumFromCurvature(track,0,p)-p);
+  p=fabs(MomentumFromCurvature(track,0,p));//-p);
 
   //p=MomentumFromCurvature(track,0,p);
 
@@ -1028,6 +1069,16 @@ bool event_classif::perform_kalman_fit(State& seed, Trajectory& track) {
 
   ///fit the track using the seed state                             
   bool ok = man().fitting_svc().fit(seed, track);
+
+  //Trajectory& traj = *_trajs[i];///
+  int _fitCheck = 0;
+  vector<Node*>::iterator nDIt;
+  for (nDIt = track.nodes().begin();nDIt!=track.nodes().end();nDIt++)
+    if ( (*nDIt)->status("fitted") )
+      _fitCheck++;
+
+  cout<<"event_classif.cpp fitcheck: "<<_fitCheck<<endl;
+
  
   ///print first state here, which is the 1st measurement in the trajectory
   if (ok)
@@ -2023,13 +2074,21 @@ double event_classif::correctEdep(double edep, double X, double Y, double Z)
   double sum1 = 0;
   double xedge = _detX/2.;
   double yedge = _detY/2.;
-
+  /*
   sum1 = exp(-(xedge + fabs(X))/_WLSAtten);
   sum1 += exp(-(3*xedge-fabs(X))/_WLSAtten);
   sum1 += exp(-(yedge + fabs(Y))/_WLSAtten);
   sum1 += exp(-(3*yedge-fabs(Y))/_WLSAtten);
+  */
 
-  double corrEng = 2*edep/sum1;
+  sum1 =  exp( -(xedge - fabs(X))/_WLSAtten );
+  sum1 += exp( -(xedge + fabs(X))/_WLSAtten );
+  sum1 += exp( -(yedge - fabs(Y))/_WLSAtten );
+  sum1 += exp( -(yedge + fabs(Y))/_WLSAtten );
+
+  //double corrEng = 2*edep/sum1;
+
+  double corrEng = 4*edep/sum1;
 
   return corrEng;
 }

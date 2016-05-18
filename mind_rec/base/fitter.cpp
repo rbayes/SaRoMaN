@@ -259,7 +259,8 @@ bool fitter::Execute(bhep::particle& part,int evNo){
 	}
 
 	cout<<"End of fitter.cpp Fitted: "<<_fitted<<endl;
-	cout<<"End of fitter.cpp Fitcheck: "<<_fitCheck<<endl;
+	cout<<"End of fitter.cpp forwardFitcheck: "<<_forwardFitCheck<<endl;
+	cout<<"End of fitter.cpp reseedFitcheck: "<<_reseedFitCheck<<endl;
 	cout<<"End of fitter.cpp initialqP: "<<_initialqP<<endl;
 
     for(int i=0;i<_trajs.size();i++)
@@ -400,8 +401,8 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   //_traj.nodes()[3]->reset();
 
   /// fit the trajectory                
-  //ok0 = man().fitting_svc().fit(seedState0, _traj);
-  ok0 = man().fitting_svc().fit(seedState0, _traj, "particle/helix");
+  ok0 = man().fitting_svc().fit(seedState0, _traj);
+  //ok0 = man().fitting_svc().fit(seedState0, _traj, "particle/helix");
   //ok0 = man().fitting_svc().fit(seedState0, _traj, "kalman");
   
   // Check the quality if the traj is fitted
@@ -429,6 +430,7 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
       _fitCheck++;
 
     }
+  _forwardFitCheck = _fitCheck;
   
   cout<<"fitCheck="<<_fitCheck<<" for trajectory size "<<_traj.size()<<endl;
   
@@ -438,6 +440,13 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
     low_fit_cut = _lowFit2;
   else
     low_fit_cut = _lowFit1;
+
+  cout<<"intType="<<_intType<<endl;
+  cout<<"ok0="<<ok0<<endl;
+  cout<<"ok1="<<ok1<<endl;
+  cout<<"(double)_fitCheck/(double)_traj.size()="<<(double)_fitCheck/(double)_traj.size()<<endl;
+  cout<<"low_fit_cut="<< low_fit_cut<<endl;
+
 
   ///reseed the trajectory
   if (_intType!= 5){   // not CA
@@ -449,7 +458,8 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
     else if (((double)_fitCheck/(double)_traj.size() < low_fit_cut ) && _fitCheck > 0){      
       ///if traj contains all single occ planes
       // _reseed_ok = ReseedTrajectory(_traj2,trajno);      
-      _reseed_ok = ReseedTrajectory(trajno);      
+      //_reseed_ok = ReseedTrajectory(trajno); 
+      _reseed_ok=true;
     }
     else _pr_count++;    
   }
@@ -473,6 +483,8 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
       _fitCheck++;
 
     }
+
+  _reseedFitCheck = _fitCheck;
   
   cout<<"fitCheck="<<_fitCheck<<" for trajectory size in refit "<<_traj.size()<<endl;
   
@@ -530,6 +542,7 @@ bool fitter::ReseedTrajectory(const int trajno){
     
   ///sort nodes in reverse order
   _traj2.sort_nodes(RP::z, -1);
+  //_traj2.sort_nodes(RP::z, 1);
 
   //ComputeSeed(_traj2,backSeed);
 
@@ -1038,11 +1051,11 @@ void fitter::ComputeSeed(const Trajectory& traj, State& seedState, int firsthit)
   C[3][3] = C[4][4] = 1.; // Expected pos dx/dz, dy/dz
   C[5][5] = pow(v[5],2)*3; // Expected pos dx/dz, dy/dz
   
-  // seedState.set_name(RP::particle_helix);
+  seedState.set_name(RP::particle_helix);
   seedState.set_name(RP::representation,RP::slopes_curv_z);
   
   v2[0] = 1;
-  seedState.set_hv(RP::sense,HyperVector(v2,C2,RP::x));
+  seedState.set_hv(RP::sense,HyperVector(v2,C2,RP::z));
   seedState.set_hv(HyperVector(v,C,RP::slopes_curv_z));
 
   std::cout<<"fitter::ComputeSeed 1/v[5]="<<1./v[5]<<std::endl;
@@ -1219,13 +1232,16 @@ void fitter::ComputeMomFromRange(const Trajectory& traj, int nplanes, int firsth
 
   meansign = CalculateCharge(traj);
   p = RangeMomentum(pathlength,traj.node(firsthit).measurement().position()[2]);
+  p=fabs(MomentumFromCurvature(traj,0,p));//-p);
 
+  /*
   if(final_Zpos > zMax)
     //if(traj.size() > 16) //tot 18 plates.
     {//Track went through the detector
       cout<<"Went through the detector fitter"<<endl;
       p=MomentumFromCurvature(traj,0,p);
     }
+  */
 
   std::cout<<"P value in ComputeMomFromRange fitter: "<<p<<std::endl;
 
