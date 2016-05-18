@@ -55,8 +55,8 @@ class saroman:
         #self.out_base  = os.path.join(self.home, 'batch')
         self.scripts_dir = os.path.join(self.exec_base, 'saroman')
         self.third_party_support = os.path.join(self.home, 'third_party') 
-        #self.xml_file_path = os.path.join(self.exec_base,'MIND.gdml')
-        self.xml_file_path = os.path.join(self.exec_base,'MIND_v3.gdml')
+        self.xml_file_path = os.path.join(self.exec_base,'MIND.gdml')
+        #self.xml_file_path = os.path.join(self.exec_base,'patMIND.gdml')
         self.parsed_file_path  = os.path.join(self.exec_base,'parsedGdml.log')
 
         #General flags
@@ -202,7 +202,7 @@ class saroman:
         self.config_rec_boxX = 1.5 #cm
         self.config_rec_do_clust = 1
         self.config_rec_detect = 'tracking'
-        self.config_rec_step_size = 1 #cm
+        self.config_rec_step_size = 10 #cm
         self.config_rec_pos_res = 1.5 #cm
         self.config_rec_meas_type = 'xyz'
         self.config_rec_WLSatten = 5000
