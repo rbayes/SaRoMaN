@@ -842,8 +842,8 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 
   vstring mother_particle;
 
-  double propSpeed = 170000000.0;
-  double timeSmearingFactor = 0.01;
+  double propSpeed = 170.0; //mm/ns
+  double timeSmearing = 0.7327; //ns
 
 
   bhep::hit* vhit = new bhep::hit( "tracking" );
@@ -886,14 +886,24 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 
       double yt1 = (yedge+(*hIt).second->x()[1])/propSpeed;
       double yt2 = (yedge-(*hIt).second->x()[1])/propSpeed;
-
+      /*
+      cout<<"xt1: "<<xt1<<endl;
+      cout<<"xt2: "<<xt2<<endl;
+      cout<<"yt1: "<<yt1<<endl;
+      cout<<"yt2: "<<yt2<<endl;
+      */
       // smear time
-      xt1 = xt1 + _ranGen.Gaus(0,timeSmearingFactor * xt1);
-      xt2 = xt2 + _ranGen.Gaus(0,timeSmearingFactor * xt2);
+      xt1 = xt1 + _ranGen.Gaus(0,timeSmearing);
+      xt2 = xt2 + _ranGen.Gaus(0,timeSmearing);
 
-      yt1 = yt1 + _ranGen.Gaus(0,timeSmearingFactor * yt1);
-      yt2 = yt2 + _ranGen.Gaus(0,timeSmearingFactor * yt2);
-
+      yt1 = yt1 + _ranGen.Gaus(0,timeSmearing);
+      yt2 = yt2 + _ranGen.Gaus(0,timeSmearing);
+      /*
+      cout<<"xt1: "<<xt1<<endl;
+      cout<<"xt2: "<<xt2<<endl;
+      cout<<"yt1: "<<yt1<<endl;
+      cout<<"yt2: "<<yt2<<endl;
+      */
       // Convert back to position.
 
       double x = (xt1-xt2)/2.0 * propSpeed;
@@ -907,9 +917,10 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 	  cout<<"x-bar x="<<(*hIt).second->ddata( "barPosT" )<<endl;  
 	  cout<<"x-bar y="<<y<<endl; 
  	  cout<<"x-bar real y="<<(*hIt).second->x()[1]<<endl;
-	  */
+	  
 	  barPosY.push_back(y);
 	  sumBarPosY+=y;
+	  */
 	}
       else
 	{
@@ -919,10 +930,11 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 	  cout<<"y-bar y="<<(*hIt).second->ddata( "barPosT" )<<endl;  
 	  cout<<"y-bar x="<<x<<endl; 
 	  cout<<"y-bar real x="<<(*hIt).second->x()[0]<<endl;
-	  */
+	  
 	  barPosX.push_back(x);
 	  sumBarPosX+=x;
-	}
+	  */
+	  }
       mother_particle.push_back((*hIt).second->mother_particle().name());
       X.push_back( (*hIt).second->x()[0] );
       Y.push_back( (*hIt).second->x()[1] );
