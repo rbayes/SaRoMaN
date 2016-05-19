@@ -842,6 +842,10 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 
   vstring mother_particle;
 
+  double propSpeed = 170000000.0;
+  double timeSmearingFactor = 0.01;
+
+
   bhep::hit* vhit = new bhep::hit( "tracking" );
 
   vhit->add_property( "voxel", vox );
@@ -876,15 +880,48 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
 	  <<endl;
       */
 
+      //get propagation time.
+      double xt1 = (xedge+(*hIt).second->x()[0])/propSpeed;
+      double xt2 = (xedge-(*hIt).second->x()[0])/propSpeed;
+
+      double yt1 = (yedge+(*hIt).second->x()[1])/propSpeed;
+      double yt2 = (yedge-(*hIt).second->x()[1])/propSpeed;
+
+      // smear time
+      xt1 = xt1 + _ranGen.Gaus(0,timeSmearingFactor * xt1);
+      xt2 = xt2 + _ranGen.Gaus(0,timeSmearingFactor * xt2);
+
+      yt1 = yt1 + _ranGen.Gaus(0,timeSmearingFactor * yt1);
+      yt2 = yt2 + _ranGen.Gaus(0,timeSmearingFactor * yt2);
+
+      // Convert back to position.
+
+      double x = (xt1-xt2)/2.0 * propSpeed;
+      double y = (yt1-yt2)/2.0 * propSpeed;
+
       if((*hIt).second->idata( "IsYBar" ) == 0)
 	{
 	  barPosX.push_back((*hIt).second->ddata( "barPosT" ));
 	  sumBarPosX+=(*hIt).second->ddata( "barPosT" );
+	  /*
+	  cout<<"x-bar x="<<(*hIt).second->ddata( "barPosT" )<<endl;  
+	  cout<<"x-bar y="<<y<<endl; 
+ 	  cout<<"x-bar real y="<<(*hIt).second->x()[1]<<endl;
+	  */
+	  barPosY.push_back(y);
+	  sumBarPosY+=y;
 	}
       else
 	{
 	  barPosY.push_back((*hIt).second->ddata( "barPosT" ));
 	  sumBarPosY+=(*hIt).second->ddata( "barPosT" );
+	  /*
+	  cout<<"y-bar y="<<(*hIt).second->ddata( "barPosT" )<<endl;  
+	  cout<<"y-bar x="<<x<<endl; 
+	  cout<<"y-bar real x="<<(*hIt).second->x()[0]<<endl;
+	  */
+	  barPosX.push_back(x);
+	  sumBarPosX+=x;
 	}
       mother_particle.push_back((*hIt).second->mother_particle().name());
       X.push_back( (*hIt).second->x()[0] );
@@ -917,25 +954,39 @@ bhep::hit* gdml_hit_constructor::get_vhit(int vox, double z,
   //Assume equal amounts of energy from both views and
   // equal energy flow in both directions along strip.
   //cout<<"totEng: "<<totEng<<endl;
-  xE1 = xE2 = yE1 = yE2 = totEng/2;
+  //xE1 = xE2 = yE1 = yE2 = totEng/2;
+
+  xE1 = xE2 = yE1 = yE2 = totEng/4;
 
   xeTH1F->Fill(xE1+xE2);
   yeTH1F->Fill(yE1+yE2);
 
   //cout<<"attLength: "<<_attLength<<endl;
-
+  /*
   xE1 = xE1 * exp(-(xedge + fabs(barX))/_attLength);
   xE2 = xE2 * exp(-(3*xedge-fabs(barX))/_attLength);
   yE1 = yE1 * exp(-(yedge + fabs(barY))/_attLength);
   yE2 = yE2 * exp(-(3*yedge-fabs(barY))/_attLength);
+  */
+  xE1 = xE1 * exp(-(xedge - fabs(barX))/_attLength);
+  xE2 = xE2 * exp(-(xedge + fabs(barX))/_attLength);
+  yE1 = yE1 * exp(-(yedge - fabs(barY))/_attLength);
+  yE2 = yE2 * exp(-(yedge + fabs(barY))/_attLength);
+
 
   xeAttTH1F->Fill(xE1+xE2);
   yeAttTH1F->Fill(yE1+yE2);
-  
+  /*
   dtx = (xedge + fabs(barX)) < (3*xedge - fabs(barX)) ?
     (xedge + fabs(barX))/vlight : (3*xedge - fabs(barX))/vlight;
   dty = (yedge + fabs(barY)) < (3*yedge - fabs(barY)) ?
     (yedge + fabs(barY))/vlight : (3*yedge - fabs(barY))/vlight;
+  */
+  dtx = (xedge - fabs(barX)) < (xedge + fabs(barX)) ?
+    (xedge - fabs(barX))/vlight : (xedge + fabs(barX))/vlight;
+  dty = (yedge - fabs(barY)) < (yedge + fabs(barY)) ?
+    (yedge - fabs(barY))/vlight : (yedge + fabs(barY))/vlight;
+
 
   dt = dtx < dty ? dtx : dty;
 
