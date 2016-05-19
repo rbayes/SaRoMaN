@@ -151,6 +151,7 @@ private:
   std::vector< vector<double> > _ZPos;
   std::vector< vector<double> > _Edep;
   std::vector< vector<double> > _HTime;
+  std::vector< vector<double> > _NodeFitted;
 
   std::vector<double> _XMeas;
   std::vector<double> _YMeas;

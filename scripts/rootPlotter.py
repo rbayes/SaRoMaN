@@ -55,7 +55,7 @@ class eventPlotter:
             sys.exit()
         if self.outfile == "":
             print "No output file provided. Will use default output name."
-            self.outfile = "Event_"+str(self.event)+".eps"
+            self.outfile = "Event_"+str(self.initevent)+".eps"
         if self.mode == 1:
             self.generateSingleEvent()
         elif self.mode == 2:
@@ -88,14 +88,10 @@ class eventPlotter:
             # ntraj = event.classif_NumTrajectory
             if nb < 0:
                 continue
-            failed = 0
-            for traj_fit in tree.traj_Fitted:
-                if traj_fit == 0:
-                    failed = 1
-            if failed == 1:
+            if tree.traj_Fitted[0] == 0:
                 self.generateEventPlot(tree, ievt)
  
-    def loopThroughFailedEvents(self):
+    def loopThroughAllEvents(self):
         '''
         Loop through events from input file, plot the event content and continue
         '''
@@ -130,16 +126,20 @@ class eventPlotter:
                           1000, -1800,1800, 1000, -1000,1000)
 
         evtcut = "MC_Evt=="+str(evt)
+        #tree.Draw("trajNode_YPos:trajNode_ZPos>>fitted2d",
+         #         evtcut + " && traj_Fitted[0]==1","COLZ")
         tree.Draw("trajNode_YPos:trajNode_ZPos>>fitted2d",
-                  evtcut + " && traj_Fitted==1","COLZ")
+                  evtcut + " && trajNode_Fitted==1","COLZ")
         tree.Draw("raw_Ymeas:raw_Zmeas>>raw_mu2d",
                   evtcut + " && raw_MotherProp>=0.5","COLZ")
         tree.Draw("raw_Ymeas:raw_Zmeas>>raw_other2d",
                   evtcut + " && raw_MotherProp<0.5","COLZ")
   
-        tree.Draw("trajNode_XPos:trajNode_ZPos>>fittedx","traj_Fitted==1","COLZ")
-        tree.Draw("raw_Xmeas:raw_Zmeas>>raw_mux","raw_MotherProp>=0.5","COLZ")
-        tree.Draw("raw_Xmeas:raw_Zmeas>>raw_otherx","raw_MotherProp<0.5","COLZ")
+        tree.Draw("trajNode_XPos:trajNode_ZPos>>fittedx",evtcut + "&& traj_Fitted[0]==1","COLZ")
+        tree.Draw("raw_Xmeas:raw_Zmeas>>raw_mux",evtcut +"&& raw_MotherProp>=0.5","COLZ")
+        tree.Draw("raw_Xmeas:raw_Zmeas>>raw_otherx",evtcut + "&& raw_MotherProp<0.5","COLZ")
+
+        print evtcut
 
         
         fitted2d.SetMarkerColor(4)
