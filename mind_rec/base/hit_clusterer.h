@@ -55,6 +55,8 @@ class hit_clusterer
 
   //sigma for position smear.
   double _sigMa;
+  double _sigMaX;
+  double _sigMaY;
   double _sigMaZ;
   double _minEng;
   double _res[3];

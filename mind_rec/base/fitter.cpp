@@ -89,7 +89,7 @@ bool fitter::Execute(bhep::particle& part,int evNo){
   ///create clusters or fill measurement vector
   ok = CreateMeasurements(part);
   
-  cout<<"What is patternRec: "<<_patternRec<<endl;
+  //cout<<"What is patternRec: "<<_patternRec<<endl;
 
   ///if pattern recognition 
   if (_patternRec) {
@@ -119,13 +119,13 @@ bool fitter::Execute(bhep::particle& part,int evNo){
     
     /// execute event classification
     get_classifier().Execute( _meas, _trajs, _hadmeas);
-
+    /*
     for(int i=0;i<_trajs.size();i++)
       {
 	cout<<"after class trajs[i]->size() "<<_trajs[i]->size()<<endl;
 	cout<<"lowpt "<<_trajs[i]->quality("lowPt")<<endl;
       }
-    
+    */
     ///sort the hadrons
     sort( _hadmeas.begin(), _hadmeas.end(), reverseSorter() );
     
@@ -149,11 +149,11 @@ bool fitter::Execute(bhep::particle& part,int evNo){
   for (unsigned int i=0; i<_trajs.size(); i++){ 
  
     _m.message("inside traj loop::if classifier ok, traj no =",i,"*********",bhep::DETAILED); 
-    
+    /*
     cout<<"traj no="<<i<<endl;
     cout<<"lowPt="<<_trajs[i]->quality("lowPt")<<endl;
     cout<<"trajs[i] size="<<_trajs[i]->size()<<endl;
-
+    */
     // If the track is fitted
     //if(_trajs[i]->nodes()[0]->status("fitted"))
     // if(_trajs[i]->quality("fitted"))
@@ -165,7 +165,7 @@ bool fitter::Execute(bhep::particle& part,int evNo){
 	//EVector vertex = EVector(3,0);
 	//vertex = _trajs[i]->state(_trajs[i]->first_fitted_node()).vector();
 	
-	cout<<"We have found a fitted track"<<endl;
+	//cout<<"We have found a fitted track"<<endl;
 	_fitted = true;
 	ok = false; // No need to fit the track if it is fitted!
 	_fitCheck = 1;// ?? Can not set this, thus the track is not added to fitted nodes. Must check this again.
@@ -419,13 +419,18 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
     ComputeSeedRefit(_traj, seedState1);
     ok1 = man().fitting_svc().fit(seedState1,_traj);
   }
+  else
+    {
+      ok1=true;
+    }
 
   ///check number of fitted nodes in traj
   _fitCheck =0;
   vector<Node*>::iterator nDIt;
   for (nDIt = _traj.nodes().begin();nDIt!=_traj.nodes().end();nDIt++)
     {
-      cout<<"_traj.nodes Fitted: "<<(*nDIt)->status("fitted")<<endl;
+      cout<<"_traj.nodes Fitted: "<<(*nDIt)->status("fitted")<<" "
+	  <<(*nDIt)->measurement().position()[2]<<endl;
     if ( (*nDIt)->status("fitted") )
       _fitCheck++;
 
@@ -478,7 +483,8 @@ bool fitter::FitTrajectory(const State& seedState0, const int trajno) {
   _fitCheck = 0;
   for (nDIt = _traj.nodes().begin();nDIt!=_traj.nodes().end();nDIt++)
     {
-      cout<<"_traj.nodes Fitted reseed: "<<(*nDIt)->status("fitted")<<endl;
+      cout<<"_traj.nodes Fitted reseed: "<<(*nDIt)->status("fitted")<<" "
+	  <<(*nDIt)->measurement().position()[2]<<endl;
     if ( (*nDIt)->status("fitted") )
       _fitCheck++;
 
@@ -531,14 +537,16 @@ bool fitter::ReseedTrajectory(const int trajno){
 
   State backSeed = _vPR_seed[_pr_count];
   
-  cout<<"Printing backSeed"<<endl;
-  cout<<backSeed<<endl;
+  //cout<<"Printing backSeed"<<endl;
+  //cout<<backSeed<<endl;
 
-
+  /*
   //Want to re-seed with diagonal matrix.
   HyperVector HV1 = backSeed.hv();//.keepDiagonalMatrix();
   HV1.keepDiagonalMatrix();
   backSeed.set_hv( HV1 );
+  */
+  cout<<"z pos in fitter_reseed: "<<backSeed.vector()[2]<<endl; 
     
   ///sort nodes in reverse order
   _traj2.sort_nodes(RP::z, -1);
@@ -567,8 +575,8 @@ bool fitter::ReseedTrajectory(const int trajno){
       State seedState1;
       ComputeSeedRefit(_traj2,seedState1);
       try {
-	ok1 = man().fitting_svc().fit(seedState1,_traj3);
-	//ok1 = man().fitting_svc().fit(backSeed,_traj3);
+	//ok1 = man().fitting_svc().fit(seedState1,_traj3);
+	ok1 = man().fitting_svc().fit(backSeed,_traj3);
       } catch (const char* msg ) {
 	ok1 = false;
       }
@@ -1019,7 +1027,7 @@ void fitter::ComputeSeed(const Trajectory& traj, State& seedState, int firsthit)
   
   if ( (double)(traj.quality("lastIso"))/(double)traj.size() > _min_iso_prop )
     firsthit = (int)traj.size() - (int)(traj.quality("lastIso"));
-
+  
   EVector v(6,0), v2(1,0);
   EMatrix C(6,6,0), C2(1,1,0);
     
@@ -1031,7 +1039,9 @@ void fitter::ComputeSeed(const Trajectory& traj, State& seedState, int firsthit)
   */
   v[0] = traj.nodes()[firsthit]->measurement().position()[0];
   v[1] = traj.nodes()[firsthit]->measurement().position()[1];
-  v[2] = traj.nodes()[firsthit]->measurement().position()[2];   
+  v[2] = traj.nodes()[firsthit]->measurement().position()[2];  
+
+  cout<<"z pos in fitter_seed: "<<v[2]<<endl; 
 
   // Estime the momentum from range
   ComputeMomFromRange( traj, (int)traj.size(), firsthit, v);
@@ -1044,6 +1054,13 @@ void fitter::ComputeSeed(const Trajectory& traj, State& seedState, int firsthit)
   //v[5] = 1.0/pSeed;
   //}
   
+
+
+  v[3] = 0;
+  v[4] = 0;
+
+
+
   // But use a larger covariance matrix
   // diagonal covariance matrix
   C[0][0] = C[1][1] = 9.*cm*cm;  // Expected pos res x,y

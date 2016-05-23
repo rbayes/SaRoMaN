@@ -189,7 +189,9 @@ RUN de_dx_fe D %(MIND_passive_de_dx)s
 RUN de_dx_min D %(MIND_module_de_dx)s
 
 # Position resolution for detector (cm).
-RUN pos_res D %(config_rec_pos_res)s
+RUN pos_resX D %(config_rec_pos_resX)s
+RUN pos_resY D %(config_rec_pos_resY)s
+RUN pos_resZ D %(config_rec_pos_resZ)s
 
 # Step size for track fitting (cm).
 RUN StepSize D %(config_rec_step_size)s
@@ -200,7 +202,7 @@ RUN detect S %(config_rec_detect)s
 ########
 # For hit clustering.(edge in cm)
 RUN do_clust I %(config_rec_do_clust)s
-RUN rec_boxX D 0.966 #%(config_rec_boxX)s
+RUN rec_boxX D %(config_rec_boxX)s
 
 # min energy at plane for detection (MeV) ***must be same as in digi!!***
 RUN min_eng D %(MIND_min_eng_at_plane)s
@@ -209,7 +211,8 @@ RUN min_eng D %(MIND_min_eng_at_plane)s
 #RUN Gen_seed D %(config_rec_gen_seed)s
 
 # sigma (cm)
-RUN pos_sig D %(MIND_width_sigma)s 
+RUN xpos_sig D %(MIND_width_sigmaX)s
+RUN ypos_sig D %(MIND_width_sigmaY)s 
 RUN zpos_sig D %(MIND_thickness_sigma)s 
 
 #############################################
@@ -336,8 +339,8 @@ RUN Eng_Res D %(config_digi_eng_res)s
 # seed value for random generator
 CON Gen_seed D %(config_digi_seed)s
 
-CON rec_boxX D 0.966 #%(MIND_width_active)s
-CON rec_boxY D 0.666  #%(MIND_width_active)s
+CON rec_boxX D %(MIND_width_activeX)s
+CON rec_boxY D %(MIND_width_activeY)s
 
 CON nVoxX I 47;
 

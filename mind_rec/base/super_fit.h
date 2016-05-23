@@ -40,7 +40,7 @@ class super_fit{
   // than can be calculated from RangeMomentum
   double MomentumFromCurvature(const Trajectory& traj, int startPoint,double minP);
   // Calculate the charge by using a quadratic fit.
-  double CalculateCharge(const Trajectory& track);
+  double CalculateCharge(const Trajectory& startTrack);
 
 };
 

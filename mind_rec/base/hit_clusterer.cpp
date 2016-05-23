@@ -9,8 +9,10 @@ hit_clusterer::hit_clusterer(const bhep::gstore& store)
   //get relevant information from the store.
   // long seed = (long)store.fetch_dstore("Gen_seed");
 //   _ranGen = RanluxEngine( seed, 4 );
-  _sigMa = store.fetch_dstore("pos_sig") * cm;
-  _sigMaZ = 2*cm/sqrt(12);
+  //_sigMa = store.fetch_dstore("pos_sig") * cm;
+  _sigMaX = store.fetch_dstore("xpos_sig") * cm;
+  _sigMaY = store.fetch_dstore("ypos_sig") * cm;
+  _sigMaZ = store.fetch_dstore("zpos_sig") * cm;
 
   _res[0] = 0.85; _res[1] = 0.80; _res[2] = 0.75;
 
@@ -21,8 +23,11 @@ hit_clusterer::hit_clusterer(const bhep::gstore& store)
   _cov = EMatrix(3,3,0);
   //for (int i = 0;i < 2;i++)
   //_cov[i][i] = pow( _sigMa, 2 );
-  for (int i = 0;i < 2;i++) 
-    _cov[i][i] = pow( _sigMa, 2 );
+  //for (int i = 0;i < 2;i++) 
+  //_cov[i][i] = pow( _sigMa, 2 );
+
+  _cov[0][0] = pow( _sigMaX, 2 );
+  _cov[1][1] = pow( _sigMaY, 2 );
   _cov[2][2] = _sigMaZ * _sigMaZ;
   
   
@@ -292,9 +297,9 @@ void hit_clusterer::calculate_clust_pos(const std::vector<bhep::hit*>& hits, EVe
   }
   _nVoxV[0] = nX; _nVoxV[1] = nY;
   if ( nX == 0 ) _cov[0][0] = pow( 1.0*m, 2 );
-  else if ( nX > 1 ) _cov[0][0] = pow( _res[nX-1]*_sigMa, 2 );
+  else if ( nX > 1 ) _cov[0][0] = pow( _res[nX-1]*_sigMaX, 2 );
   if ( nY == 0 ) _cov[1][1] = pow( 1.0*m, 2 );
-  else if ( nY > 1 ) _cov[1][1] = pow( _res[nY-1]*_sigMa, 2 );
+  else if ( nY > 1 ) _cov[1][1] = pow( _res[nY-1]*_sigMaY, 2 );
 
   vec[0] = X / Qm1;// + RandGauss::shoot(&_ranGen, 0, _sigMa);
   vec[1] = Y / Qm2;// + RandGauss::shoot(&_ranGen, 0, _sigMa);

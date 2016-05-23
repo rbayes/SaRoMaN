@@ -659,8 +659,8 @@ void MINDsetup::readParam(){
     meas_dim = 2;
     meastype = _pstore.fetch_sstore("meas_type");
     
-    resx = _pstore.fetch_dstore("pos_res") * cm;
-    resy = _pstore.fetch_dstore("pos_res") * cm;
+    resx = _pstore.fetch_dstore("pos_resX") * cm;
+    resy = _pstore.fetch_dstore("pos_resY") * cm;
     
     if(_pstore.find_dstore("StepSize")){
       StepSize = _pstore.fetch_dstore("StepSize") * cm;

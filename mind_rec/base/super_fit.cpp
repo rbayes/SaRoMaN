@@ -180,12 +180,16 @@ double super_fit::MomentumFromCurvature(const Trajectory& traj, int startPoint,d
 }
 
 //***********************************************************************
-double super_fit::CalculateCharge(const Trajectory& track) {
+double super_fit::CalculateCharge(const Trajectory& startTrack) {
   //***********************************************************************
 
   int fitcatcher;
-  int nMeas = track.size();
+  int nMeas = startTrack.size();
   bool removeHits = false;
+
+  Trajectory track = startTrack;
+
+  track.sort_nodes(RP::z, -1);
 
   // Run this with different track starts! Will make really bad guesses when we change field.
   // Either from start or from the end.

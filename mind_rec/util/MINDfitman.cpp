@@ -186,7 +186,9 @@ void MINDfitman::config_matching()
     .set_max_distance( _store.fetch_dstore("max_sep") * cm );
 
   _man.matching_svc().retrieve_trajectory_finder<CellularAutomaton>("cat")
-    .set_plane_tolerance( _store.fetch_dstore("pos_res") * cm );
+    .set_plane_tolerance( sqrt(
+			 pow(_store.fetch_dstore("pos_resX") * cm,2) +
+			 pow(_store.fetch_dstore("pos_resY") * cm,2)));
 
   _man.matching_svc().retrieve_trajectory_finder<CellularAutomaton>("cat")
     .set_max_trajs( _store.fetch_istore("max_traj") );

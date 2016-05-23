@@ -99,8 +99,10 @@ class saroman:
         self.MIND_active_de_dx = 0.2052 #MeV/mm
         self.MIND_thickness_active = 3.0#1.5 # cm
         self.MIND_thickness_sigma = self.MIND_thickness_active / math.sqrt(12)
-        self.MIND_width_active = 1.5 #cm
-        self.MIND_width_sigma = self.MIND_width_active / math.sqrt(12)
+        self.MIND_width_activeX = 8.5 #cm
+        self.MIND_width_sigmaX = self.MIND_width_activeX / math.sqrt(12)
+        self.MIND_width_activeY = 1.5 #cm
+        self.MIND_width_sigmaY = self.MIND_width_activeY / math.sqrt(12)
         self.MIND_rad_length_active = 413.1 #mm
         self.MIND_npanels = 3 #Describe howmany 'parts' the magnetic field has.
         self.MIND_active_layers = 1 #1
@@ -170,10 +172,10 @@ class saroman:
         self.config_rec_fac_refit = 10000
         self.config_rec_refit = 1 # fit data twice (0=false, 1=true)
         self.config_rec_z_cut = 300 #cm
-        self.config_rec_x_cut = 50 #cm
+        self.config_rec_x_cut = 100 #cm
         self.config_rec_y_cut = 50 #cm
         self.config_rec_low_fit_cut2 = 0.6
-        self.config_rec_low_fit_cut0 = 0.8
+        self.config_rec_low_fit_cut0 = 0.6
         self.config_rec_high_pass_hits = 500
         self.config_rec_low_pass_hits = 6
         self.config_rec_max_n_trajs = 4
@@ -185,10 +187,10 @@ class saroman:
         self.config_rec_max_blobSkip = 0.2
         self.config_rec_min_use_prop = 0.7
         self.config_rec_max_consec_missed_planes = 3
-        self.config_rec_pat_rec_max_outliners = 10
+        self.config_rec_pat_rec_max_outliners = 4
         self.config_rec_pat_rec_max_chi = 20
         self.config_rec_chi2node_max = 20
-        self.config_rec_max_outliners = 5
+        self.config_rec_max_outliners = 2
         self.config_rec_chi2fit_max = 50
         # verbosities for recpack services
         self.config_rec_vfit = 0#0#3
@@ -199,11 +201,13 @@ class saroman:
         self.config_rec_model = 'particle/helix'
         self.config_rec_kfitter = 'kalman'
         self.config_rec_gen_seed = 373940592
-        self.config_rec_boxX = 1.5 #cm
+        self.config_rec_boxX = 8.5 #cm
         self.config_rec_do_clust = 1
         self.config_rec_detect = 'tracking'
-        self.config_rec_step_size = 10 #cm
-        self.config_rec_pos_res = 1.5 #cm
+        self.config_rec_step_size = 5 #cm
+        self.config_rec_pos_resX = 8.5 #cm
+        self.config_rec_pos_resY = 1.5 #cm
+        self.config_rec_pos_resZ = 1.5 #cm
         self.config_rec_meas_type = 'xyz'
         self.config_rec_WLSatten = 5000
         # relative density, Sc/Fe, AIR/Sc.
